@@ -195,7 +195,7 @@ S = [
  "Land 3:25 PM (Fri Aug 7). To Boavista: Metro Line E (violet) → Casa da Música ~25 min (€2.25 + Andante card) + 8–10 min walk, or taxi/Bolt €20–25. After a red-eye the taxi is worth it.",
  None,15,30,True),
 ("Sheraton Porto Hotel & Spa 🏨",41.1580,-8.6293,2,"hotel","Porto",
- "🏨 Aug 7–9 (BOOKED, conf. H-XLJ4969JRL8K, $511.29). Boavista, 2.5 km from Ribeira. Premium Queen listed for 2 — call +351 22 040 4000 to arrange third-person bedding. Real pool + spa after the red-eye.",
+ "🏨 Aug 7–9 (BOOKED, $511.29). Boavista, 2.5 km from Ribeira. Premium Queen listed for 2 — call +351 22 040 4000 to arrange third-person bedding. Real pool + spa after the red-eye.",
  None,17,0,True),
 ("Ribeira riverfront",41.1408,-8.6110,2,"attraction","Porto",
  "Evening stroll along the Douro. ~5:45 PM from the hotel — taxi ~10 min €8, or metro to São Bento + walk down.",
@@ -241,7 +241,7 @@ S = [
  "🚆 9:00 AM Alfa Pendular to Lisboa Santa Apolónia, ~3h (book cp.pt, promo from €9.50). Taxi to Campanhã (NOT São Bento) ~12 min. Arrive ~12:30 PM.",
  "https://www.cp.pt/passageiros/en",9,180,True),
 ("HF Fénix Urban 🏨",38.7267,-9.1500,4,"hotel","Lisbon",
- "🏨 Aug 9–12 (BOOKED, conf. H-FJWLNW2TPFTX, $649.79; refundable before Aug 5). Marquês de Pombal — metro hub on the doorstep, family room with 2 queens sleeps 3. Verify breakfast.",
+ "🏨 Aug 9–12 (BOOKED, $649.79; refundable before Aug 5). Marquês de Pombal — metro hub on the doorstep, family room with 2 queens sleeps 3. Verify breakfast.",
  None,13,0,True),
 ("🕌 Alfama + Miradouro de Santa Luzia",38.7118,-9.1300,4,"moorish","Lisbon",
  "🕌 2:00 PM the old Moorish quarter (from Arabic al-hamma) — wander the lanes up to the tiled Santa Luzia terrace.",
@@ -310,7 +310,7 @@ S = [
  "🌘 ECLIPSE DAY. Partial begins ~7:30 PM as you walk off the plane; maximum ~8:30 PM (~85–90% covered), the Sun 8–10° above the western horizon. Watch max from arrivals with a clear WESTERN view. Bring 3 pairs of ISO 12312-2 glasses from the US — sold out across Spain. Verify minutes at timeanddate.com/eclipse.",
  "https://www.timeanddate.com/eclipse/",20,60,False),
 ("Hotel Giralda Center 🏨",37.3833,-5.9822,7,"hotel","Seville",
- "🏨 Aug 12–15 (BOOKED, conf. H-43QF6GWWPFP4, $516.60). San Bernardo — 1 double + 2 twins + sofa bed, the room genuinely built for 3. Rooftop pool. To hotel: Tussam EA bus €4 + walk, or taxi €25.",
+ "🏨 Aug 12–15 (BOOKED, $516.60). San Bernardo — 1 double + 2 twins + sofa bed, the room genuinely built for 3. Rooftop pool. To hotel: Tussam EA bus €4 + walk, or taxi €25.",
  None,21,0,True),
 ("Barrio Santa Cruz — late tapas",37.3855,-5.9905,7,"food","Seville",
  "🍽 9:45 PM Santa Cruz lanes by night + rooftop drink with Giralda view (La Terraza de EME). 10:15 PM late tapas — Spanish dinner time from night one.",
@@ -355,7 +355,7 @@ S = [
  "🚆 Morning Renfe direct, 2.5–3h (first ~07:40). ⚠️ Aug 15 is Assumption Day — book the moment Renfe opens sales. Arrive ~1:00 PM.",
  "https://www.renfe.com/es/en",8,180,True),
 ("Meliá Granada 🏨",37.1735,-3.5990,10,"hotel","Granada",
- "🏨 Aug 15–17 (BOOKED, conf. H-NTD7QG4BZTZM, $438.50). Puerta Real — most central base of the trip. Premium Double booked for 3 — call +34 958 22 74 00 to add a bed. 15-min walk to Plaza Nueva. 1:30–6 PM check in, lunch, rest through the heat.",
+ "🏨 Aug 15–17 (BOOKED, $438.50). Puerta Real — most central base of the trip. Premium Double booked for 3 — call +34 958 22 74 00 to add a bed. 15-min walk to Plaza Nueva. 1:30–6 PM check in, lunch, rest through the heat.",
  None,13,0,True),
 ("🕌 Albaicín → Mirador de San Nicolás 🌄",37.1809,-3.5924,10,"moorish","Granada",
  "🕌 7:00 PM the old Moorish quarter (UNESCO) up to the Mirador de San Nicolás: sunset over the Alhambra with the Sierra Nevada behind — the single best free view of the trip. 20–25 min uphill walk or C31/C32 minibus.",
@@ -386,7 +386,7 @@ S = [
  "🚆 AVE direct ~3h20 (first ~06:56). ⚠️ Check the ARRIVAL STATION — some services arrive Atocha, others Chamartín. Renfe-only route; book early. Arrive ~1:30 PM.",
  "https://www.renfe.com/es/en",10,200,True),
 ("Airbnb — Plaza Mayor 🏨",40.4155,-3.7075,12,"hotel","Madrid",
- "🏨 Aug 17–20 (BOOKED, conf. HM4P9Z8TFE, $651.36 paid). Calle de Felipe III 6, directly on Plaza Mayor. Doorstep: Mercado de San Miguel 2 min, Botín 2 min, Casa Hernanz 3 min, Sol 4 min, Royal Palace 10 min. Save door codes offline; pack earplugs.",
+ "🏨 Aug 17–20 (BOOKED, $651.36 paid). Calle de Felipe III 6, directly on Plaza Mayor. Doorstep: Mercado de San Miguel 2 min, Botín 2 min, Casa Hernanz 3 min, Sol 4 min, Royal Palace 10 min. Save door codes offline; pack earplugs.",
  None,14,0,True),
 ("Royal Palace + Campo del Moro",40.4180,-3.7143,12,"attraction","Madrid",
  "4:00 PM Royal Palace (10-min walk). 🇪🇸 Friends say approach from below via Campo del Moro / Cuesta de la Vega (where Day 14's Muralla Árabe sits) — flat frontal view has 'no depth'. Alt: Prado free window 18:00–20:00.",
@@ -460,9 +460,60 @@ LEGS = [
   "a":(40.4067,-3.6906),"b":(39.8628,-4.0273)},
 ]
 
-def valhalla_route(a, b):
+# ─── Transport modes: colour + line style + routing engine per mode ─────────
+# walk/taxi/bus follow real streets (Valhalla/OSM, cached); metro/tram/train/
+# flight run on rails or air, so they are drawn as clean direct hops.
+MODE_STYLE = {
+ "walk":  {"color":"#2E9B57","dash":"1 7","w":3,"label":"🚶 Walk","costing":"pedestrian"},
+ "taxi":  {"color":"#E8952F","dash":None, "w":4,"label":"🚕 Taxi","costing":"auto"},
+ "bus":   {"color":"#159C97","dash":None, "w":4,"label":"🚌 Bus","costing":"bus"},
+ "metro": {"color":"#2D5BD0","dash":"7 6","w":4,"label":"🚇 Metro","costing":None},
+ "tram":  {"color":"#8E44AD","dash":"7 6","w":4,"label":"🚊 Tram","costing":None},
+ "train": {"color":"#C0392B","dash":None, "w":4,"label":"🚆 Train","costing":None},
+ "flight":{"color":"#6C757D","dash":"10 8","w":4,"label":"✈️ Flight","costing":None},
+}
+# Mode used to REACH each stop from the previous stop that day (default = walk).
+# Straight from the itinerary's stated transport for each hop.
+MODE_TO = {
+ "Ribeira riverfront":"taxi",
+ "🍷 Graham's 1890 Port Lodge":"taxi",
+ "O Valentim (dinner, Matosinhos)":"metro",
+ "🕌 Alfama + Miradouro de Santa Luzia":"metro",
+ "⭐ Pena Palace":"bus",
+ "⭐ Oceanário de Lisboa":"taxi",
+ "🕌 National Tile Museum (Azulejo)":"taxi",
+ "⭐ Tram 28 / Ler Devagar 📚":"tram",
+ "⭐🛍 Embaixada (Príncipe Real)":"metro",
+ "Hotel Giralda Center 🏨":"taxi",
+ "🕌 Albaicín → Mirador de San Nicolás 🌄":"bus",
+ "Rest / pool 🏊":"taxi",
+ "Sacromonte — carmen dinner 🌄":"taxi",
+ "🕌 Muralla Árabe":"taxi",
+ "⭐ Templo de Debod (sunset) 🌄":"taxi",
+ "Botín — farewell dinner":"taxi",
+}
+
+def arrive_mode(day, name, first):
+    if first: return None
+    return MODE_TO.get(name, "walk")
+
+def build_segments():
+    """Ordered intra-day hops between consecutive place-stops. Skips any hop
+    into/out of a train or flight stop — those journeys are the intercity legs."""
+    segs=[]
+    for d in range(1,16):
+        ds=[s for s in S if s[3]==d]
+        for i in range(1,len(ds)):
+            prev,cur=ds[i-1],ds[i]
+            if prev[4] in ("train","flight") or cur[4] in ("train","flight"): continue
+            segs.append({"day":d,"mode":MODE_TO.get(cur[0],"walk"),
+                         "a":(prev[1],prev[2]),"b":(cur[1],cur[2]),
+                         "from":prev[0],"to":cur[0]})
+    return segs
+
+def valhalla_route(a, b, costing):
     payload={"locations":[{"lat":a[0],"lon":a[1]},{"lat":b[0],"lon":b[1]}],
-             "costing":"auto","directions_options":{"units":"km"}}
+             "costing":costing,"directions_options":{"units":"km"}}
     try:
         r=requests.post(VALHALLA_URL,json=payload,timeout=30); r.raise_for_status(); d=r.json()
         if "trip" not in d: return None
@@ -471,32 +522,36 @@ def valhalla_route(a, b):
             c=pl_lib.decode(leg["shape"],6)
             if cc and c and cc[-1]==c[0]: c=c[1:]
             cc.extend(c)
-        return cc
+        return cc or None
     except Exception:
         return None
 
-def fetch_routes():
+def build_paths():
     cache={}
     if os.path.exists(ROUTE_CACHE):
         try: cache=json.load(open(ROUTE_CACHE))
         except Exception: cache={}
-    print("Resolving intercity legs…")
-    out=[]
-    for lg in LEGS:
-        key=hashlib.md5(f'{lg["a"]}{lg["b"]}{lg["mode"]}'.encode()).hexdigest()
+    legs=[(lg,[list(lg["a"]),list(lg["b"])]) for lg in LEGS]  # rail/air = direct
+    print("Resolving intra-city paths…")
+    segs=[]; routed=0
+    for sg in build_segments():
+        costing=MODE_STYLE[sg["mode"]]["costing"]
+        straight=[list(sg["a"]),list(sg["b"])]
+        if not costing:
+            segs.append((sg,straight)); continue
+        key=hashlib.md5(f'{sg["a"]}{sg["b"]}{costing}'.encode()).hexdigest()
         if key in cache:
-            coords=cache[key]; print(f"  ✓ {lg['name']} (cache)")
-        elif lg["mode"]=="flight":
-            coords=[list(lg["a"]),list(lg["b"])]; cache[key]=coords; print(f"  ✈ {lg['name']} (great-circle)")
+            segs.append((sg,cache[key])); routed+=1; continue
+        res=valhalla_route(sg["a"],sg["b"],costing)
+        if res:
+            cache[key]=res; segs.append((sg,res)); routed+=1
+            time.sleep(0.4)
         else:
-            res=valhalla_route(lg["a"],lg["b"])
-            coords=res if res else [list(lg["a"]),list(lg["b"])]
-            cache[key]=coords
-            print(f"  {'✓' if res else '⚠'} {lg['name']} ({len(coords)} pts)")
-            time.sleep(0.6)
-        out.append((lg,coords))
-    json.dump(cache,open(ROUTE_CACHE,"w"))
-    return out
+            segs.append((sg,straight))  # fallback NOT cached → upgraded on a networked run
+    try: json.dump(cache,open(ROUTE_CACHE,"w"))
+    except Exception: pass
+    print(f"  {routed}/{len(segs)} intra-city hops street-routed (rest drawn direct)")
+    return {"legs":legs,"segs":segs}
 
 # ═══════════════════════ THEME / ICON HELPERS ═══════════════════════
 TYPE_ICON = {  # (fa icon, override marker colour or None → use region colour)
@@ -566,33 +621,33 @@ def popup_html(name, day, st, city, notes, link, lat, lon, wx=None):
     return h+"</div></div>"
 
 # ═══════════════════════ MAP ═══════════════════════
-def build_map(routes, weather):
+DAY_LAYER = {d: f"Day {d} — {DAY_DATES[d][5:].replace('-','/')} · {DAY_CITY[d]}" for d in range(1,16)}
+
+def build_map(paths, weather):
     m=folium.Map(location=MAP_CENTER, zoom_start=ZOOM_START, tiles=None, control_scale=True)
     folium.TileLayer("OpenStreetMap", name="🗺️ Street Map").add_to(m)
     folium.TileLayer(tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",attr="Esri",name="🏔️ Terrain").add_to(m)
     folium.TileLayer(tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",attr="Esri",name="🛰️ Satellite").add_to(m)
 
-    rg={r:FeatureGroup(name=f'{TYPE_EMOJI.get("attraction","")} {r}', show=True) for r in REGION_ORDER if r!="Transit"}
-    rg["Porto"]=FeatureGroup(name="🟦 Porto", show=True)
-    rg["Lisbon"]=FeatureGroup(name="🟦 Lisbon & Sintra", show=True)
-    rg["Seville"]=FeatureGroup(name="🟥 Seville & Cordoba", show=True)
-    rg["Granada"]=FeatureGroup(name="🟨 Granada", show=True)
-    rg["Madrid"]=FeatureGroup(name="🟪 Madrid & Toledo", show=True)
-    rg["Transit"]=FeatureGroup(name="✈️ Flights", show=True)
-
+    # One toggleable layer per day (markers + that day's paths)
+    dg={d: FeatureGroup(name=DAY_LAYER[d], show=True) for d in range(1,16)}
     moor=FeatureGroup(name="🕌 Moorish & Mudéjar sites", show=False)
     hist=FeatureGroup(name="✊ Political & literary history", show=False)
     hotels=FeatureGroup(name="🏨 Hotels", show=False)
-    journey=FeatureGroup(name="🚆 Intercity journey", show=True)
 
-    # Intercity route lines
-    for lg,coords in routes:
-        col=REGION_COLORS[region(DAY_CITY[lg["day"]])]
-        dash="10 8" if lg["mode"]=="flight" else None
-        PolyLine(locations=coords, color=col, weight=4, opacity=0.85, smooth_factor=1,
-                 dash_array=dash,
-                 tooltip=f"<b>{'✈️' if lg['mode']=='flight' else '🚆'} {lg['name']}</b><br>{lg['note']}"
-                 ).add_to(journey)
+    # Intercity legs (rail/air) → their travel day's layer
+    for lg,coords in paths["legs"]:
+        stl=MODE_STYLE[lg["mode"]]
+        PolyLine(locations=coords, color=stl["color"], weight=5, opacity=0.9, smooth_factor=1,
+                 dash_array=stl["dash"],
+                 tooltip=f"<b>{stl['label']}: {lg['name']}</b><br>{lg['note']}").add_to(dg[lg["day"]])
+
+    # Intra-city hops (walk/taxi/metro/…) → their day's layer, styled by mode
+    for sg,coords in paths["segs"]:
+        stl=MODE_STYLE[sg["mode"]]
+        PolyLine(locations=coords, color=stl["color"], weight=stl["w"], opacity=0.85, smooth_factor=1,
+                 dash_array=stl["dash"],
+                 tooltip=f"<b>{stl['label']}</b><br>{sg['from']} → {sg['to']}").add_to(dg[sg["day"]])
 
     # Stop markers
     for name,lat,lon,day,st,city,notes,link,hr,dur,anchor in S:
@@ -602,7 +657,7 @@ def build_map(routes, weather):
         ph=Popup(popup_html(name,day,st,city,notes,link,lat,lon,wx), max_width=340)
         Marker(location=[lat,lon], popup=ph,
                tooltip=f"<b>{TYPE_EMOJI.get(st,'📷')} {name}</b><br><small>{DAY_LABELS[day]}</small>",
-               icon=Icon(color=col, icon=ic, prefix="fa")).add_to(rg[region(city)])
+               icon=Icon(color=col, icon=ic, prefix="fa")).add_to(dg[day])
         if is_moorish(notes):
             Marker(location=[lat,lon], popup=Popup(popup_html(name,day,st,city,notes,link,lat,lon,wx),max_width=340),
                    tooltip=f"<b>🕌 {name}</b>", icon=Icon(color="darkred",icon="mosque",prefix="fa")).add_to(moor)
@@ -613,8 +668,7 @@ def build_map(routes, weather):
             Marker(location=[lat,lon], popup=Popup(popup_html(name,day,st,city,notes,link,lat,lon,wx),max_width=340),
                    tooltip=f"<b>🏨 {name}</b>", icon=Icon(color="green",icon="bed",prefix="fa")).add_to(hotels)
 
-    journey.add_to(m)
-    for r in REGION_ORDER: rg[r].add_to(m)
+    for d in range(1,16): dg[d].add_to(m)
     moor.add_to(m); hist.add_to(m); hotels.add_to(m)
     LayerControl(collapsed=True).add_to(m)
     LocateControl(position="topleft", strings={"title":"See my location"}).add_to(m)
@@ -622,8 +676,9 @@ def build_map(routes, weather):
     title="""<div id="map-title" style="position:fixed;top:10px;left:55px;z-index:1000;background:white;padding:10px 18px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.2);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;max-width:calc(100vw - 120px);">
     <div style="font-size:16px;font-weight:700;color:#B23A48;">🕌 Portugal &amp; Spain — Moorish Tour</div>
     <div class="title-sub" style="font-size:12px;color:#666;margin-top:2px;">Aug 6–20, 2026 · 15 Days · Porto → Lisbon → Seville → Granada → Madrid · all trains + one flight</div>
-    <div class="title-legend" style="font-size:10px;color:#999;margin-top:4px;">🕌 Moorish  ✊ History  🏨 Hotel  🍽️ Food  🛍️ Shop  🚆 Train  ✈️ Flight  🌄 View  🌘 Eclipse</div>
-    <div class="title-credits" style="font-size:9px;color:#bbb;margin-top:3px;">Routes: Valhalla/OSM · Climate normals from the itinerary heat outlook · Toggle layers ↗</div></div>"""
+    <div class="title-legend" style="font-size:10px;color:#999;margin-top:4px;">🕌 Moorish  ✊ History  🏨 Hotel  🍽️ Food  🛍️ Shop  🌄 View  🌘 Eclipse</div>
+    <div class="title-legend" style="font-size:10px;color:#999;margin-top:2px;">Paths: <span style="color:#2E9B57;font-weight:700">━ 🚶Walk</span>  <span style="color:#E8952F;font-weight:700">━ 🚕Taxi</span>  <span style="color:#2D5BD0;font-weight:700">┄ 🚇Metro</span>  <span style="color:#8E44AD;font-weight:700">┄ 🚊Tram</span>  <span style="color:#159C97;font-weight:700">━ 🚌Bus</span>  <span style="color:#C0392B;font-weight:700">━ 🚆Train</span>  <span style="color:#6C757D;font-weight:700">┄ ✈️Flight</span></div>
+    <div class="title-credits" style="font-size:9px;color:#bbb;margin-top:3px;">Walk/taxi/bus paths follow streets (Valhalla/OSM); rail &amp; air are direct hops · Toggle days ↗</div></div>"""
     m.get_root().html.add_child(folium.Element(title))
     m.get_root().html.add_child(folium.Element(RESPONSIVE_CSS))
     m.get_root().html.add_child(folium.Element(build_agenda(weather)))
@@ -656,7 +711,7 @@ def _trunc(notes, c):
                 f'<a href="#" onclick="var p=this.parentElement;p.style.display=\'none\';p.previousElementSibling.style.display=\'inline\';p.previousElementSibling.previousElementSibling.style.display=\'inline\';return false;" style="color:#666;text-decoration:none;">Hide ↑</a></span>')
     return notes.replace("\n","<br>")
 
-def _card(name,lat,lon,day,st,city,notes,link,hr,dur,anchor,wx=None):
+def _card(name,lat,lon,day,st,city,notes,link,hr,dur,anchor,wx=None,arrive=None):
     c=rcolor(city); reg=region(city)
     icon=TYPE_EMOJI.get(st,"📷"); tstr=f"{hr:02d}:00"
     sid=f"d{day}h{hr}s{st}"
@@ -664,6 +719,9 @@ def _card(name,lat,lon,day,st,city,notes,link,hr,dur,anchor,wx=None):
     mo="true" if is_moorish(notes) else "false"
     hi="true" if is_history(notes) else "false"
     h =f'<div class="sc" id="{sid}" data-id="{sid}" data-day="{day}" data-city="{reg}" data-type="{st}" data-hour="{hr}" data-moor="{mo}" data-hist="{hi}" data-immune="{immune}" data-dur="{dur}" style="border-left-color:{c}">'
+    if arrive:
+        stl=MODE_STYLE[arrive]
+        h+=f'<div class="amode" style="color:{stl["color"]}">↳ {stl["label"]} from previous stop</div>'
     h+='<div style="display:flex;align-items:baseline;gap:10px;justify-content:space-between;width:100%">'
     h+=f'<div style="display:flex;align-items:baseline;gap:10px"><div class="st">{tstr}</div>'
     h+=f'<div><span class="sn">{icon} {name}</span><br><span class="stp">{st}</span></div></div>'
@@ -694,10 +752,16 @@ def build_agenda(weather):
     for i in range(1,16):
         city=DAY_CITY[i]; c=REGION_COLORS[region(city)]
         tl+=f'<div class="dh" data-day="{i}" data-city="{region(city)}"><div class="dd" style="background:{c}"></div>{DAY_LABELS[i]}</div>'
-        for stp in S:
-            if stp[3]==i:
-                wx=get_wx(weather, stp[5], stp[3], stp[8])  # city, day, hour
-                tl+=_card(*stp, wx=wx)
+        day_stops=[stp for stp in S if stp[3]==i]
+        for j,stp in enumerate(day_stops):
+            wx=get_wx(weather, stp[5], stp[3], stp[8])  # city, day, hour
+            # inbound transport mode (skip the day's first stop and rail/flight hops)
+            arrive=None
+            if j>0:
+                prev=day_stops[j-1]
+                if prev[4] not in ("train","flight") and stp[4] not in ("train","flight"):
+                    arrive=MODE_TO.get(stp[0],"walk")
+            tl+=_card(*stp, wx=wx, arrive=arrive)
 
     dd_js="{"+",".join(f'{k}:"{v}"' for k,v in DAY_DATES.items())+"}"
     day_opts="".join(f'<option value="{d}">Day {d} · {DAY_DATES[d][5:].replace("-","/")}</option>' for d in range(1,16))
@@ -795,6 +859,7 @@ def build_agenda(weather):
     .st{{font-size:13px;font-weight:700;color:#333;font-variant-numeric:tabular-nums;min-width:48px}}
     .sn{{font-size:14px;font-weight:600;color:#111}} .stp{{font-size:11px;color:#888;text-transform:capitalize}}
     .snt{{font-size:12px;color:#555;margin-top:6px;line-height:1.5}}
+    .amode{{font-size:11px;font-weight:600;margin-bottom:6px;opacity:0.9}}
     .sw{{background:#fff8e6;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:11px;display:grid;grid-template-columns:1fr 1fr;gap:2px 10px}}
     .sw-live{{background:#eef7f0}}
     .sl{{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0}}
@@ -852,10 +917,10 @@ def build_agenda(weather):
     """
 
 if __name__=="__main__":
-    routes=fetch_routes()
+    paths=build_paths()
     weather=fetch_weather()
     print("\nBuilding interactive map…")
-    m=build_map(routes, weather)
+    m=build_map(paths, weather)
     out="spain.html"
     m.save(out)
     import re

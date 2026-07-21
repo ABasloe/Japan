@@ -38,6 +38,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add spain.html spain_weather_cache.json
+          git add spain.html spain_weather_cache.json spain_route_cache.json
           git diff --staged --quiet || git commit -m "🌤️ Auto-refresh Spain weather [$(date -u '+%Y-%m-%d %H:%M UTC')]"
           git push
