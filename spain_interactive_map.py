@@ -753,6 +753,41 @@ GUIDE = {
  "⭐ Santo Tomé (El Greco) + Cathedral":"https://en.wikipedia.org/wiki/The_Burial_of_the_Count_of_Orgaz",
  "Free Madrid morning":"https://en.wikipedia.org/wiki/Plaza_Mayor,_Madrid",
 }
+GUIDE_STOPS = set(GUIDE)   # which sightseeing stops get a Visitor Guide
+# Better than Wikipedia: independent expert planner (Rick Steves) + official
+# national tourism (Spain.info / VisitPortugal), keyed by city.
+RS_CITY = {
+ "Porto":"https://www.ricksteves.com/europe/portugal/porto",
+ "Lisbon":"https://www.ricksteves.com/europe/portugal/lisbon",
+ "Sintra":"https://www.ricksteves.com/europe/portugal/sintra",
+ "Seville":"https://www.ricksteves.com/europe/spain/seville",
+ "Cordoba":"https://www.ricksteves.com/europe/spain/cordoba",
+ "Granada":"https://www.ricksteves.com/europe/spain/granada",
+ "Madrid":"https://www.ricksteves.com/europe/spain/madrid",
+ "Toledo":"https://www.ricksteves.com/europe/spain/toledo",
+}
+OFFICIAL_GUIDE = {
+ "Porto":"https://www.visitportugal.com/en/destinos/porto-e-o-norte",
+ "Lisbon":"https://www.visitportugal.com/en/destinos/lisboa-region",
+ "Sintra":"https://www.visitportugal.com/en/destinos/lisboa-region/sintra",
+ "Seville":"https://www.spain.info/en/destination/seville/",
+ "Cordoba":"https://www.spain.info/en/destination/cordoba/",
+ "Granada":"https://www.spain.info/en/destination/granada/",
+ "Madrid":"https://www.spain.info/en/destination/madrid/",
+ "Toledo":"https://www.spain.info/en/destination/toledo/",
+}
+PT_CITIES = {"Porto","Lisbon","Sintra"}
+def official_label(city):
+    return "🇵🇹 VisitPortugal →" if city in PT_CITIES else "🇪🇸 Spain.info →"
+def guide_links(name, city, c, small=False):
+    """Return the Rick Steves + official-tourism guide <a> tags for a stop."""
+    if name not in GUIDE_STOPS: return []
+    fs = '' if small else 'font-size:12.5px;'
+    out=[]
+    og=OFFICIAL_GUIDE.get(city); rs=RS_CITY.get(city)
+    if rs: out.append(f'<a href="{rs}" target="_blank" style="color:{c};text-decoration:none;{fs}font-weight:600;">🎒 Rick Steves →</a>')
+    if og: out.append(f'<a href="{og}" target="_blank" style="color:{c};text-decoration:none;{fs}font-weight:600;">{official_label(city)}</a>')
+    return out
 # Official booking / info pages to fill in where a stop had none (incl. the
 # Sintra suburban train — the one remaining rail leg without a booking link).
 BOOKINFO = {
@@ -773,7 +808,6 @@ BOOKINFO = {
 def popup_html(name, day, st, city, notes, link, lat, lon, wx=None):
     c=rcolor(city)
     link = link or BOOKINFO.get(name)
-    guide = GUIDE.get(name)
     h=(f'<div style="font-family:var(--sans);max-width:300px;width:calc(100vw - 80px);line-height:1.55;">'
        f'<div style="background:{c};color:white;padding:11px 14px;">'
        f'<span class="pop-h">{name}</span><br>'
@@ -787,8 +821,7 @@ def popup_html(name, day, st, city, notes, link, lat, lon, wx=None):
     parts=[]
     if link:
         parts.append(f'<a href="{link}" target="_blank" style="color:{c};text-decoration:none;font-size:12.5px;font-weight:600;">🔗 Book / Info →</a>')
-    if guide:
-        parts.append(f'<a href="{guide}" target="_blank" style="color:{c};text-decoration:none;font-size:12.5px;font-weight:600;">📖 Visitor Guide →</a>')
+    parts += guide_links(name, city, c)
     parts.append(f'<a href="https://www.google.com/maps?q={lat},{lon}" target="_blank" style="color:{c};text-decoration:none;font-size:12.5px;font-weight:600;">📍 Map</a>')
     if day in DAY_MAP:
         parts.append(f'<a href="{DAY_MAP[day]}" target="_blank" style="color:{c};text-decoration:none;font-size:12.5px;font-weight:600;">🗺 Day route</a>')
@@ -920,10 +953,9 @@ def _card(name,lat,lon,day,st,city,notes,link,hr,dur,anchor,wx=None,arrive=None)
         h+=f'<span>🌡️ High {cl["hi"]}</span><span>🌙 Low {cl["lo"]}</span></div>'
     h+=f'<div class="snt">{_trunc(notes,c)}</div>'
     link = link or BOOKINFO.get(name)
-    guide = GUIDE.get(name)
     h+='<div class="sl">'
     if link: h+=f'<a href="{link}" target="_blank" style="color:{c}">🔗 Book / Info →</a>'
-    if guide: h+=f'<a href="{guide}" target="_blank" style="color:{c}">📖 Visitor Guide →</a>'
+    for g in guide_links(name, city, c, small=True): h+=g
     h+=f'<a href="https://www.google.com/maps?q={lat},{lon}" target="_blank" style="color:{c}">📍 Map</a>'
     if day in DAY_MAP: h+=f'<a href="{DAY_MAP[day]}" target="_blank" style="color:{c}">🗺 Day route</a>'
     h+='</div></div>'
@@ -1117,10 +1149,16 @@ def build_agenda(weather, paths):
     """
 
 def build_scrubber():
-    days=[{"d":d,
-           "date":f"{int(DAY_DATES[d][5:7])}/{int(DAY_DATES[d][8:10])}",
-           "city":DAY_CITY[d],
-           "color":REGION_COLORS[region(DAY_CITY[d])]} for d in range(1,16)]
+    days=[]
+    for d in range(1,16):
+        # that day's stop coords, limited to Iberia so the transatlantic
+        # endpoints don't blow up the fit
+        pts=[[round(s[1],5),round(s[2],5)] for s in S if s[3]==d and s[2]>=-10]
+        days.append({"d":d,
+                     "date":f"{int(DAY_DATES[d][5:7])}/{int(DAY_DATES[d][8:10])}",
+                     "city":DAY_CITY[d],
+                     "color":REGION_COLORS[region(DAY_CITY[d])],
+                     "pts":pts})
     DAYS_JS=json.dumps(days)
     html=r"""
     <div id="scrub" role="group" aria-label="Trip day timeline">
@@ -1171,6 +1209,22 @@ def build_scrubber():
       var lab=document.getElementById('scrub-label');
       var allb=document.getElementById('scrub-all');
       var GRAD='linear-gradient(90deg,#41827b,#4c72a0,#c15f3c,#b3812f,#8c6183)';
+      var MC=[40.0,-5.6], MZ=6, _map=null;
+      function getMap(){
+        if(_map) return _map;
+        if(!window.L) return null;
+        for(var k in window){ try{ if(window[k] && window[k] instanceof L.Map){ _map=window[k]; break; } }catch(e){} }
+        return _map;
+      }
+      function zoomTo(s){
+        var mp=getMap(); if(!mp) return;
+        if(s==='all'){ mp.setView(MC, MZ); return; }
+        var pts=(DAYS[s-1]||{}).pts;
+        if(!pts||!pts.length){ mp.setView(MC, MZ); return; }
+        if(pts.length===1){ mp.setView(pts[0], 14); return; }
+        try{ mp.fitBounds(L.latLngBounds(pts), {paddingTopLeft:[40,90], paddingBottomRight:[40,130], maxZoom:15}); }
+        catch(e){ mp.setView(pts[0], 13); }
+      }
       function pos(i){return N<2?0:(i/(N-1))*100;}
       DAYS.forEach(function(o,i){
         var t=document.createElement('button');
@@ -1199,6 +1253,7 @@ def build_scrubber():
         var ticks=document.querySelectorAll('.scrub-tick');
         for(var k=0;k<ticks.length;k++){ticks[k].classList.toggle('act',sel!=='all'&&k===s-1);}
         setDayLayers(s);
+        zoomTo(s);
       }
       function dayFromX(x){var r=track.getBoundingClientRect();var f=(x-r.left)/r.width;
         f=Math.max(0,Math.min(1,f));return Math.round(f*(N-1))+1;}
