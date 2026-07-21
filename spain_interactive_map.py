@@ -832,7 +832,7 @@ def popup_html(name, day, st, city, notes, link, lat, lon, wx=None):
 DAY_LAYER = {d: f"Day {d} — {DAY_DATES[d][5:].replace('-','/')} · {DAY_CITY[d]}" for d in range(1,16)}
 
 def build_map(paths, weather):
-    m=folium.Map(location=MAP_CENTER, zoom_start=ZOOM_START, tiles=None, control_scale=True)
+    m=folium.Map(location=MAP_CENTER, zoom_start=ZOOM_START, tiles=None, control_scale=False)
     folium.TileLayer("OpenStreetMap", name="🗺️ Street Map").add_to(m)
     folium.TileLayer(tiles="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",attr="© OpenStreetMap contributors © CARTO",name="🌙 Dark Matter").add_to(m)
     folium.TileLayer(tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",attr="Esri",name="🏔️ Terrain").add_to(m)
@@ -1329,6 +1329,8 @@ def build_theme():
     .leaflet-tooltip-bottom:before{border-bottom-color:var(--line) !important;}
     .leaflet-tooltip-left:before{border-left-color:var(--line) !important;}
     .leaflet-tooltip-right:before{border-right-color:var(--line) !important;}
+    /* Hide the km/mi scale control */
+    .leaflet-control-scale{display:none !important;}
     /* Delay menu (inline-styled) */
     :root[data-theme="dark"] #d-menu{background:var(--panel) !important;}
     :root[data-theme="dark"] #d-menu button{color:var(--ink) !important;}
