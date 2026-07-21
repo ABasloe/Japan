@@ -609,12 +609,38 @@ def _est_minutes(coords, mode):
     km=_poly_len(coords); spd=MODE_STYLE[mode]["spd"]
     return max(1, round(km/spd*60)) if spd else 1
 
+def catmull_rom(pts, n=22, alpha=0.5):
+    """Centripetal Catmull-Rom spline through the waypoints → smooth rail curve."""
+    pts=[list(p) for p in pts]
+    if len(pts)<3: return pts
+    P=[pts[0]]+pts+[pts[-1]]
+    def dist(a,b): return (((a[0]-b[0])**2+(a[1]-b[1])**2)**0.5) or 1e-9
+    out=[]
+    for i in range(1,len(P)-2):
+        p0,p1,p2,p3=P[i-1],P[i],P[i+1],P[i+2]
+        t0=0.0; t1=t0+dist(p0,p1)**alpha; t2=t1+dist(p1,p2)**alpha; t3=t2+dist(p2,p3)**alpha
+        for k in range(n):
+            t=t1+(t2-t1)*(k/n)
+            def L(a,b,ta,tb):
+                r=0.0 if tb==ta else (t-ta)/(tb-ta)
+                return [a[0]+(b[0]-a[0])*r, a[1]+(b[1]-a[1])*r]
+            A1=L(p0,p1,t0,t1); A2=L(p1,p2,t1,t2); A3=L(p2,p3,t2,t3)
+            B1=L(A1,A2,t0,t2); B2=L(A2,A3,t1,t3)
+            C=L(B1,B2,t1,t2)
+            out.append([round(C[0],5),round(C[1],5)])
+    out.append([round(pts[-1][0],5),round(pts[-1][1],5)])
+    return out
+
 def build_paths():
     cache={}
     if os.path.exists(ROUTE_CACHE):
         try: cache=json.load(open(ROUTE_CACHE))
         except Exception: cache={}
-    legs=[(lg,[list(lg["a"])]+[list(v) for v in lg.get("via",[])]+[list(lg["b"])]) for lg in LEGS]
+    legs=[]
+    for lg in LEGS:
+        pts=[list(lg["a"])]+[list(v) for v in lg.get("via",[])]+[list(lg["b"])]
+        if lg["mode"]=="train": pts=catmull_rom(pts)   # smooth rail curve
+        legs.append((lg,pts))
     print("Resolving intra-city paths…")
     segs=[]; routed=0
     for sg in build_segments():
@@ -816,7 +842,7 @@ def _card(name,lat,lon,day,st,city,notes,link,hr,dur,anchor,wx=None,arrive=None)
     h+=f'<div style="display:flex;align-items:baseline;gap:10px"><div class="st">{tstr}</div>'
     h+=f'<div><span class="sn">{icon} {name}</span><br><span class="stp">{st}</span></div></div>'
     if not anchor:
-        h+=f'<button class="stog" onclick="togSkip(\'{sid}\', event)" style="background:transparent;border:1px solid #ddd;color:#666;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;height:24px;">➖ Remove</button>'
+        h+=f'<button class="stog" onclick="togSkip(\'{sid}\', event)">➖ Remove</button>'
     h+='</div>'
     if wx:
         feels='' if wx["fc"] is None else f'<span>🥶 Feels {_n0(wx["fc"],"°C")} / {_n0(wx["ff"])}°F</span>'
@@ -866,9 +892,11 @@ def build_agenda(weather, paths):
       <button id="ba" onclick="sv('agenda')">📋 Itinerary</button>
     </div>
     <div id="av">
-      <div class="ah"><div style="font-size:22px;font-weight:700">🕌 Portugal &amp; Spain</div>
-        <div style="font-size:13px;opacity:0.85;margin-top:4px">Aug 6–20, 2026 · 15 Days</div>
-        <div style="font-size:11px;opacity:0.7;margin-top:6px">Porto → Lisbon → Seville → Granada → Madrid · all trains + one short flight, no car</div></div>
+      <div class="ah">
+        <div class="ah-t">🕌 Portugal &amp; Spain</div>
+        <div class="ah-s">Aug 6–20, 2026 · 15 days</div>
+        <div class="ah-r">Porto → Lisbon → Seville → Granada → Madrid</div>
+      </div>
       <div id="af">
         <button class="fp active" data-f="all" onclick="tf(this)">All</button>
         <button class="fp active" data-f="Porto" onclick="tf(this)" style="border-color:#2A9D8F;color:#2A9D8F">Porto</button>
@@ -934,45 +962,54 @@ def build_agenda(weather, paths):
       </div>
     </div>
     <style>
-    #vtog{{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-radius:24px;padding:3px;box-shadow:0 2px 12px rgba(0,0,0,0.15);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif}}
-    #vtog button{{padding:8px 20px;border:none;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.3s}}
+    #vtog{{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;background:rgba(255,255,255,0.9);backdrop-filter:blur(14px);border-radius:22px;padding:4px;box-shadow:0 4px 18px rgba(0,0,0,0.14);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif}}
+    #vtog button{{padding:8px 20px;border:none;border-radius:18px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.25s;color:#79726b}}
     #vtog button:focus{{outline:none}}
-    #bm{{background:#B23A48;color:white}} #ba{{background:transparent;color:#666}}
-    #av{{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1500;background:#f8f6f2;overflow-y:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif}}
-    .ah{{padding:60px 20px 14px;background:linear-gradient(135deg,#7b1f2b,#B23A48,#D4A017);color:white;text-align:center}}
-    #af{{padding:12px 16px;background:white;border-bottom:1px solid #e8eaed;display:flex;flex-wrap:wrap;gap:6px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.06)}}
-    .fp{{padding:6px 14px;border:1.5px solid #ddd;border-radius:16px;font-size:12px;font-weight:500;cursor:pointer;background:white;color:#888;transition:all 0.2s}}
-    .fp.active{{background:#fdf3f4;border-color:currentColor;font-weight:600}}
-    .fp[data-f="all"].active{{background:#e8eaed;border-color:#666;color:#333}}
-    #atl{{padding:16px;max-width:700px;margin:0 auto}}
-    .dh{{display:flex;align-items:center;gap:12px;padding:16px 0 8px;margin-top:8px;font-size:14px;font-weight:700;color:#333}}
-    .dd{{width:14px;height:14px;border-radius:50%;flex-shrink:0}}
-    .sc{{background:white;border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.06);border-left:4px solid #ddd;transition:all 0.2s}}
-    .sc:hover{{box-shadow:0 3px 12px rgba(0,0,0,0.1);transform:translateY(-1px)}}
-    .sc.now{{box-shadow:0 0 0 2px #B23A48,0 3px 12px rgba(178,58,72,0.2)}}
-    .st{{font-size:13px;font-weight:700;color:#333;font-variant-numeric:tabular-nums;min-width:48px}}
-    .sn{{font-size:14px;font-weight:600;color:#111}} .stp{{font-size:11px;color:#888;text-transform:capitalize}}
-    .snt{{font-size:12px;color:#555;margin-top:6px;line-height:1.5}}
-    .amode{{font-size:11px;font-weight:600;margin-bottom:6px;opacity:0.9}}
-    .sw{{background:#fff8e6;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:11px;display:grid;grid-template-columns:1fr 1fr;gap:2px 10px}}
-    .sw-live{{background:#eef7f0}}
-    .sl{{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0}}
-    .sl a{{font-size:12px;font-weight:600;text-decoration:none;padding:4px 0}}
-    .infocard{{background:white;border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.06);border-left:4px solid #D4A017;font-size:12px;color:#444;line-height:1.55}}
-    .infocard a{{color:#B23A48;font-weight:600;text-decoration:none}}
-    .mod-ov{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:3000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}}
-    .mod-bx{{background:white;border-radius:16px;padding:24px;width:90%;max-width:360px;box-shadow:0 10px 30px rgba(0,0,0,0.2)}}
-    .mbtn{{padding:8px 12px;background:#fdf3f4;border:1px solid #f0d9dc;border-radius:6px;font-weight:600;color:#B23A48;cursor:pointer;flex:1}}
-    .mbtn:hover{{background:#fbe7e9}}
-    .d-itm{{display:flex;justify-content:space-between;align-items:center;background:#f9f9f9;padding:12px;border-radius:8px;margin-bottom:8px;border:1px solid #eee}}
-    .rm-btn{{background:#ffebee;color:#c62828;border:none;padding:6px 12px;border-radius:6px;font-weight:600;cursor:pointer}}
+    #bm{{background:#b23a48;color:#fff}} #ba{{background:transparent}}
+    #av{{display:none;position:fixed;inset:0;z-index:1500;background:#f6f5f3;overflow-y:auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:#3d3a37;-webkit-font-smoothing:antialiased}}
+    .ah{{padding:56px 20px 22px;background:linear-gradient(135deg,#6f1d2a,#b23a48 72%,#c26a34);color:#fff;text-align:center}}
+    .ah-t{{font-size:23px;font-weight:800;letter-spacing:-0.3px}}
+    .ah-s{{font-size:12.5px;opacity:0.92;margin-top:6px;font-weight:500;letter-spacing:0.2px}}
+    .ah-r{{font-size:11px;opacity:0.74;margin-top:9px}}
+    #af{{padding:11px 14px;background:rgba(246,245,243,0.92);backdrop-filter:blur(10px);border-bottom:1px solid #e6e2dd;display:flex;flex-wrap:wrap;gap:7px;position:sticky;top:0;z-index:100}}
+    .fp{{padding:6px 13px;border:1px solid #e2ded8;border-radius:18px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:#948b81;transition:all 0.18s}}
+    .fp:hover{{border-color:#c9c3bb}}
+    .fp.active{{background:#fbeef0;border-color:currentColor}}
+    .fp[data-f="all"].active{{background:#3d3a37;border-color:#3d3a37;color:#fff}}
+    #atl{{padding:14px 14px 4px;max-width:680px;margin:0 auto}}
+    .dh{{display:flex;align-items:center;gap:10px;padding:22px 2px 10px;font-size:13px;font-weight:700;color:#5b554f;letter-spacing:0.2px}}
+    .dh:first-child{{padding-top:8px}}
+    .dd{{width:11px;height:11px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 3px rgba(0,0,0,0.04)}}
+    .sc{{position:relative;background:#fff;border-radius:16px;padding:15px 16px 14px;margin-bottom:11px;box-shadow:0 1px 2px rgba(0,0,0,0.04),0 1px 10px rgba(0,0,0,0.045);border:1px solid #efece7;border-left:3px solid #ddd;transition:transform 0.18s,box-shadow 0.18s}}
+    .sc:hover{{box-shadow:0 5px 20px rgba(0,0,0,0.09);transform:translateY(-1px)}}
+    .sc.now{{box-shadow:0 0 0 2px #b23a48,0 6px 18px rgba(178,58,72,0.18)}}
+    .amode{{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;margin-bottom:9px;padding:2.5px 9px;border-radius:20px;background:rgba(0,0,0,0.045);letter-spacing:0.2px}}
+    .st{{font-size:12.5px;font-weight:700;color:#b23a48;font-variant-numeric:tabular-nums;min-width:46px;letter-spacing:0.3px}}
+    .sn{{font-size:14.5px;font-weight:650;color:#26221f;line-height:1.3}}
+    .stp{{font-size:10px;color:#a49a8f;text-transform:uppercase;letter-spacing:0.7px;font-weight:600;margin-top:3px;display:inline-block}}
+    .snt{{font-size:12.5px;color:#6b645d;margin-top:8px;line-height:1.55}}
+    .stog{{flex-shrink:0;background:#fff;border:1px solid #e2ded8;color:#a49a8f;border-radius:9px;padding:4px 9px;font-size:11px;font-weight:600;cursor:pointer;height:26px;transition:all 0.15s}}
+    .stog:hover{{border-color:#b23a48;color:#b23a48}}
+    .sw{{background:#faf5eb;border-radius:11px;padding:9px 11px;margin-top:10px;font-size:11px;display:grid;grid-template-columns:1fr 1fr;gap:3px 10px;color:#7a7268}}
+    .sw-live{{background:#eef6f0}}
+    .sl{{display:flex;gap:16px;flex-wrap:wrap;margin-top:11px;padding-top:11px;border-top:1px solid #f0ede8}}
+    .sl a{{font-size:12px;font-weight:600;text-decoration:none;padding:1px 0;opacity:0.92}}
+    .sl a:hover{{opacity:1}}
+    .infocard{{background:#fff;border-radius:14px;padding:14px 16px;margin-bottom:11px;box-shadow:0 1px 3px rgba(0,0,0,0.05);border:1px solid #efece7;border-left:3px solid #d9a441;font-size:12px;color:#5f594f;line-height:1.6}}
+    .infocard a{{color:#b23a48;font-weight:600;text-decoration:none}}
+    .mod-ov{{position:fixed;inset:0;background:rgba(30,25,22,0.45);z-index:3000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}}
+    .mod-bx{{background:#fff;border-radius:18px;padding:24px;width:90%;max-width:360px;box-shadow:0 16px 40px rgba(0,0,0,0.25)}}
+    .mbtn{{padding:8px 12px;background:#fbeef0;border:1px solid #f2d9dd;border-radius:9px;font-weight:600;color:#b23a48;cursor:pointer;flex:1}}
+    .mbtn:hover{{background:#f7e2e6}}
+    .d-itm{{display:flex;justify-content:space-between;align-items:center;background:#f7f5f2;padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid #ecebe6}}
+    .rm-btn{{background:#fdecec;color:#c0392b;border:none;padding:6px 12px;border-radius:9px;font-weight:600;cursor:pointer}}
     .time-adj{{color:#e63946;font-weight:700;font-size:11px;display:block;margin-top:2px}}
-    .time-adj.time-sub{{color:#4caf50;}}
-    .skip-rec{{background:#fff3cd;border-left:4px solid #ffc107;padding:10px 12px;border-radius:0 6px 6px 0;margin-bottom:12px;font-size:12px;font-weight:600;color:#856404;display:flex;align-items:center;gap:8px}}
-    .sc.skipped{{opacity:0.5;filter:grayscale(1)}}
+    .time-adj.time-sub{{color:#2e9b57}}
+    .skip-rec{{background:#fff6e0;border:1px solid #f2e2b8;border-left:3px solid #e0a800;padding:9px 12px;border-radius:10px;margin-bottom:11px;font-size:11.5px;font-weight:600;color:#8a6d1a}}
+    .sc.skipped{{opacity:0.5;filter:grayscale(0.8)}}
     .sc.skipped .sn,.sc.skipped .stp,.sc.skipped .snt{{text-decoration:line-through}}
-    .sc.skipped .stog{{color:#111 !important;border-color:#111 !important}}
-    @media(max-width:600px){{ #vtog{{top:auto;bottom:98px}} #vtog button{{padding:6px 14px;font-size:12px}} .sc{{padding:12px 14px}} #af{{padding:10px 12px}}}}
+    .sc.skipped .stog{{color:#26221f !important;border-color:#26221f !important}}
+    @media(max-width:600px){{ #vtog{{top:auto;bottom:98px}} #vtog button{{padding:6px 14px;font-size:12px}} .sc{{padding:13px 14px}} #af{{padding:10px 12px}} .ah{{padding:48px 16px 20px}} }}
     </style>
     <script>
     var DD={dd_js};
@@ -1129,9 +1166,17 @@ def build_theme():
     [data-theme="dark"] .fp[data-f="all"].active{background:#3d3a35;border-color:#a8a49c;color:#e8e6e1;}
     [data-theme="dark"] .sc{background:#2a2927;box-shadow:0 1px 4px rgba(0,0,0,0.45);}
     [data-theme="dark"] .sc:hover{box-shadow:0 3px 12px rgba(0,0,0,0.6);}
-    [data-theme="dark"] .st,[data-theme="dark"] .sn{color:#ece9e4;}
+    [data-theme="dark"] .sn{color:#f0ede8;}
+    [data-theme="dark"] .st{color:#e79070;}
     [data-theme="dark"] .stp,[data-theme="dark"] .snt{color:#a8a49c;}
-    [data-theme="dark"] .dh{color:#ece9e4;}
+    [data-theme="dark"] .dh{color:#c9c3bb;}
+    [data-theme="dark"] .amode{background:rgba(255,255,255,0.07);}
+    [data-theme="dark"] .stog{background:#312e2a;border-color:#4a463f;color:#a8a49c;}
+    [data-theme="dark"] .stog:hover{border-color:#e79070;color:#e79070;}
+    [data-theme="dark"] .sc{border-color:#37342f;}
+    [data-theme="dark"] #d-menu{background:#2a2927;}
+    [data-theme="dark"] #d-menu button{color:#e8e6e1;}
+    [data-theme="dark"] .skip-rec{background:#3a3320;border-color:#5a4d24;color:#e0c375;}
     [data-theme="dark"] .sw{background:#35322e;}
     [data-theme="dark"] .sw div,[data-theme="dark"] .sw span{color:#cfccc5;}
     [data-theme="dark"] .sw-live{background:#22302a;}
