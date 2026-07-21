@@ -711,8 +711,69 @@ def wx_block(wx, c):
             f'<span>🌧️ Precip {precip}</span></div></div>')
 
 # ═══════════════════════ POPUPS ═══════════════════════
+# Standardized high-quality visitor guides (Wikipedia) — the Spain/Portugal
+# analogue of the Iceland map's guidetoiceland links. Keyed by exact stop name.
+GUIDE = {
+ "Ribeira riverfront":"https://en.wikipedia.org/wiki/Ribeira_(Porto)",
+ "Dom Luís I Bridge 🌄":"https://en.wikipedia.org/wiki/Dom_Luís_I_Bridge",
+ "Livraria Lello 📚":"https://en.wikipedia.org/wiki/Lello_Bookstore",
+ "Clérigos Tower":"https://en.wikipedia.org/wiki/Clérigos_Church",
+ "São Bento azulejo hall":"https://en.wikipedia.org/wiki/São_Bento_railway_station",
+ "⭐ Palácio da Bolsa (Arab Room)":"https://en.wikipedia.org/wiki/Palácio_da_Bolsa",
+ "🕌 Alfama + Miradouro de Santa Luzia":"https://en.wikipedia.org/wiki/Alfama",
+ "✊ Museu do Aljube":"https://en.wikipedia.org/wiki/Aljube",
+ "🕌 Castelo de São Jorge":"https://en.wikipedia.org/wiki/São_Jorge_Castle",
+ "🕌 Castelo dos Mouros, Sintra":"https://en.wikipedia.org/wiki/Castle_of_the_Moors",
+ "⭐ Pena Palace":"https://en.wikipedia.org/wiki/Pena_Palace",
+ "⭐ Quinta da Regaleira (optional)":"https://en.wikipedia.org/wiki/Quinta_da_Regaleira",
+ "⭐🕌 Jerónimos Monastery, Belém":"https://en.wikipedia.org/wiki/Jerónimos_Monastery",
+ "🕌 National Tile Museum (Azulejo)":"https://en.wikipedia.org/wiki/National_Tile_Museum",
+ "⭐ Tram 28 / Ler Devagar 📚":"https://en.wikipedia.org/wiki/Trams_in_Lisbon",
+ "✊ Largo do Carmo":"https://en.wikipedia.org/wiki/Carmo_Convent_(Lisbon)",
+ "⭐ Calouste Gulbenkian Museum":"https://en.wikipedia.org/wiki/Calouste_Gulbenkian_Museum",
+ "⭐ Oceanário de Lisboa":"https://en.wikipedia.org/wiki/Lisbon_Oceanarium",
+ "🕌 Real Alcázar":"https://en.wikipedia.org/wiki/Alcázar_of_Seville",
+ "🕌 Cathedral + Giralda":"https://en.wikipedia.org/wiki/Seville_Cathedral",
+ "⭐🕌 Casa de Pilatos":"https://en.wikipedia.org/wiki/Casa_de_Pilatos",
+ "⭐ Plaza de España":"https://en.wikipedia.org/wiki/Plaza_de_España,_Seville",
+ "🕌 Mezquita-Catedral, Cordoba":"https://en.wikipedia.org/wiki/Mosque–Cathedral_of_Córdoba",
+ "Alcázar + Judería + Roman bridge":"https://en.wikipedia.org/wiki/Alcázar_de_los_Reyes_Cristianos",
+ "⭐ Palacio de Viana (patios)":"https://en.wikipedia.org/wiki/Palacio_de_Viana",
+ "🕌 Albaicín → Mirador de San Nicolás 🌄":"https://en.wikipedia.org/wiki/Albaicín",
+ "🕌 THE ALHAMBRA + Generalife":"https://en.wikipedia.org/wiki/Alhambra",
+ "⭐ Royal Chapel + Cathedral":"https://en.wikipedia.org/wiki/Royal_Chapel_of_Granada",
+ "✊ Centro Federico García Lorca":"https://en.wikipedia.org/wiki/Federico_García_Lorca",
+ "Sacromonte — carmen dinner 🌄":"https://en.wikipedia.org/wiki/Sacromonte",
+ "Royal Palace + Campo del Moro":"https://en.wikipedia.org/wiki/Royal_Palace_of_Madrid",
+ "✊ Reina Sofía (Guernica)":"https://en.wikipedia.org/wiki/Museo_Reina_Sofía",
+ "🕌 Muralla Árabe":"https://en.wikipedia.org/wiki/Walls_of_Madrid",
+ "⭐ Templo de Debod (sunset) 🌄":"https://en.wikipedia.org/wiki/Temple_of_Debod",
+ "🕌 Mezquita del Cristo de la Luz":"https://en.wikipedia.org/wiki/Mosque_of_Cristo_de_la_Luz",
+ "🕌 Santa María la Blanca + El Tránsito":"https://en.wikipedia.org/wiki/Santa_María_la_Blanca",
+ "⭐ Santo Tomé (El Greco) + Cathedral":"https://en.wikipedia.org/wiki/The_Burial_of_the_Count_of_Orgaz",
+ "Free Madrid morning":"https://en.wikipedia.org/wiki/Plaza_Mayor,_Madrid",
+}
+# Official booking / info pages to fill in where a stop had none (incl. the
+# Sintra suburban train — the one remaining rail leg without a booking link).
+BOOKINFO = {
+ "Rossio → Sintra train 🚆":"https://www.cp.pt/passageiros/en",
+ "Clérigos Tower":"https://www.torredosclerigos.pt/en/",
+ "✊ Museu do Aljube":"https://www.museudoaljube.pt",
+ "⭐ Quinta da Regaleira (optional)":"https://www.regaleira.pt/en/",
+ "⭐🕌 Jerónimos Monastery, Belém":"https://www.patrimoniocultural.gov.pt",
+ "🕌 National Tile Museum (Azulejo)":"https://www.museudoazulejo.gov.pt",
+ "⭐🕌 Casa de Pilatos":"https://www.fundacionmedinaceli.org",
+ "Alcázar + Judería + Roman bridge":"https://www.turismodecordoba.org/en",
+ "⭐ Palacio de Viana (patios)":"https://www.palaciodeviana.com",
+ "Royal Palace + Campo del Moro":"https://www.patrimonionacional.es",
+ "🕌 Santa María la Blanca + El Tránsito":"https://toledomonumental.com",
+ "⭐ Santo Tomé (El Greco) + Cathedral":"https://santotome.org",
+}
+
 def popup_html(name, day, st, city, notes, link, lat, lon, wx=None):
     c=rcolor(city)
+    link = link or BOOKINFO.get(name)
+    guide = GUIDE.get(name)
     h=(f'<div style="font-family:var(--sans);max-width:300px;width:calc(100vw - 80px);line-height:1.55;">'
        f'<div style="background:{c};color:white;padding:11px 14px;">'
        f'<span class="pop-h">{name}</span><br>'
@@ -726,6 +787,8 @@ def popup_html(name, day, st, city, notes, link, lat, lon, wx=None):
     parts=[]
     if link:
         parts.append(f'<a href="{link}" target="_blank" style="color:{c};text-decoration:none;font-size:12.5px;font-weight:600;">🔗 Book / Info →</a>')
+    if guide:
+        parts.append(f'<a href="{guide}" target="_blank" style="color:{c};text-decoration:none;font-size:12.5px;font-weight:600;">📖 Visitor Guide →</a>')
     parts.append(f'<a href="https://www.google.com/maps?q={lat},{lon}" target="_blank" style="color:{c};text-decoration:none;font-size:12.5px;font-weight:600;">📍 Map</a>')
     if day in DAY_MAP:
         parts.append(f'<a href="{DAY_MAP[day]}" target="_blank" style="color:{c};text-decoration:none;font-size:12.5px;font-weight:600;">🗺 Day route</a>')
@@ -856,8 +919,11 @@ def _card(name,lat,lon,day,st,city,notes,link,hr,dur,anchor,wx=None,arrive=None)
         h+=f'<div style="grid-column:1/-1;font-weight:600;margin-bottom:2px">{cl["emoji"]} Typical {city} · {cl["pat"]}</div>'
         h+=f'<span>🌡️ High {cl["hi"]}</span><span>🌙 Low {cl["lo"]}</span></div>'
     h+=f'<div class="snt">{_trunc(notes,c)}</div>'
+    link = link or BOOKINFO.get(name)
+    guide = GUIDE.get(name)
     h+='<div class="sl">'
     if link: h+=f'<a href="{link}" target="_blank" style="color:{c}">🔗 Book / Info →</a>'
+    if guide: h+=f'<a href="{guide}" target="_blank" style="color:{c}">📖 Visitor Guide →</a>'
     h+=f'<a href="https://www.google.com/maps?q={lat},{lon}" target="_blank" style="color:{c}">📍 Map</a>'
     if day in DAY_MAP: h+=f'<a href="{DAY_MAP[day]}" target="_blank" style="color:{c}">🗺 Day route</a>'
     h+='</div></div>'
