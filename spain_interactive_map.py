@@ -691,6 +691,7 @@ DAY_LAYER = {d: f"Day {d} — {DAY_DATES[d][5:].replace('-','/')} · {DAY_CITY[d
 def build_map(paths, weather):
     m=folium.Map(location=MAP_CENTER, zoom_start=ZOOM_START, tiles=None, control_scale=True)
     folium.TileLayer("OpenStreetMap", name="🗺️ Street Map").add_to(m)
+    folium.TileLayer(tiles="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",attr="© OpenStreetMap contributors © CARTO",name="🌙 Dark Matter").add_to(m)
     folium.TileLayer(tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",attr="Esri",name="🏔️ Terrain").add_to(m)
     folium.TileLayer(tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",attr="Esri",name="🛰️ Satellite").add_to(m)
 
@@ -739,7 +740,7 @@ def build_map(paths, weather):
     LocateControl(position="topleft", strings={"title":"See my location"}).add_to(m)
 
     title="""<div id="map-title" style="position:fixed;top:10px;left:55px;z-index:1000;background:white;padding:10px 18px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.2);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;max-width:calc(100vw - 120px);">
-    <div style="font-size:16px;font-weight:700;color:#B23A48;">🕌 Portugal &amp; Spain — Moorish Tour</div>
+    <div style="font-size:16px;font-weight:700;color:#B23A48;">🕌 Portugal &amp; Spain</div>
     <div class="title-sub" style="font-size:12px;color:#666;margin-top:2px;">Aug 6–20, 2026 · 15 Days · Porto → Lisbon → Seville → Granada → Madrid · all trains + one flight</div>
     <div class="title-legend" style="font-size:10px;color:#999;margin-top:4px;">🕌 Moorish  ✊ History  🏨 Hotel  🍽️ Food  🛍️ Shop  🌄 View  🌘 Eclipse</div>
     <div class="title-legend" style="font-size:10px;color:#999;margin-top:2px;">Paths: <span style="color:#2E9B57;font-weight:700">━ 🚶Walk</span>  <span style="color:#E8952F;font-weight:700">━ 🚕Taxi</span>  <span style="color:#2D5BD0;font-weight:700">┄ 🚇Metro</span>  <span style="color:#8E44AD;font-weight:700">┄ 🚊Tram</span>  <span style="color:#159C97;font-weight:700">━ 🚌Bus</span>  <span style="color:#C0392B;font-weight:700">━ 🚆Train</span>  <span style="color:#6C757D;font-weight:700">┄ ✈️Flight</span></div>
@@ -748,6 +749,7 @@ def build_map(paths, weather):
     m.get_root().html.add_child(folium.Element(RESPONSIVE_CSS))
     m.get_root().html.add_child(folium.Element(build_agenda(weather)))
     m.get_root().html.add_child(folium.Element(build_scrubber()))
+    m.get_root().html.add_child(folium.Element(build_theme()))
     return m
 
 RESPONSIVE_CSS = """<style>
@@ -838,7 +840,7 @@ def build_agenda(weather):
       <button id="ba" onclick="sv('agenda')">📋 Itinerary</button>
     </div>
     <div id="av">
-      <div class="ah"><div style="font-size:22px;font-weight:700">🕌 Portugal &amp; Spain — Moorish Tour</div>
+      <div class="ah"><div style="font-size:22px;font-weight:700">🕌 Portugal &amp; Spain</div>
         <div style="font-size:13px;opacity:0.85;margin-top:4px">Aug 6–20, 2026 · 15 Days · Dad, Ihsan (21) &amp; Daughter (18)</div>
         <div style="font-size:11px;opacity:0.7;margin-top:6px">Porto → Lisbon → Seville → Granada → Madrid · all trains + one short flight, no car</div></div>
       <div id="af">
@@ -1078,6 +1080,92 @@ def build_scrubber():
     </script>
     """
     return html.replace("__DAYS__", DAYS_JS)
+
+def build_theme():
+    # Warm "Claude Code" dark palette: charcoal surfaces, clay/coral accent.
+    return r"""
+    <button id="theme-tog" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+    <style>
+    #theme-tog{position:fixed;top:12px;right:12px;z-index:2600;width:40px;height:40px;border-radius:50%;
+      border:none;background:rgba(255,255,255,0.95);box-shadow:0 2px 8px rgba(0,0,0,0.2);
+      font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;}
+    #theme-tog:hover{transform:scale(1.06);}
+    /* ═════════ DARK MODE (Claude Code colours) ═════════ */
+    [data-theme="dark"] #theme-tog{background:#35322e;box-shadow:0 2px 8px rgba(0,0,0,0.55);}
+    [data-theme="dark"] .leaflet-container{background:#1a1917;}
+    [data-theme="dark"] #av{background:#1f1e1d;}
+    [data-theme="dark"] .ah{filter:brightness(0.88);}
+    [data-theme="dark"] #af{background:#2a2927;border-bottom-color:#3d3a35;box-shadow:0 2px 8px rgba(0,0,0,0.45);}
+    [data-theme="dark"] .fp{background:#35322e;border-color:#3d3a35;color:#a8a49c;}
+    [data-theme="dark"] .fp.active{background:rgba(217,119,87,0.18);}
+    [data-theme="dark"] .fp[data-f="all"].active{background:#3d3a35;border-color:#a8a49c;color:#e8e6e1;}
+    [data-theme="dark"] .sc{background:#2a2927;box-shadow:0 1px 4px rgba(0,0,0,0.45);}
+    [data-theme="dark"] .sc:hover{box-shadow:0 3px 12px rgba(0,0,0,0.6);}
+    [data-theme="dark"] .st,[data-theme="dark"] .sn{color:#ece9e4;}
+    [data-theme="dark"] .stp,[data-theme="dark"] .snt{color:#a8a49c;}
+    [data-theme="dark"] .dh{color:#ece9e4;}
+    [data-theme="dark"] .sw{background:#35322e;}
+    [data-theme="dark"] .sw div,[data-theme="dark"] .sw span{color:#cfccc5;}
+    [data-theme="dark"] .sw-live{background:#22302a;}
+    [data-theme="dark"] .sl{border-top-color:#3d3a35;}
+    [data-theme="dark"] .infocard{background:#2a2927;color:#bdb9b1;}
+    [data-theme="dark"] .mod-bx{background:#2a2927;color:#ece9e4;}
+    [data-theme="dark"] .mod-bx input,[data-theme="dark"] .mod-bx select{background:#35322e;color:#ece9e4;border-color:#3d3a35;}
+    [data-theme="dark"] .mod-bx [style*="color:#666"],[data-theme="dark"] .mod-bx [style*="color:#555"],
+    [data-theme="dark"] .mod-bx label{color:#a8a49c !important;}
+    [data-theme="dark"] .mbtn{background:#35322e;border-color:#3d3a35;color:#e08a6b;}
+    [data-theme="dark"] .d-itm{background:#35322e;border-color:#3d3a35;}
+    [data-theme="dark"] #vtog{background:rgba(42,41,39,0.95);}
+    [data-theme="dark"] #ba{color:#a8a49c;}
+    [data-theme="dark"] #map-title{background:#2a2927 !important;box-shadow:0 2px 8px rgba(0,0,0,0.55);}
+    [data-theme="dark"] #map-title > div:first-child{color:#e08a6b !important;}
+    [data-theme="dark"] #map-title .title-sub,[data-theme="dark"] #map-title .title-legend,
+    [data-theme="dark"] #map-title .title-credits{color:#a8a49c !important;}
+    [data-theme="dark"] #scrub{background:rgba(42,41,39,0.97);}
+    [data-theme="dark"] #scrub-label{color:#ece9e4;}
+    [data-theme="dark"] #scrub-label b{color:#e08a6b;}
+    [data-theme="dark"] #scrub-all{background:#2a2927;border-color:#d97757;color:#e08a6b;}
+    [data-theme="dark"] #scrub-all.on{background:#d97757;color:#fff;}
+    [data-theme="dark"] .scrub-tick .tk-n{color:#8a867e;}
+    [data-theme="dark"] .scrub-tick.act .tk-n{color:#ece9e4;}
+    [data-theme="dark"] .leaflet-control-layers{background:#2a2927;color:#ece9e4;border-color:#3d3a35;}
+    [data-theme="dark"] .leaflet-control-layers-toggle{filter:invert(0.88);}
+    [data-theme="dark"] .leaflet-control-layers label{color:#ece9e4;}
+    [data-theme="dark"] .leaflet-bar a{background:#2a2927;color:#ece9e4;border-bottom-color:#3d3a35;}
+    [data-theme="dark"] .leaflet-bar a:hover{background:#35322e;}
+    [data-theme="dark"] .leaflet-control-attribution{background:rgba(42,41,39,0.85) !important;color:#8a867e !important;}
+    [data-theme="dark"] .leaflet-control-attribution a{color:#a8a49c !important;}
+    </style>
+    <script>
+    (function(){
+      var KEY='trip_theme';
+      function basemap(dark){
+        var labs=document.querySelectorAll('.leaflet-control-layers-base label');
+        for(var i=0;i<labs.length;i++){
+          var t=labs[i].textContent.trim(), inp=labs[i].querySelector('input'); if(!inp)continue;
+          var want = dark ? /Dark/.test(t) : /Street/.test(t);
+          if(want && !inp.checked){ inp.click(); }
+        }
+      }
+      function apply(theme, switchmap){
+        document.documentElement.setAttribute('data-theme', theme);
+        var b=document.getElementById('theme-tog'); if(b) b.textContent = (theme==='dark')?'☀️':'🌙';
+        if(switchmap) setTimeout(function(){ basemap(theme==='dark'); }, 60);
+      }
+      var saved=null; try{ saved=localStorage.getItem(KEY); }catch(_){}
+      var sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var theme = saved || (sysDark?'dark':'light');
+      apply(theme, false);
+      window.addEventListener('load', function(){ setTimeout(function(){ basemap(theme==='dark'); }, 500); });
+      var btn=document.getElementById('theme-tog');
+      if(btn) btn.addEventListener('click', function(){
+        var next=(document.documentElement.getAttribute('data-theme')==='dark')?'light':'dark';
+        try{ localStorage.setItem(KEY,next); }catch(_){}
+        apply(next, true);
+      });
+    })();
+    </script>
+    """
 
 if __name__=="__main__":
     paths=build_paths()

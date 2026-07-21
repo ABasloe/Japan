@@ -3,21 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trip Planner — Choose Your Adventure</title>
+<title>Spain &amp; Iceland — Trips</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:#fff;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:#fff;overflow:hidden;background:#1f1e1d}
 .wrap{display:flex;height:100vh;width:100vw}
 .panel{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;cursor:pointer;overflow:hidden;color:#fff;text-decoration:none;transition:flex 0.5s cubic-bezier(.4,0,.2,1)}
 .panel,.panel *{color:#fff;text-decoration:none}
 .panel::before{content:"";position:absolute;inset:0;z-index:0;transition:transform 0.7s ease, filter 0.5s ease}
 .iceland::before{background:linear-gradient(160deg,#0b2545 0%,#13315c 40%,#2e5b8a 100%)}
 .spain::before{background:linear-gradient(160deg,#7b1f2b 0%,#b23a48 45%,#d4a017 100%)}
-.panel::after{content:"";position:absolute;inset:0;z-index:1;background:rgba(0,0,0,0.28);transition:background 0.5s ease}
+.panel::after{content:"";position:absolute;inset:0;z-index:1;background:rgba(0,0,0,0.22);transition:background 0.5s ease}
 .panel:hover::before{transform:scale(1.06)}
-.panel:hover::after{background:rgba(0,0,0,0.12)}
+.panel:hover::after{background:rgba(0,0,0,0.10)}
 .panel:hover{flex:1.5}
 .content{position:relative;z-index:2;max-width:460px;transform:translateY(0);transition:transform 0.5s ease}
 .flag{font-size:78px;line-height:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4))}
@@ -30,9 +30,14 @@ h1{font-size:44px;font-weight:800;margin:14px 0 6px;letter-spacing:-0.5px;text-s
 .panel:hover .btn{background:#fff;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
 .iceland:hover .btn{color:#13315c}
 .spain:hover .btn{color:#b23a48}
-.brand{position:fixed;top:0;left:0;width:100%;z-index:10;text-align:center;padding:22px;pointer-events:none}
-.brand .t{font-size:14px;font-weight:700;letter-spacing:3px;text-transform:uppercase;opacity:0.9;text-shadow:0 2px 10px rgba(0,0,0,0.5)}
-.brand .d{font-size:11px;opacity:0.7;margin-top:3px;letter-spacing:1px}
+/* Dark mode: deepen the panels for a warm, low-glare look */
+:root[data-theme="dark"] .panel::before{filter:brightness(0.8) saturate(0.95)}
+:root[data-theme="dark"] .panel::after{background:rgba(0,0,0,0.42)}
+:root[data-theme="dark"] .panel:hover::after{background:rgba(0,0,0,0.28)}
+#theme-tog{position:fixed;top:14px;right:14px;z-index:50;width:42px;height:42px;border-radius:50%;border:none;
+  background:rgba(255,255,255,0.16);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.3);
+  color:#fff;font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;transition:transform .2s}
+#theme-tog:hover{transform:scale(1.08)}
 @media (max-width:760px){
  .wrap{flex-direction:column}
  .panel:hover{flex:1}
@@ -42,21 +47,17 @@ h1{font-size:44px;font-weight:800;margin:14px 0 6px;letter-spacing:-0.5px;text-s
  .sub{font-size:14px}
  .meta{font-size:12px}
  .btn{margin-top:18px;padding:12px 32px;font-size:15px}
- .brand{display:none}
 }
 </style>
 </head>
 <body>
-<div class="brand">
-  <div class="t">🧭 Trip Planner</div>
-  <div class="d">Two interactive itineraries · live maps · day-by-day agendas</div>
-</div>
+<button id="theme-tog" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
 <div class="wrap">
   <a class="panel spain" href="spain.html">
     <div class="content">
       <div class="flag">🕌</div>
       <h1>Spain</h1>
-      <div class="sub">Portugal &amp; Spain — Moorish Architecture Tour</div>
+      <div class="sub">Portugal &amp; Spain</div>
       <div class="meta">Aug 6–20, 2026 · 15 days<br>Porto → Lisbon → Seville → Granada → Madrid</div>
       <div class="tags">
         <span class="tag">🕌 Alhambra &amp; Mezquita</span>
@@ -81,5 +82,22 @@ h1{font-size:44px;font-weight:800;margin:14px 0 6px;letter-spacing:-0.5px;text-s
     </div>
   </a>
 </div>
+<script>
+(function(){
+  var KEY='trip_theme';
+  function apply(t){
+    document.documentElement.setAttribute('data-theme',t);
+    var b=document.getElementById('theme-tog'); if(b) b.textContent=(t==='dark')?'☀️':'🌙';
+  }
+  var saved=null; try{saved=localStorage.getItem(KEY);}catch(e){}
+  var sysDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+  apply(saved||(sysDark?'dark':'light'));
+  document.getElementById('theme-tog').addEventListener('click',function(){
+    var next=(document.documentElement.getAttribute('data-theme')==='dark')?'light':'dark';
+    try{localStorage.setItem(KEY,next);}catch(e){}
+    apply(next);
+  });
+})();
+</script>
 </body>
 </html>
