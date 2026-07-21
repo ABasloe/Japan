@@ -474,13 +474,13 @@ LEGS = [
 # walk/taxi/bus follow real streets (Valhalla/OSM, cached); metro/tram/train/
 # flight run on rails or air, so they are drawn as clean direct hops.
 MODE_STYLE = {
- "walk":  {"color":"#2E9B57","dash":"1 7","w":3,"label":"🚶 Walk","costing":"pedestrian","spd":4.8},
- "taxi":  {"color":"#E8952F","dash":None, "w":4,"label":"🚕 Taxi","costing":"auto","spd":22},
- "bus":   {"color":"#159C97","dash":None, "w":4,"label":"🚌 Bus","costing":"bus","spd":15},
- "metro": {"color":"#2D5BD0","dash":"7 6","w":4,"label":"🚇 Metro","costing":None,"spd":30},
- "tram":  {"color":"#8E44AD","dash":"7 6","w":4,"label":"🚊 Tram","costing":None,"spd":14},
- "train": {"color":"#C0392B","dash":None, "w":4,"label":"🚆 Train","costing":None,"spd":90},
- "flight":{"color":"#6C757D","dash":"10 8","w":4,"label":"✈️ Flight","costing":None,"spd":700},
+ "walk":  {"color":"#5f8b57","dash":"1 7","w":3,"label":"🚶 Walk","costing":"pedestrian","spd":4.8},
+ "taxi":  {"color":"#cc8642","dash":None, "w":4,"label":"🚕 Taxi","costing":"auto","spd":22},
+ "bus":   {"color":"#3c8f8a","dash":None, "w":4,"label":"🚌 Bus","costing":"bus","spd":15},
+ "metro": {"color":"#4a6fa5","dash":"7 6","w":4,"label":"🚇 Metro","costing":None,"spd":30},
+ "tram":  {"color":"#8a6193","dash":"7 6","w":4,"label":"🚊 Tram","costing":None,"spd":14},
+ "train": {"color":"#b8503a","dash":None, "w":4,"label":"🚆 Train","costing":None,"spd":90},
+ "flight":{"color":"#7d7770","dash":"10 8","w":4,"label":"✈️ Flight","costing":None,"spd":700},
 }
 # Mode used to REACH each stop from the previous stop that day (default = walk).
 # Straight from the itinerary's stated transport for each hop.
@@ -790,7 +790,7 @@ def build_map(paths, weather):
     <div class="mt-t">Portugal &amp; Spain</div>
     <div class="title-sub" style="font-size:12px;margin-top:3px;">Aug 6–20, 2026 · 15 Days · Porto → Lisbon → Seville → Granada → Madrid · all trains + one flight</div>
     <div class="title-legend" style="font-size:10px;margin-top:5px;">🕌 Moorish  ✊ History  🏨 Hotel  🍽️ Food  🛍️ Shop  🌄 View  🌘 Eclipse</div>
-    <div class="title-legend" style="font-size:10px;color:#999;margin-top:2px;">Paths: <span style="color:#2E9B57;font-weight:700">━ 🚶Walk</span>  <span style="color:#E8952F;font-weight:700">━ 🚕Taxi</span>  <span style="color:#2D5BD0;font-weight:700">┄ 🚇Metro</span>  <span style="color:#8E44AD;font-weight:700">┄ 🚊Tram</span>  <span style="color:#159C97;font-weight:700">━ 🚌Bus</span>  <span style="color:#C0392B;font-weight:700">━ 🚆Train</span>  <span style="color:#6C757D;font-weight:700">┄ ✈️Flight</span></div>
+    <div class="title-legend" style="font-size:10px;color:#999;margin-top:2px;">Paths: <span style="color:#5f8b57;font-weight:700">━ 🚶Walk</span>  <span style="color:#cc8642;font-weight:700">━ 🚕Taxi</span>  <span style="color:#4a6fa5;font-weight:700">┄ 🚇Metro</span>  <span style="color:#8a6193;font-weight:700">┄ 🚊Tram</span>  <span style="color:#3c8f8a;font-weight:700">━ 🚌Bus</span>  <span style="color:#b8503a;font-weight:700">━ 🚆Train</span>  <span style="color:#7d7770;font-weight:700">┄ ✈️Flight</span></div>
     <div class="title-credits" style="font-size:9px;color:#bbb;margin-top:3px;">Walk/taxi/bus paths follow streets (Valhalla/OSM); rail &amp; air are direct hops · Toggle days ↗</div></div>"""
     m.get_root().html.add_child(folium.Element(title))
     m.get_root().html.add_child(folium.Element(RESPONSIVE_CSS))
