@@ -110,6 +110,77 @@ CITY_GUIDE = {
  "Madrid":"https://www.esmadrid.com/en","Toledo":"https://toledomonumental.com","Transit":None,
 }
 
+# ─── Live weather (Open-Meteo) — same engine as the Iceland map ─────────────
+# Forecasts only reach ~16 days out, so live data appears as the trip nears;
+# until then (and if the fetch fails) each stop falls back to the climate panel.
+WEATHER_CACHE = "spain_weather_cache.json"
+CACHE_MAX_AGE_HOURS = 1
+WX_COORD = {
+ "Porto":(41.15,-8.61),"Lisbon":(38.72,-9.14),"Sintra":(38.79,-9.39),
+ "Seville":(37.38,-5.99),"Cordoba":(37.88,-4.78),"Granada":(37.17,-3.60),
+ "Madrid":(40.41,-3.70),"Toledo":(39.86,-4.02),
+}
+WX_TZ = {  # Portugal is WEST (UTC+1) in August, Spain is CEST (UTC+2)
+ "Porto":"Europe/Lisbon","Lisbon":"Europe/Lisbon","Sintra":"Europe/Lisbon",
+ "Seville":"Europe/Madrid","Cordoba":"Europe/Madrid","Granada":"Europe/Madrid",
+ "Madrid":"Europe/Madrid","Toledo":"Europe/Madrid",
+}
+WMO = {
+ 0:("Clear sky","☀️"),1:("Mainly clear","🌤️"),2:("Partly cloudy","⛅"),3:("Overcast","☁️"),
+ 45:("Fog","🌫️"),48:("Rime fog","🌫️"),51:("Light drizzle","🌦️"),53:("Drizzle","🌦️"),
+ 55:("Dense drizzle","🌧️"),61:("Slight rain","🌦️"),63:("Rain","🌧️"),65:("Heavy rain","🌧️"),
+ 71:("Light snow","🌨️"),73:("Snow","🌨️"),75:("Heavy snow","❄️"),
+ 80:("Light showers","🌦️"),81:("Showers","🌧️"),82:("Heavy showers","⛈️"),
+ 95:("Thunderstorm","⛈️"),96:("T-storm + hail","⛈️"),99:("T-storm + heavy hail","⛈️"),
+}
+
+def fetch_weather():
+    if os.path.exists(WEATHER_CACHE):
+        age=time.time()-os.path.getmtime(WEATHER_CACHE)
+        if age<CACHE_MAX_AGE_HOURS*3600:
+            try:
+                data=json.load(open(WEATHER_CACHE))
+                print(f"✓ Weather from cache (expires in {int((CACHE_MAX_AGE_HOURS*3600-age)/60)} min).")
+                return data
+            except Exception: pass
+    print("Fetching weather from Open-Meteo…")
+    out={}
+    for city,(lat,lon) in WX_COORD.items():
+        url=(f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}"
+             f"&hourly=temperature_2m,apparent_temperature,precipitation,weathercode,windspeed_10m,windgusts_10m"
+             f"&daily=sunrise,sunset&forecast_days=16&timezone={WX_TZ[city]}")
+        try:
+            r=requests.get(url,timeout=15).json()
+            if "hourly" in r: out[city]={"hourly":r["hourly"],"daily":r.get("daily",{})}; print(f"  ✓ {city}")
+            else: print(f"  – {city}: no hourly data")
+        except Exception as e:
+            print(f"  ⚠ {city}: {e}")
+        time.sleep(0.3)
+    try: json.dump(out,open(WEATHER_CACHE,"w"))
+    except Exception: pass
+    return out
+
+def get_wx(weather, city, day, hour):
+    """Return live forecast dict for a city at a given day+hour, or None.
+    Guards every value so a null from the API can never crash formatting."""
+    if not weather or city not in weather: return None
+    h=weather[city].get("hourly")
+    if not h or "time" not in h: return None
+    t=f"{DAY_DATES[day]}T{hour:02d}:00"
+    try: i=h["time"].index(t)
+    except ValueError: return None
+    def g(k):
+        a=h.get(k)
+        if not a or i>=len(a): return None
+        return a[i]
+    tc=g("temperature_2m"); fc=g("apparent_temperature")
+    p=g("precipitation"); w=g("windspeed_10m"); gu=g("windgusts_10m"); wc=g("weathercode")
+    if tc is None: return None  # no usable live reading → fall back to climate
+    desc,emoji=WMO.get(wc,("—","🌡️"))
+    def cf(v): return None if v is None else round(v*9/5+32)
+    return {"tc":tc,"tf":cf(tc),"fc":fc,"ff":cf(fc),"p":p,"w":w,"g":gu,
+            "desc":desc,"emoji":emoji,"hour":hour}
+
 # ═══════════════════════ STOPS ═══════════════════════
 # (name, lat, lon, day, type, city, notes, link, hour, dur_min, anchor)
 #  type → icon/colour.  🕌 moorish · ✊ history · ⭐ must-see · 📚 books · 🇪🇸 friend tip
@@ -455,8 +526,24 @@ def climate_block(city, c):
             f'<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;font-size:11px;color:#555;">'
             f'<span>🌡️ Avg high {cl["hi"]}</span><span>🌙 Avg low {cl["lo"]}</span>{warn}</div></div>')
 
+def _n0(v, unit=""):
+    return "—" if v is None else f"{v:.0f}{unit}"
+
+def wx_block(wx, c):
+    """Live-forecast panel (mint tint) shown when Open-Meteo has data for the slot."""
+    temp=f'{_n0(wx["tc"],"°C")} / {_n0(wx["tf"])}°F'
+    feels='' if wx["fc"] is None else f'<span>🥶 Feels {_n0(wx["fc"],"°C")} / {_n0(wx["ff"])}°F</span>'
+    precip='—' if wx["p"] is None else f'{wx["p"]:.1f} mm'
+    return (f'<div style="background:#eef7f0;border-radius:6px;padding:8px 10px;margin-bottom:8px;'
+            f'font-size:12px;border-left:3px solid {c};">'
+            f'<div style="font-weight:600;margin-bottom:4px;">🔴 Live · {wx["emoji"]} {wx["desc"]} at ~{wx["hour"]:02d}:00</div>'
+            f'<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;font-size:11px;color:#555;">'
+            f'<span>🌡️ {temp}</span>{feels}'
+            f'<span>💨 Wind {_n0(wx["w"]," km/h")}</span><span>💨 Gusts {_n0(wx["g"]," km/h")}</span>'
+            f'<span>🌧️ Precip {precip}</span></div></div>')
+
 # ═══════════════════════ POPUPS ═══════════════════════
-def popup_html(name, day, st, city, notes, link, lat, lon):
+def popup_html(name, day, st, city, notes, link, lat, lon, wx=None):
     c=rcolor(city)
     h=(f'<div style="font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Arial,sans-serif;'
        f'max-width:300px;width:calc(100vw - 80px);line-height:1.5;">'
@@ -464,7 +551,9 @@ def popup_html(name, day, st, city, notes, link, lat, lon):
        f'<strong style="font-size:14px;">{name}</strong><br>'
        f'<span style="font-size:11px;opacity:0.9;">{DAY_LABELS[day]} · {st.capitalize()}</span></div>'
        f'<div style="padding:10px 14px 12px 14px;">')
-    if city in CLIMATE and city!="Transit":
+    if wx:
+        h+=wx_block(wx, c)
+    elif city in CLIMATE and city!="Transit":
         h+=climate_block(city, c)
     h+=f'<div style="font-size:12px;color:#333;white-space:pre-wrap;">{notes}</div>'
     parts=[]
@@ -477,7 +566,7 @@ def popup_html(name, day, st, city, notes, link, lat, lon):
     return h+"</div></div>"
 
 # ═══════════════════════ MAP ═══════════════════════
-def build_map(routes):
+def build_map(routes, weather):
     m=folium.Map(location=MAP_CENTER, zoom_start=ZOOM_START, tiles=None, control_scale=True)
     folium.TileLayer("OpenStreetMap", name="🗺️ Street Map").add_to(m)
     folium.TileLayer(tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",attr="Esri",name="🏔️ Terrain").add_to(m)
@@ -509,18 +598,19 @@ def build_map(routes):
     for name,lat,lon,day,st,city,notes,link,hr,dur,anchor in S:
         ic,ocol=TYPE_ICON.get(st,("camera",None))
         col=ocol or REGION_MARKER[region(city)]
-        ph=Popup(popup_html(name,day,st,city,notes,link,lat,lon), max_width=340)
+        wx=get_wx(weather, city, day, hr)
+        ph=Popup(popup_html(name,day,st,city,notes,link,lat,lon,wx), max_width=340)
         Marker(location=[lat,lon], popup=ph,
                tooltip=f"<b>{TYPE_EMOJI.get(st,'📷')} {name}</b><br><small>{DAY_LABELS[day]}</small>",
                icon=Icon(color=col, icon=ic, prefix="fa")).add_to(rg[region(city)])
         if is_moorish(notes):
-            Marker(location=[lat,lon], popup=Popup(popup_html(name,day,st,city,notes,link,lat,lon),max_width=340),
+            Marker(location=[lat,lon], popup=Popup(popup_html(name,day,st,city,notes,link,lat,lon,wx),max_width=340),
                    tooltip=f"<b>🕌 {name}</b>", icon=Icon(color="darkred",icon="mosque",prefix="fa")).add_to(moor)
         if is_history(notes):
-            Marker(location=[lat,lon], popup=Popup(popup_html(name,day,st,city,notes,link,lat,lon),max_width=340),
+            Marker(location=[lat,lon], popup=Popup(popup_html(name,day,st,city,notes,link,lat,lon,wx),max_width=340),
                    tooltip=f"<b>✊ {name}</b>", icon=Icon(color="black",icon="fist-raised",prefix="fa")).add_to(hist)
         if st=="hotel" and "🏨" in name:
-            Marker(location=[lat,lon], popup=Popup(popup_html(name,day,st,city,notes,link,lat,lon),max_width=340),
+            Marker(location=[lat,lon], popup=Popup(popup_html(name,day,st,city,notes,link,lat,lon,wx),max_width=340),
                    tooltip=f"<b>🏨 {name}</b>", icon=Icon(color="green",icon="bed",prefix="fa")).add_to(hotels)
 
     journey.add_to(m)
@@ -536,7 +626,7 @@ def build_map(routes):
     <div class="title-credits" style="font-size:9px;color:#bbb;margin-top:3px;">Routes: Valhalla/OSM · Climate normals from the itinerary heat outlook · Toggle layers ↗</div></div>"""
     m.get_root().html.add_child(folium.Element(title))
     m.get_root().html.add_child(folium.Element(RESPONSIVE_CSS))
-    m.get_root().html.add_child(folium.Element(build_agenda()))
+    m.get_root().html.add_child(folium.Element(build_agenda(weather)))
     return m
 
 RESPONSIVE_CSS = """<style>
@@ -566,7 +656,7 @@ def _trunc(notes, c):
                 f'<a href="#" onclick="var p=this.parentElement;p.style.display=\'none\';p.previousElementSibling.style.display=\'inline\';p.previousElementSibling.previousElementSibling.style.display=\'inline\';return false;" style="color:#666;text-decoration:none;">Hide ↑</a></span>')
     return notes.replace("\n","<br>")
 
-def _card(name,lat,lon,day,st,city,notes,link,hr,dur,anchor):
+def _card(name,lat,lon,day,st,city,notes,link,hr,dur,anchor,wx=None):
     c=rcolor(city); reg=region(city)
     icon=TYPE_EMOJI.get(st,"📷"); tstr=f"{hr:02d}:00"
     sid=f"d{day}h{hr}s{st}"
@@ -580,7 +670,13 @@ def _card(name,lat,lon,day,st,city,notes,link,hr,dur,anchor):
     if not anchor:
         h+=f'<button class="stog" onclick="togSkip(\'{sid}\', event)" style="background:transparent;border:1px solid #ddd;color:#666;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;height:24px;">➖ Remove</button>'
     h+='</div>'
-    if city in CLIMATE and city!="Transit":
+    if wx:
+        feels='' if wx["fc"] is None else f'<span>🥶 Feels {_n0(wx["fc"],"°C")} / {_n0(wx["ff"])}°F</span>'
+        h+=f'<div class="sw sw-live" style="border-left:3px solid {c}">'
+        h+=f'<div style="grid-column:1/-1;font-weight:600;margin-bottom:2px">🔴 Live · {wx["emoji"]} {wx["desc"]} at ~{wx["hour"]:02d}:00</div>'
+        h+=f'<span>🌡️ {_n0(wx["tc"],"°C")} / {_n0(wx["tf"])}°F</span>{feels}'
+        h+=f'<span>💨 Wind {_n0(wx["w"]," km/h")}</span><span>💨 Gusts {_n0(wx["g"]," km/h")}</span></div>'
+    elif city in CLIMATE and city!="Transit":
         cl=CLIMATE[city]
         h+=f'<div class="sw" style="border-left:3px solid {c}">'
         h+=f'<div style="grid-column:1/-1;font-weight:600;margin-bottom:2px">{cl["emoji"]} Typical {city} · {cl["pat"]}</div>'
@@ -593,14 +689,15 @@ def _card(name,lat,lon,day,st,city,notes,link,hr,dur,anchor):
     h+='</div></div>'
     return h
 
-def build_agenda():
+def build_agenda(weather):
     tl=""
     for i in range(1,16):
         city=DAY_CITY[i]; c=REGION_COLORS[region(city)]
         tl+=f'<div class="dh" data-day="{i}" data-city="{region(city)}"><div class="dd" style="background:{c}"></div>{DAY_LABELS[i]}</div>'
         for stp in S:
             if stp[3]==i:
-                tl+=_card(*stp)
+                wx=get_wx(weather, stp[5], stp[3], stp[8])  # city, day, hour
+                tl+=_card(*stp, wx=wx)
 
     dd_js="{"+",".join(f'{k}:"{v}"' for k,v in DAY_DATES.items())+"}"
     day_opts="".join(f'<option value="{d}">Day {d} · {DAY_DATES[d][5:].replace("-","/")}</option>' for d in range(1,16))
@@ -628,7 +725,7 @@ def build_agenda():
       <div id="atl">{tl}
         <div style="max-width:700px;margin:8px auto 0;padding:0 4px">
           <div class="infocard">
-            <b>☀️ August heat is the #1 hazard.</b> Porto &amp; Lisbon are comfortable; Andalusia (Aug 12–16) is the danger zone — Seville/Cordoba run 100–108°F. Heat protocol: sights 8:30–12:00, siesta 14:00–18:00, out after 19:00. Re-check <a href="https://www.aemet.es/en" target="_blank">aemet.es</a> (Spain) / <a href="https://www.ipma.pt/en/" target="_blank">ipma.pt</a> (Portugal) 48 h before each leg.
+            <b>☀️ August heat is the #1 hazard.</b> Porto &amp; Lisbon are comfortable; Andalusia (Aug 12–16) is the danger zone — Seville/Cordoba run 100–108°F. Heat protocol: sights 8:30–12:00, siesta 14:00–18:00, out after 19:00. Re-check <a href="https://www.aemet.es/en" target="_blank">aemet.es</a> (Spain) / <a href="https://www.ipma.pt/en/" target="_blank">ipma.pt</a> (Portugal) 48 h before each leg.<br><span style="color:#2e7d5b;font-weight:600">🔴 Live forecast:</span> each stop shows a live Open-Meteo reading once its day is within the ~16-day forecast window (refreshed hourly); until then it shows the August climate normal.
           </div>
           <div class="infocard">
             <b>🎟️ Locked bookings:</b> Alhambra General — morning Sun Aug 16 (non-changeable). Ryanair FR3628 Lisbon→Seville, Aug 12 5:20 PM. All hotels + Madrid Airbnb booked. Book the 5 rail legs now on <a href="https://www.cp.pt/passageiros/en" target="_blank">cp.pt</a> / <a href="https://www.renfe.com/es/en" target="_blank">renfe.com</a> — the Aug 15 holiday Granada train sells first.
@@ -699,6 +796,7 @@ def build_agenda():
     .sn{{font-size:14px;font-weight:600;color:#111}} .stp{{font-size:11px;color:#888;text-transform:capitalize}}
     .snt{{font-size:12px;color:#555;margin-top:6px;line-height:1.5}}
     .sw{{background:#fff8e6;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:11px;display:grid;grid-template-columns:1fr 1fr;gap:2px 10px}}
+    .sw-live{{background:#eef7f0}}
     .sl{{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0}}
     .sl a{{font-size:12px;font-weight:600;text-decoration:none;padding:4px 0}}
     .infocard{{background:white;border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.06);border-left:4px solid #D4A017;font-size:12px;color:#444;line-height:1.55}}
@@ -755,8 +853,9 @@ def build_agenda():
 
 if __name__=="__main__":
     routes=fetch_routes()
+    weather=fetch_weather()
     print("\nBuilding interactive map…")
-    m=build_map(routes)
+    m=build_map(routes, weather)
     out="spain.html"
     m.save(out)
     import re
