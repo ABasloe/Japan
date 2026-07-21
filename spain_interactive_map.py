@@ -445,32 +445,41 @@ S = [
 ]
 
 # ═══════════════════════ INTERCITY LEGS (route polylines) ═══════════════════
+# Train legs trace the real rail corridor via intermediate stations/junctions;
+# the flight leg stays a direct great-circle dashed line.
 LEGS = [
- {"name":"Porto → Lisbon","mode":"train","day":4,"note":"Alfa Pendular · ~3h · cp.pt",
-  "a":(41.1490,-8.5850),"b":(38.7139,-9.1224)},
+ {"name":"Porto → Lisbon","mode":"train","day":4,"note":"Alfa Pendular · ~3h · Linha do Norte",
+  "a":(41.1490,-8.5850),"b":(38.7139,-9.1224),
+  "via":[(41.0075,-8.6410),(40.6430,-8.6400),(40.2220,-8.4350),(39.9130,-8.6280),
+         (39.4650,-8.4720),(39.2630,-8.6870),(38.9550,-8.9900)]},  # Espinho·Aveiro·Coimbra·Pombal·Entroncamento·Santarém·VFXira
  {"name":"Lisbon → Seville","mode":"flight","day":7,"note":"Ryanair FR3628 · 1h05",
   "a":(38.7742,-9.1342),"b":(37.4180,-5.8931)},
- {"name":"Seville ⇄ Cordoba","mode":"train","day":9,"note":"AVE/Avant · 45 min · renfe.com",
-  "a":(37.3919,-5.9757),"b":(37.8918,-4.7908)},
- {"name":"Seville → Granada","mode":"train","day":10,"note":"Renfe direct · 2.5–3h",
-  "a":(37.3919,-5.9757),"b":(37.1918,-3.6089)},
- {"name":"Granada → Madrid","mode":"train","day":12,"note":"AVE · ~3h20 · Renfe-only",
-  "a":(37.1918,-3.6089),"b":(40.4067,-3.6906)},
- {"name":"Madrid ⇄ Toledo","mode":"train","day":13,"note":"Avant · 33 min · fixed fares",
-  "a":(40.4067,-3.6906),"b":(39.8628,-4.0273)},
+ {"name":"Seville ⇄ Cordoba","mode":"train","day":9,"note":"AVE/Avant · 45 min · LAV Madrid–Sevilla",
+  "a":(37.3919,-5.9757),"b":(37.8918,-4.7908),
+  "via":[(37.5300,-5.5800),(37.7700,-5.0800),(37.8400,-4.8600)]},
+ {"name":"Seville → Granada","mode":"train","day":10,"note":"Renfe AVE via Antequera · 2.5–3h",
+  "a":(37.3919,-5.9757),"b":(37.1918,-3.6089),
+  "via":[(37.2950,-5.4400),(37.2380,-5.1000),(37.1600,-4.6100),(37.1800,-4.1000),(37.1900,-3.7500)]},  # Osuna·Antequera-Santa Ana
+ {"name":"Granada → Madrid","mode":"train","day":12,"note":"AVE via Antequera & Córdoba · ~3h20",
+  "a":(37.1918,-3.6089),"b":(40.4067,-3.6906),
+  "via":[(37.1600,-4.6100),(37.8400,-4.8100),(37.8918,-4.7908),(38.3800,-4.4000),
+         (38.6900,-4.1070),(38.9860,-3.9270),(39.8600,-3.7300)]},  # Antequera·Córdoba·Puertollano·Ciudad Real
+ {"name":"Madrid ⇄ Toledo","mode":"train","day":13,"note":"Avant · 33 min · LAV Toledo",
+  "a":(40.4067,-3.6906),"b":(39.8628,-4.0273),
+  "via":[(40.1000,-3.8300),(39.9300,-3.9600)]},
 ]
 
 # ─── Transport modes: colour + line style + routing engine per mode ─────────
 # walk/taxi/bus follow real streets (Valhalla/OSM, cached); metro/tram/train/
 # flight run on rails or air, so they are drawn as clean direct hops.
 MODE_STYLE = {
- "walk":  {"color":"#2E9B57","dash":"1 7","w":3,"label":"🚶 Walk","costing":"pedestrian"},
- "taxi":  {"color":"#E8952F","dash":None, "w":4,"label":"🚕 Taxi","costing":"auto"},
- "bus":   {"color":"#159C97","dash":None, "w":4,"label":"🚌 Bus","costing":"bus"},
- "metro": {"color":"#2D5BD0","dash":"7 6","w":4,"label":"🚇 Metro","costing":None},
- "tram":  {"color":"#8E44AD","dash":"7 6","w":4,"label":"🚊 Tram","costing":None},
- "train": {"color":"#C0392B","dash":None, "w":4,"label":"🚆 Train","costing":None},
- "flight":{"color":"#6C757D","dash":"10 8","w":4,"label":"✈️ Flight","costing":None},
+ "walk":  {"color":"#2E9B57","dash":"1 7","w":3,"label":"🚶 Walk","costing":"pedestrian","spd":4.8},
+ "taxi":  {"color":"#E8952F","dash":None, "w":4,"label":"🚕 Taxi","costing":"auto","spd":22},
+ "bus":   {"color":"#159C97","dash":None, "w":4,"label":"🚌 Bus","costing":"bus","spd":15},
+ "metro": {"color":"#2D5BD0","dash":"7 6","w":4,"label":"🚇 Metro","costing":None,"spd":30},
+ "tram":  {"color":"#8E44AD","dash":"7 6","w":4,"label":"🚊 Tram","costing":None,"spd":14},
+ "train": {"color":"#C0392B","dash":None, "w":4,"label":"🚆 Train","costing":None,"spd":90},
+ "flight":{"color":"#6C757D","dash":"10 8","w":4,"label":"✈️ Flight","costing":None,"spd":700},
 }
 # Mode used to REACH each stop from the previous stop that day (default = walk).
 # Straight from the itinerary's stated transport for each hop.
@@ -577,6 +586,7 @@ def build_segments():
     return segs
 
 def valhalla_route(a, b, costing):
+    """Return (coords, seconds) following the street network, or None."""
     payload={"locations":[{"lat":a[0],"lon":a[1]},{"lat":b[0],"lon":b[1]}],
              "costing":costing,"directions_options":{"units":"km"}}
     try:
@@ -587,32 +597,43 @@ def valhalla_route(a, b, costing):
             c=pl_lib.decode(leg["shape"],6)
             if cc and c and cc[-1]==c[0]: c=c[1:]
             cc.extend(c)
-        return cc or None
+        secs=d["trip"].get("summary",{}).get("time")
+        return (cc, secs) if cc else None
     except Exception:
         return None
+
+def _poly_len(coords):
+    return sum(_haversine(coords[i],coords[i+1]) for i in range(len(coords)-1)) if len(coords)>1 else 0.0
+
+def _est_minutes(coords, mode):
+    km=_poly_len(coords); spd=MODE_STYLE[mode]["spd"]
+    return max(1, round(km/spd*60)) if spd else 1
 
 def build_paths():
     cache={}
     if os.path.exists(ROUTE_CACHE):
         try: cache=json.load(open(ROUTE_CACHE))
         except Exception: cache={}
-    legs=[(lg,[list(lg["a"]),list(lg["b"])]) for lg in LEGS]  # rail/air = direct
+    legs=[(lg,[list(lg["a"])]+[list(v) for v in lg.get("via",[])]+[list(lg["b"])]) for lg in LEGS]
     print("Resolving intra-city paths…")
     segs=[]; routed=0
     for sg in build_segments():
         costing=MODE_STYLE[sg["mode"]]["costing"]
-        straight=[list(sg["a"]),list(sg["b"])]
-        if not costing:
-            segs.append((sg,straight)); continue
-        key=hashlib.md5(f'{sg["a"]}{sg["b"]}{costing}'.encode()).hexdigest()
-        if key in cache:
-            segs.append((sg,cache[key])); routed+=1; continue
-        res=valhalla_route(sg["a"],sg["b"],costing)
-        if res:
-            cache[key]=res; segs.append((sg,res)); routed+=1
-            time.sleep(0.4)
-        else:
-            segs.append((sg,straight))  # fallback NOT cached → upgraded on a networked run
+        coords=[list(sg["a"]),list(sg["b"])]; secs=None
+        if costing:
+            key=hashlib.md5(f'{sg["a"]}{sg["b"]}{costing}'.encode()).hexdigest()
+            ce=cache.get(key)
+            if isinstance(ce, dict):                 # geometry + real duration
+                coords=ce["c"]; secs=ce.get("t"); routed+=1
+            else:
+                res=valhalla_route(sg["a"],sg["b"],costing)  # (coords, seconds)
+                if res:
+                    coords,secs=res; cache[key]={"c":coords,"t":secs}; routed+=1; time.sleep(0.4)
+                elif isinstance(ce, list):           # old coords-only cache: keep geometry
+                    coords=ce; routed+=1
+                # else: straight fallback, not cached → upgraded on a networked run
+        sg["min"]=max(1, round(secs/60)) if secs is not None else _est_minutes(coords, sg["mode"])
+        segs.append((sg,coords))
     try: json.dump(cache,open(ROUTE_CACHE,"w"))
     except Exception: pass
     print(f"  {routed}/{len(segs)} intra-city hops street-routed (rest drawn direct)")
@@ -713,7 +734,7 @@ def build_map(paths, weather):
         stl=MODE_STYLE[sg["mode"]]
         PolyLine(locations=coords, color=stl["color"], weight=stl["w"], opacity=0.85, smooth_factor=1,
                  dash_array=stl["dash"],
-                 tooltip=f"<b>{stl['label']}</b><br>{sg['from']} → {sg['to']}").add_to(dg[sg["day"]])
+                 tooltip=f"<b>{stl['label']} · {sg['min']} min</b><br>{sg['from']} → {sg['to']}").add_to(dg[sg["day"]])
 
     # Stop markers
     for name,lat,lon,day,st,city,notes,link,hr,dur,anchor in S:
@@ -747,7 +768,7 @@ def build_map(paths, weather):
     <div class="title-credits" style="font-size:9px;color:#bbb;margin-top:3px;">Walk/taxi/bus paths follow streets (Valhalla/OSM); rail &amp; air are direct hops · Toggle days ↗</div></div>"""
     m.get_root().html.add_child(folium.Element(title))
     m.get_root().html.add_child(folium.Element(RESPONSIVE_CSS))
-    m.get_root().html.add_child(folium.Element(build_agenda(weather)))
+    m.get_root().html.add_child(folium.Element(build_agenda(weather, paths)))
     m.get_root().html.add_child(folium.Element(build_scrubber()))
     m.get_root().html.add_child(folium.Element(build_theme()))
     return m
@@ -788,8 +809,9 @@ def _card(name,lat,lon,day,st,city,notes,link,hr,dur,anchor,wx=None,arrive=None)
     hi="true" if is_history(notes) else "false"
     h =f'<div class="sc" id="{sid}" data-id="{sid}" data-day="{day}" data-city="{reg}" data-type="{st}" data-hour="{hr}" data-moor="{mo}" data-hist="{hi}" data-immune="{immune}" data-dur="{dur}" style="border-left-color:{c}">'
     if arrive:
-        stl=MODE_STYLE[arrive]
-        h+=f'<div class="amode" style="color:{stl["color"]}">↳ {stl["label"]} from previous stop</div>'
+        amode, amin = arrive
+        stl=MODE_STYLE[amode]
+        h+=f'<div class="amode" style="color:{stl["color"]}">↳ {amin}m {stl["label"]} from previous stop</div>'
     h+='<div style="display:flex;align-items:baseline;gap:10px;justify-content:space-between;width:100%">'
     h+=f'<div style="display:flex;align-items:baseline;gap:10px"><div class="st">{tstr}</div>'
     h+=f'<div><span class="sn">{icon} {name}</span><br><span class="stp">{st}</span></div></div>'
@@ -815,20 +837,24 @@ def _card(name,lat,lon,day,st,city,notes,link,hr,dur,anchor,wx=None,arrive=None)
     h+='</div></div>'
     return h
 
-def build_agenda(weather):
+def build_agenda(weather, paths):
+    # Inbound transport for each stop = the path segment that ENDS at it (keyed by
+    # rounded coord + day). Covers first stops too (via the hotel→first-stop transfer).
+    inbound={}
+    for sg,coords in paths["segs"]:
+        b=sg["b"]
+        inbound[(sg["day"], round(b[0],4), round(b[1],4))]=(sg["mode"], sg["min"])
     tl=""
     for i in range(1,16):
         city=DAY_CITY[i]; c=REGION_COLORS[region(city)]
         tl+=f'<div class="dh" data-day="{i}" data-city="{region(city)}"><div class="dd" style="background:{c}"></div>{DAY_LABELS[i]}</div>'
         day_stops=[stp for stp in S if stp[3]==i]
-        for j,stp in enumerate(day_stops):
+        for stp in day_stops:
             wx=get_wx(weather, stp[5], stp[3], stp[8])  # city, day, hour
-            # inbound transport mode (skip the day's first stop and rail/flight hops)
+            # arrive chip: mode+minutes of the hop into this stop (not on journey stops)
             arrive=None
-            if j>0:
-                prev=day_stops[j-1]
-                if prev[4] not in ("train","flight") and stp[4] not in ("train","flight"):
-                    arrive=MODE_TO.get(stp[0],"walk")
+            if stp[4] not in ("train","flight"):
+                arrive=inbound.get((stp[3], round(stp[1],4), round(stp[2],4)))
             tl+=_card(*stp, wx=wx, arrive=arrive)
 
     dd_js="{"+",".join(f'{k}:"{v}"' for k,v in DAY_DATES.items())+"}"
@@ -841,7 +867,7 @@ def build_agenda(weather):
     </div>
     <div id="av">
       <div class="ah"><div style="font-size:22px;font-weight:700">🕌 Portugal &amp; Spain</div>
-        <div style="font-size:13px;opacity:0.85;margin-top:4px">Aug 6–20, 2026 · 15 Days · Dad, Ihsan (21) &amp; Daughter (18)</div>
+        <div style="font-size:13px;opacity:0.85;margin-top:4px">Aug 6–20, 2026 · 15 Days</div>
         <div style="font-size:11px;opacity:0.7;margin-top:6px">Porto → Lisbon → Seville → Granada → Madrid · all trains + one short flight, no car</div></div>
       <div id="af">
         <button class="fp active" data-f="all" onclick="tf(this)">All</button>
