@@ -33,13 +33,14 @@ REGION_OF = {
     "Granada": "Granada", "Madrid": "Madrid", "Toledo": "Madrid",
     "Transit": "Transit",
 }
+# Muted, earthy Anthropic-leaning palette — distinct hues, calm on ivory & deep grey.
 REGION_COLORS = {
-    "Porto": "#2A9D8F", "Lisbon": "#457B9D", "Seville": "#E63946",
-    "Granada": "#D4A017", "Madrid": "#7B2D8E", "Transit": "#6c757d",
+    "Porto": "#41827b", "Lisbon": "#4c72a0", "Seville": "#c15f3c",
+    "Granada": "#b3812f", "Madrid": "#8c6183", "Transit": "#7d7770",
 }
-REGION_MARKER = {  # Leaflet.awesome-markers palette
+REGION_MARKER = {  # Leaflet.awesome-markers palette (nearest muted names)
     "Porto": "cadetblue", "Lisbon": "blue", "Seville": "red",
-    "Granada": "orange", "Madrid": "purple", "Transit": "gray",
+    "Granada": "orange", "Madrid": "darkpurple", "Transit": "gray",
 }
 REGION_ORDER = ["Porto", "Lisbon", "Seville", "Granada", "Madrid", "Transit"]
 
@@ -898,11 +899,11 @@ def build_agenda(weather, paths):
       </div>
       <div id="af">
         <button class="fp active" data-f="all" onclick="tf(this)">All</button>
-        <button class="fp active" data-f="Porto" onclick="tf(this)" style="border-color:#2A9D8F;color:#2A9D8F">Porto</button>
-        <button class="fp active" data-f="Lisbon" onclick="tf(this)" style="border-color:#457B9D;color:#457B9D">Lisbon</button>
-        <button class="fp active" data-f="Seville" onclick="tf(this)" style="border-color:#E63946;color:#E63946">Seville</button>
-        <button class="fp active" data-f="Granada" onclick="tf(this)" style="border-color:#D4A017;color:#D4A017">Granada</button>
-        <button class="fp active" data-f="Madrid" onclick="tf(this)" style="border-color:#7B2D8E;color:#7B2D8E">Madrid</button>
+        <button class="fp active" data-f="Porto" onclick="tf(this)" style="border-color:{REGION_COLORS['Porto']};color:{REGION_COLORS['Porto']}">Porto</button>
+        <button class="fp active" data-f="Lisbon" onclick="tf(this)" style="border-color:{REGION_COLORS['Lisbon']};color:{REGION_COLORS['Lisbon']}">Lisbon</button>
+        <button class="fp active" data-f="Seville" onclick="tf(this)" style="border-color:{REGION_COLORS['Seville']};color:{REGION_COLORS['Seville']}">Seville</button>
+        <button class="fp active" data-f="Granada" onclick="tf(this)" style="border-color:{REGION_COLORS['Granada']};color:{REGION_COLORS['Granada']}">Granada</button>
+        <button class="fp active" data-f="Madrid" onclick="tf(this)" style="border-color:{REGION_COLORS['Madrid']};color:{REGION_COLORS['Madrid']}">Madrid</button>
         <button class="fp active" data-f="moor" onclick="tf(this)">🕌 Moorish</button>
         <button class="fp active" data-f="food" onclick="tf(this)">🍽️ Food</button>
         <button class="fp active" data-f="hist" onclick="tf(this)">✊ History</button>
@@ -1079,7 +1080,7 @@ def build_scrubber():
     #scrub-label b{color:var(--accent);font-weight:700;}
     #scrub-track{position:relative;height:40px;margin:0 12px;cursor:pointer;}
     #scrub-line{position:absolute;top:19px;left:0;right:0;height:5px;border-radius:3px;
-      background:linear-gradient(90deg,#2A9D8F,#457B9D,#E63946,#D4A017,#7B2D8E);opacity:0.88;}
+      background:linear-gradient(90deg,#41827b,#4c72a0,#c15f3c,#b3812f,#8c6183);opacity:0.88;}
     .scrub-tick{position:absolute;top:9px;transform:translateX(-50%);background:transparent;border:none;
       padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;width:22px;}
     .scrub-tick .tk-bar{width:3px;height:14px;border-radius:2px;background:var(--c);opacity:0.5;transition:all .15s;}
@@ -1103,7 +1104,7 @@ def build_scrubber():
       var line=document.getElementById('scrub-line');
       var lab=document.getElementById('scrub-label');
       var allb=document.getElementById('scrub-all');
-      var GRAD='linear-gradient(90deg,#2A9D8F,#457B9D,#E63946,#D4A017,#7B2D8E)';
+      var GRAD='linear-gradient(90deg,#41827b,#4c72a0,#c15f3c,#b3812f,#8c6183)';
       function pos(i){return N<2?0:(i/(N-1))*100;}
       DAYS.forEach(function(o,i){
         var t=document.createElement('button');
@@ -1188,13 +1189,24 @@ def build_theme():
     /* Leaflet chrome */
     #av{background:var(--bg);}
     :root[data-theme="dark"] .leaflet-container{background:#0b0b0c;}
-    .leaflet-control-layers{background:var(--panel) !important;color:var(--ink) !important;border:1px solid var(--line) !important;border-radius:12px !important;box-shadow:var(--shadow) !important;}
-    .leaflet-control-layers label{color:var(--ink);}
+    .leaflet-control-layers{background:var(--panel) !important;color:var(--ink) !important;border:1px solid var(--line) !important;border-radius:14px !important;box-shadow:0 8px 28px rgba(0,0,0,0.16) !important;}
+    .leaflet-control-layers-expanded{padding:10px 12px !important;}
+    .leaflet-control-layers label{color:var(--ink);font-size:13px;margin-bottom:2px;display:flex;align-items:center;}
+    .leaflet-control-layers label span{padding-left:2px;}
+    .leaflet-control-layers input{accent-color:var(--brand);margin-right:5px;}
+    .leaflet-control-layers-separator{border-top:1px solid var(--line) !important;margin:8px -4px;}
     :root[data-theme="dark"] .leaflet-control-layers-toggle{filter:invert(0.85) hue-rotate(180deg);}
     :root[data-theme="dark"] .leaflet-bar a{background:var(--panel);color:var(--ink);border-bottom-color:var(--line);}
     :root[data-theme="dark"] .leaflet-bar a:hover{background:var(--panel2);}
-    :root[data-theme="dark"] .leaflet-control-attribution{background:rgba(33,31,27,0.85) !important;color:var(--ink3) !important;}
+    :root[data-theme="dark"] .leaflet-control-attribution{background:rgba(26,26,28,0.85) !important;color:var(--ink3) !important;}
     :root[data-theme="dark"] .leaflet-control-attribution a{color:var(--ink2) !important;}
+    /* Hover tooltips → panel card */
+    .leaflet-tooltip{background:var(--panel) !important;border:1px solid var(--line) !important;color:var(--ink) !important;border-radius:9px !important;box-shadow:0 4px 16px rgba(0,0,0,0.18) !important;font-family:var(--sans) !important;font-size:12px !important;padding:6px 10px !important;}
+    .leaflet-tooltip small{color:var(--ink2) !important;}
+    .leaflet-tooltip-top:before{border-top-color:var(--line) !important;}
+    .leaflet-tooltip-bottom:before{border-bottom-color:var(--line) !important;}
+    .leaflet-tooltip-left:before{border-left-color:var(--line) !important;}
+    .leaflet-tooltip-right:before{border-right-color:var(--line) !important;}
     /* Delay menu (inline-styled) */
     :root[data-theme="dark"] #d-menu{background:var(--panel) !important;}
     :root[data-theme="dark"] #d-menu button{color:var(--ink) !important;}
