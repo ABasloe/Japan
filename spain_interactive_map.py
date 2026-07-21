@@ -497,18 +497,83 @@ def arrive_mode(day, name, first):
     if first: return None
     return MODE_TO.get(name, "walk")
 
+# Named coordinates for transfer hops (hotels, stations, airports)
+_C = {
+ "OPO":(41.2481,-8.6814),"Sheraton":(41.1580,-8.6293),"Campanha":(41.1490,-8.5850),"Lello":(41.1470,-8.6146),
+ "HFFenix":(38.7267,-9.1500),"SantaApolonia":(38.7139,-9.1224),"Rossio":(38.7143,-9.1400),
+ "SintraSt":(38.7986,-9.3866),"Castelo":(38.7925,-9.3888),"Regaleira":(38.7963,-9.3963),
+ "BairroAlto":(38.7118,-9.1447),"Jeronimos":(38.6979,-9.2065),"Gulbenkian":(38.7376,-9.1537),"LIS":(38.7742,-9.1342),
+ "Giralda":(37.3833,-5.9822),"Alcazar":(37.3830,-5.9906),"SantaJusta":(37.3919,-5.9757),
+ "CordobaSt":(37.8918,-4.7908),"Mezquita":(37.8790,-4.7794),
+ "GranadaSt":(37.1918,-3.6089),"Melia":(37.1735,-3.5990),"Alhambra":(37.1760,-3.5881),
+ "Atocha":(40.4067,-3.6906),"Airbnb":(40.4155,-3.7075),"ReinaSofia":(40.4079,-3.6947),
+ "ToledoSt":(39.8628,-4.0273),"Cristo":(39.8607,-4.0247),"MAD":(40.4936,-3.5668),
+}
+# Connective hops the stop-to-stop logic can't derive: getting from the hotel to
+# the station/airport (and from the arrival station to the first stop), plus the
+# day-trip train legs. This is where the "gaps" were.
+TRANSFERS = [
+ (2,"taxi","OPO","Sheraton"),
+ (3,"metro","Sheraton","Lello"),
+ (4,"taxi","Sheraton","Campanha"),              # hotel → station, last day in Porto
+ (4,"metro","SantaApolonia","HFFenix"),          # arrival station → hotel
+ (5,"metro","HFFenix","Rossio"),
+ (5,"train","Rossio","SintraSt"),
+ (5,"bus","SintraSt","Castelo"),
+ (5,"walk","Regaleira","SintraSt"),
+ (5,"train","SintraSt","Rossio"),
+ (5,"walk","Rossio","BairroAlto"),
+ (6,"taxi","HFFenix","Jeronimos"),
+ (7,"walk","HFFenix","Gulbenkian"),
+ (7,"taxi","Gulbenkian","LIS"),                  # hotel-area → airport, last day in Lisbon
+ (8,"walk","Giralda","Alcazar"),
+ (9,"taxi","Giralda","SantaJusta"),
+ (9,"walk","CordobaSt","Mezquita"),
+ (10,"taxi","Giralda","SantaJusta"),             # hotel → station, last day in Seville
+ (10,"taxi","GranadaSt","Melia"),
+ (11,"bus","Melia","Alhambra"),
+ (12,"taxi","Melia","GranadaSt"),                # hotel → station, last day in Granada
+ (12,"walk","Atocha","Airbnb"),
+ (13,"walk","Airbnb","Atocha"),
+ (13,"bus","ToledoSt","Cristo"),
+ (14,"walk","Airbnb","ReinaSofia"),
+ (15,"taxi","Airbnb","MAD"),                     # hotel → airport, last day of the trip
+]
+_LABEL = {
+ "OPO":"OPO Airport","Sheraton":"Sheraton Porto","Campanha":"Porto Campanhã","Lello":"Livraria Lello",
+ "HFFenix":"HF Fénix Urban","SantaApolonia":"Santa Apolónia","Rossio":"Rossio station",
+ "SintraSt":"Sintra station","Castelo":"Castelo dos Mouros","Regaleira":"Quinta da Regaleira",
+ "BairroAlto":"Bairro Alto","Jeronimos":"Jerónimos, Belém","Gulbenkian":"Gulbenkian Museum","LIS":"LIS Airport",
+ "Giralda":"Hotel Giralda","Alcazar":"Real Alcázar","SantaJusta":"Sevilla Santa Justa",
+ "CordobaSt":"Córdoba station","Mezquita":"Mezquita-Catedral",
+ "GranadaSt":"Granada station","Melia":"Meliá Granada","Alhambra":"The Alhambra",
+ "Atocha":"Madrid Atocha","Airbnb":"Plaza Mayor Airbnb","ReinaSofia":"Reina Sofía",
+ "ToledoSt":"Toledo station","Cristo":"Cristo de la Luz","MAD":"MAD Airport",
+}
+
+def _haversine(a, b):
+    from math import radians, sin, cos, asin, sqrt
+    la1,lo1,la2,lo2=map(radians,[a[0],a[1],b[0],b[1]])
+    h=sin((la2-la1)/2)**2+cos(la1)*cos(la2)*sin((lo2-lo1)/2)**2
+    return 2*6371*asin(sqrt(h))
+
 def build_segments():
-    """Ordered intra-day hops between consecutive place-stops. Skips any hop
-    into/out of a train or flight stop — those journeys are the intercity legs."""
+    """Ordered intra-day hops between consecutive place-stops, plus the explicit
+    hotel↔station↔airport transfers. Skips hops into/out of a train/flight stop
+    (those are the intercity legs) and any accidental >20 km teleport line."""
     segs=[]
     for d in range(1,16):
         ds=[s for s in S if s[3]==d]
         for i in range(1,len(ds)):
             prev,cur=ds[i-1],ds[i]
             if prev[4] in ("train","flight") or cur[4] in ("train","flight"): continue
+            a,b=(prev[1],prev[2]),(cur[1],cur[2])
+            if _haversine(a,b)>20: continue   # inter-city jump → handled by a leg/transfer
             segs.append({"day":d,"mode":MODE_TO.get(cur[0],"walk"),
-                         "a":(prev[1],prev[2]),"b":(cur[1],cur[2]),
-                         "from":prev[0],"to":cur[0]})
+                         "a":a,"b":b,"from":prev[0],"to":cur[0]})
+    for d,mode,fa,fb in TRANSFERS:
+        segs.append({"day":d,"mode":mode,"a":_C[fa],"b":_C[fb],
+                     "from":_LABEL[fa],"to":_LABEL[fb],"transfer":True})
     return segs
 
 def valhalla_route(a, b, costing):
@@ -682,6 +747,7 @@ def build_map(paths, weather):
     m.get_root().html.add_child(folium.Element(title))
     m.get_root().html.add_child(folium.Element(RESPONSIVE_CSS))
     m.get_root().html.add_child(folium.Element(build_agenda(weather)))
+    m.get_root().html.add_child(folium.Element(build_scrubber()))
     return m
 
 RESPONSIVE_CSS = """<style>
@@ -878,7 +944,7 @@ def build_agenda(weather):
     .sc.skipped{{opacity:0.5;filter:grayscale(1)}}
     .sc.skipped .sn,.sc.skipped .stp,.sc.skipped .snt{{text-decoration:line-through}}
     .sc.skipped .stog{{color:#111 !important;border-color:#111 !important}}
-    @media(max-width:600px){{ #vtog{{top:auto;bottom:24px}} #vtog button{{padding:6px 14px;font-size:12px}} .sc{{padding:12px 14px}} #af{{padding:10px 12px}}}}
+    @media(max-width:600px){{ #vtog{{top:auto;bottom:98px}} #vtog button{{padding:6px 14px;font-size:12px}} .sc{{padding:12px 14px}} #af{{padding:10px 12px}}}}
     </style>
     <script>
     var DD={dd_js};
@@ -915,6 +981,103 @@ def build_agenda(weather):
     applyDelays();
     </script>
     """
+
+def build_scrubber():
+    days=[{"d":d,
+           "date":f"{int(DAY_DATES[d][5:7])}/{int(DAY_DATES[d][8:10])}",
+           "city":DAY_CITY[d],
+           "color":REGION_COLORS[region(DAY_CITY[d])]} for d in range(1,16)]
+    DAYS_JS=json.dumps(days)
+    html=r"""
+    <div id="scrub" role="group" aria-label="Trip day timeline">
+      <div id="scrub-top">
+        <button id="scrub-all" class="on" type="button">All 15 days</button>
+        <span id="scrub-label">Aug 6–20 · whole trip</span>
+      </div>
+      <div id="scrub-track">
+        <div id="scrub-line"></div>
+        <div id="scrub-thumb"></div>
+      </div>
+    </div>
+    <style>
+    #scrub{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:1000;
+      width:min(94vw,860px);background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);
+      border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.18);padding:10px 16px 14px;
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;box-sizing:border-box;touch-action:none;}
+    #scrub-top{display:flex;align-items:center;gap:12px;margin-bottom:6px;}
+    #scrub-all{border:1.5px solid #B23A48;background:white;color:#B23A48;border-radius:20px;
+      padding:4px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+    #scrub-all.on{background:#B23A48;color:white;}
+    #scrub-label{font-size:13px;color:#333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    #scrub-label b{color:#B23A48;}
+    #scrub-track{position:relative;height:40px;margin:0 12px;cursor:pointer;}
+    #scrub-line{position:absolute;top:19px;left:0;right:0;height:5px;border-radius:3px;
+      background:linear-gradient(90deg,#2A9D8F,#457B9D,#E63946,#D4A017,#7B2D8E);opacity:0.9;}
+    .scrub-tick{position:absolute;top:9px;transform:translateX(-50%);background:transparent;border:none;
+      padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;width:22px;}
+    .scrub-tick .tk-bar{width:3px;height:14px;border-radius:2px;background:var(--c);opacity:0.55;transition:all .15s;}
+    .scrub-tick .tk-n{font-size:9px;color:#999;font-weight:600;transition:color .15s;}
+    .scrub-tick.act .tk-bar{opacity:1;height:20px;width:4px;}
+    .scrub-tick.act .tk-n{color:#333;}
+    #scrub-thumb{position:absolute;top:11px;width:22px;height:22px;border-radius:50%;
+      background:#B23A48;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);
+      transform:translateX(-50%);transition:left .12s ease,opacity .12s;opacity:0;pointer-events:none;z-index:3;}
+    @media(max-width:600px){
+      #scrub{bottom:12px;padding:8px 12px 12px;width:96vw;}
+      #scrub-label{font-size:12px;}
+      .scrub-tick .tk-n{font-size:8px;}
+    }
+    </style>
+    <script>
+    (function(){
+      var DAYS=__DAYS__, N=DAYS.length, sel='all', dragging=false;
+      var track=document.getElementById('scrub-track');
+      var thumb=document.getElementById('scrub-thumb');
+      var line=document.getElementById('scrub-line');
+      var lab=document.getElementById('scrub-label');
+      var allb=document.getElementById('scrub-all');
+      var GRAD='linear-gradient(90deg,#2A9D8F,#457B9D,#E63946,#D4A017,#7B2D8E)';
+      function pos(i){return N<2?0:(i/(N-1))*100;}
+      DAYS.forEach(function(o,i){
+        var t=document.createElement('button');
+        t.type='button';t.className='scrub-tick';t.style.left=pos(i)+'%';t.style.setProperty('--c',o.color);
+        t.innerHTML='<span class="tk-bar"></span><span class="tk-n">'+o.d+'</span>';
+        t.addEventListener('click',function(e){e.stopPropagation();pick(o.d);});
+        track.appendChild(t);
+      });
+      function setDayLayers(s){
+        var labs=document.querySelectorAll('.leaflet-control-layers-overlays label');
+        labs.forEach(function(lb){
+          var m=lb.textContent.trim().match(/^Day\s+(\d+)/); if(!m)return;
+          var d=parseInt(m[1]), inp=lb.querySelector('input'); if(!inp)return;
+          var want=(s==='all')||(d===s);
+          if(inp.checked!==want) inp.click();
+        });
+      }
+      function pick(s){
+        sel=s;
+        if(s==='all'){allb.classList.add('on');thumb.style.opacity=0;line.style.background=GRAD;
+          lab.textContent='Aug 6–20 · whole trip';}
+        else{allb.classList.remove('on');var o=DAYS[s-1];
+          thumb.style.opacity=1;thumb.style.left=pos(s-1)+'%';thumb.style.background=o.color;
+          line.style.background='#e6e6e6';
+          lab.innerHTML='<b>Day '+s+'</b> · '+o.date+' · '+o.city;}
+        var ticks=document.querySelectorAll('.scrub-tick');
+        for(var k=0;k<ticks.length;k++){ticks[k].classList.toggle('act',sel!=='all'&&k===s-1);}
+        setDayLayers(s);
+      }
+      function dayFromX(x){var r=track.getBoundingClientRect();var f=(x-r.left)/r.width;
+        f=Math.max(0,Math.min(1,f));return Math.round(f*(N-1))+1;}
+      track.addEventListener('pointerdown',function(e){dragging=true;
+        try{track.setPointerCapture(e.pointerId);}catch(_){}pick(dayFromX(e.clientX));e.preventDefault();});
+      track.addEventListener('pointermove',function(e){if(dragging)pick(dayFromX(e.clientX));});
+      window.addEventListener('pointerup',function(){dragging=false;});
+      allb.addEventListener('click',function(){pick('all');});
+      pick('all');
+    })();
+    </script>
+    """
+    return html.replace("__DAYS__", DAYS_JS)
 
 if __name__=="__main__":
     paths=build_paths()
