@@ -884,7 +884,7 @@ def build_map(paths, weather):
 
     title="""<div id="map-title" style="position:fixed;top:10px;left:55px;z-index:1000;background:white;padding:10px 18px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.2);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;max-width:calc(100vw - 120px);">
     <div class="mt-t">Portugal &amp; Spain</div>
-    <div class="title-sub" style="font-size:12px;margin-top:3px;">Aug 6–20, 2026 · 15 Days · Porto → Lisbon → Seville → Granada → Madrid · all trains + one flight</div>
+    <div class="title-sub" style="font-size:12px;margin-top:3px;">Aug 6–20, 2026 · 15 Days<span class="title-route"> · Porto → Lisbon → Seville → Granada → Madrid · all trains + one flight</span></div>
     <div class="title-legend" style="font-size:10px;margin-top:5px;">🕌 Moorish  ✊ History  🏨 Hotel  🍽️ Food  🛍️ Shop  🌄 View  🌘 Eclipse</div>
     <div class="title-legend" style="font-size:10px;color:#999;margin-top:2px;">Paths: <span style="color:#5f8b57;font-weight:700">━ 🚶Walk</span>  <span style="color:#cc8642;font-weight:700">━ 🚕Taxi</span>  <span style="color:#4a6fa5;font-weight:700">┄ 🚇Metro</span>  <span style="color:#8a6193;font-weight:700">┄ 🚊Tram</span>  <span style="color:#3c8f8a;font-weight:700">━ 🚌Bus</span>  <span style="color:#b8503a;font-weight:700">━ 🚆Train</span>  <span style="color:#7d7770;font-weight:700">┄ ✈️Flight</span></div>
     <div class="title-credits" style="font-size:9px;color:#bbb;margin-top:3px;">Walk/taxi/bus paths follow streets (Valhalla/OSM); rail &amp; air are direct hops · Toggle days ↗</div></div>"""
@@ -1137,7 +1137,7 @@ def build_agenda(weather, paths):
       allCards.forEach(function(c){{var dA=c.getAttribute('data-day');var hA=c.getAttribute('data-hour');if(!dA||!hA)return;var cardDay=parseInt(dA);var cardHr=parseInt(hA);var delayId=c.getAttribute('data-delay-id');var isImmune=c.getAttribute('data-immune')==='true';var mins=0;(dayShifts[cardDay]||[]).forEach(function(sh){{if(sh.type==='add'&&cardHr>=sh.hr&&String(sh.id)!==delayId)mins+=sh.mins;if(sh.type==='sub'&&cardHr>sh.hr)mins-=sh.mins;}});if(isImmune)return;if(mins===0)return;var stEl=c.querySelector('.st');if(!stEl)return;if(!stEl.dataset.orig)stEl.dataset.orig=stEl.innerHTML;var tot=cardHr*60+mins;var nh=Math.floor(tot/60);var nm=tot%60;if(nh<0){{nh=0;nm=0;}}if(nh>23){{nh=23;nm=59;}}var tStr=String(nh).padStart(2,'0')+':'+String(nm).padStart(2,'0');var sign=mins>0?'+':'';var tCls=mins<0?'time-adj time-sub':'time-adj';stEl.innerHTML=tStr+' <span class="'+tCls+'">'+sign+mins+'m</span>';if(nh>=19&&!delayId){{if(!c.querySelector('.skip-rec')&&c.getAttribute('data-immune')!=='true'){{var rec=document.createElement('div');rec.className='skip-rec';rec.innerHTML='⚠️ Running late — dinner is drifting past 21:30. Consider trimming a stop.';c.insertBefore(rec,c.firstChild);}}}}}});
       af();
     }}
-    function sv(v){{var m=document.querySelector('.folium-map');var a=document.getElementById('av');var t=document.getElementById('map-title');var bm=document.getElementById('bm');var ba=document.getElementById('ba');if(v==='agenda'){{if(m)m.style.display='none';if(t)t.style.display='none';a.style.display='block';bm.classList.remove('on');ba.classList.add('on');asc();}}else{{if(m)m.style.display='block';if(t)t.style.display='block';a.style.display='none';bm.classList.add('on');ba.classList.remove('on');}}}}
+    function sv(v){{var m=document.querySelector('.folium-map');var a=document.getElementById('av');var t=document.getElementById('map-title');var bm=document.getElementById('bm');var ba=document.getElementById('ba');var vt=document.getElementById('vtog');if(v==='agenda'){{if(m)m.style.display='none';if(t)t.style.display='none';a.style.display='block';bm.classList.remove('on');ba.classList.add('on');if(vt)vt.classList.add('agenda-mode');asc();}}else{{if(m)m.style.display='block';if(t)t.style.display='block';a.style.display='none';bm.classList.add('on');ba.classList.remove('on');if(vt)vt.classList.remove('agenda-mode');}}}}
     var CITIES=['Porto','Lisbon','Seville','Granada','Madrid'];
     var _f=new Set(['all'].concat(CITIES).concat(['moor','food','hist']));
     function tf(b){{var f=b.getAttribute('data-f');if(f==='all'){{_f=new Set(['all'].concat(CITIES).concat(['moor','food','hist']));document.querySelectorAll('.fp').forEach(function(p){{p.className='fp active';}});}}else{{if(b.className.indexOf('active')>=0){{b.className='fp';_f.delete(f);}}else{{b.className='fp active';_f.add(f);}}if(CITIES.indexOf(f)>=0){{var ok=CITIES.every(function(x){{return _f.has(x);}});var ab=document.querySelector('[data-f="all"]');if(ok){{ab.className='fp active';_f.add('all');}}else{{ab.className='fp';_f.delete('all');}}}}}}af();}}
@@ -1290,7 +1290,8 @@ def build_theme():
       --accent:#e0876a; --accent-soft:#241d18; --brand:#d97757;
       --shadow:0 1px 2px rgba(0,0,0,0.45);
     }
-    #theme-tog{position:fixed;top:12px;right:12px;z-index:2600;width:40px;height:40px;border-radius:50%;
+    html,body{background:var(--bg);}
+    #theme-tog{position:fixed;top:calc(12px + env(safe-area-inset-top));right:12px;z-index:2600;width:40px;height:40px;border-radius:50%;
       border:1px solid var(--line);background:var(--panel);color:var(--ink);box-shadow:var(--shadow);
       font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;transition:transform .18s;}
     #theme-tog:hover{transform:scale(1.07);}
@@ -1331,6 +1332,19 @@ def build_theme():
     /* Delay menu (inline-styled) */
     :root[data-theme="dark"] #d-menu{background:var(--panel) !important;}
     :root[data-theme="dark"] #d-menu button{color:var(--ink) !important;}
+    /* ── Mobile / iOS Safari layout fixes ── */
+    @media(max-width:600px){
+      /* keep zoom/locate below the title header instead of over it */
+      .leaflet-top.leaflet-left{margin-top:62px;}
+      #map-title{max-width:calc(100vw - 66px) !important;}
+      #map-title .mt-t{font-size:16px;}
+      #map-title .title-route{display:none;}          /* shorten the sub line on phones */
+      /* respect the home-bar / Safari toolbar safe area */
+      #scrub{bottom:calc(12px + env(safe-area-inset-bottom)) !important;}
+      #vtog{bottom:calc(94px + env(safe-area-inset-bottom)) !important;}   /* above the scrubber on the map */
+      #vtog.agenda-mode{bottom:calc(16px + env(safe-area-inset-bottom)) !important;}  /* low, tab-bar style, in the itinerary */
+      #d-fab{bottom:calc(24px + env(safe-area-inset-bottom)) !important;}
+    }
     </style>
     <script>
     (function(){
@@ -1346,6 +1360,7 @@ def build_theme():
       function apply(theme, switchmap){
         document.documentElement.setAttribute('data-theme', theme);
         var b=document.getElementById('theme-tog'); if(b) b.textContent = (theme==='dark')?'☀️':'🌙';
+        var tc=document.querySelector('meta[name=theme-color]'); if(tc) tc.content=(theme==='dark')?'#111113':'#f4f1ea';
         if(switchmap) setTimeout(function(){ basemap(theme==='dark'); }, 60);
       }
       var saved=null; try{ saved=localStorage.getItem(KEY); }catch(_){}
@@ -1373,5 +1388,8 @@ if __name__=="__main__":
     import re
     html=open(out,encoding="utf-8").read()
     html=re.sub(r'(<(meta|link|img|br|hr|input)[^>]*?)\s*/>', r'\1>', html)
+    # iOS: extend content under the Safari toolbars + tint the browser UI
+    html=re.sub(r'(name="viewport"\s+content="[^"]*?)"', r'\1, viewport-fit=cover"', html, count=1)
+    html=html.replace('</head>', '    <meta name="theme-color" content="#111113">\n</head>', 1)
     open(out,"w",encoding="utf-8").write(html)
     print(f"\n✓ Saved: {out} ({os.path.getsize(out)/1024:.0f} KB)")
