@@ -1,7 +1,9 @@
-const CACHE_NAME = 'iceland-map-v1';
+const CACHE_NAME = 'trip-map-v2';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
+    '/iceland.html',
+    '/spain.html',
     // We cannot reliable cache all OSM tiles, but we'll cache what the user views
 ];
 

@@ -1131,7 +1131,7 @@ if __name__ == "__main__":
     weather = fetch_weather()
     print("\nBuilding interactive map...")
     m = build_map(routes, weather)
-    out = "index.html"
+    out = "iceland.html"
     m.save(out)
     
     # Clean up trailing slashes for perfect HTML5 validation
