@@ -1090,6 +1090,8 @@ def build_theme():
       border:none;background:rgba(255,255,255,0.95);box-shadow:0 2px 8px rgba(0,0,0,0.2);
       font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;}
     #theme-tog:hover{transform:scale(1.06);}
+    /* make room at top-right so the toggle doesn't cover the layer control */
+    .leaflet-top.leaflet-right{margin-top:52px;}
     /* ═════════ DARK MODE (Claude Code colours) ═════════ */
     [data-theme="dark"] #theme-tog{background:#35322e;box-shadow:0 2px 8px rgba(0,0,0,0.55);}
     [data-theme="dark"] .leaflet-container{background:#1a1917;}
