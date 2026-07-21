@@ -685,26 +685,26 @@ def climate_block(city, c):
     cl=CLIMATE.get(city, CLIMATE["Madrid"])
     warn=""
     if cl["warn"]:
-        warn=('<div style="grid-column:1/-1;margin-top:4px;color:#b45309;font-weight:600;">'
+        warn=('<div style="grid-column:1/-1;margin-top:4px;color:var(--accent);font-weight:600;">'
               '🥵 Heat protocol: sights 8:30–12:00 · rest 14:00–18:00 · out after 19:00</div>')
-    return (f'<div style="background:#fff8e6;border-radius:6px;padding:8px 10px;margin-bottom:8px;'
-            f'font-size:12px;border-left:3px solid {c};">'
-            f'<div style="font-weight:600;margin-bottom:4px;">{cl["emoji"]} Typical {city} in August · {cl["pat"]}</div>'
-            f'<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;font-size:11px;color:#555;">'
+    return (f'<div style="background:color-mix(in srgb,var(--accent) 9%,var(--panel));border-radius:10px;padding:9px 11px;margin-bottom:10px;'
+            f'font-size:12px;border:1px solid var(--line);color:var(--ink2);">'
+            f'<div style="font-weight:600;margin-bottom:4px;color:var(--ink);">{cl["emoji"]} Typical {city} in August · {cl["pat"]}</div>'
+            f'<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;font-size:11px;">'
             f'<span>🌡️ Avg high {cl["hi"]}</span><span>🌙 Avg low {cl["lo"]}</span>{warn}</div></div>')
 
 def _n0(v, unit=""):
     return "—" if v is None else f"{v:.0f}{unit}"
 
 def wx_block(wx, c):
-    """Live-forecast panel (mint tint) shown when Open-Meteo has data for the slot."""
+    """Live-forecast panel shown when Open-Meteo has data for the slot."""
     temp=f'{_n0(wx["tc"],"°C")} / {_n0(wx["tf"])}°F'
     feels='' if wx["fc"] is None else f'<span>🥶 Feels {_n0(wx["fc"],"°C")} / {_n0(wx["ff"])}°F</span>'
     precip='—' if wx["p"] is None else f'{wx["p"]:.1f} mm'
-    return (f'<div style="background:#eef7f0;border-radius:6px;padding:8px 10px;margin-bottom:8px;'
-            f'font-size:12px;border-left:3px solid {c};">'
-            f'<div style="font-weight:600;margin-bottom:4px;">🔴 Live · {wx["emoji"]} {wx["desc"]} at ~{wx["hour"]:02d}:00</div>'
-            f'<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;font-size:11px;color:#555;">'
+    return (f'<div style="background:color-mix(in srgb,#2e9b57 12%,var(--panel));border-radius:10px;padding:9px 11px;margin-bottom:10px;'
+            f'font-size:12px;border:1px solid var(--line);color:var(--ink2);">'
+            f'<div style="font-weight:600;margin-bottom:4px;color:var(--ink);">🔴 Live · {wx["emoji"]} {wx["desc"]} at ~{wx["hour"]:02d}:00</div>'
+            f'<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;font-size:11px;">'
             f'<span>🌡️ {temp}</span>{feels}'
             f'<span>💨 Wind {_n0(wx["w"]," km/h")}</span><span>💨 Gusts {_n0(wx["g"]," km/h")}</span>'
             f'<span>🌧️ Precip {precip}</span></div></div>')
@@ -712,24 +712,23 @@ def wx_block(wx, c):
 # ═══════════════════════ POPUPS ═══════════════════════
 def popup_html(name, day, st, city, notes, link, lat, lon, wx=None):
     c=rcolor(city)
-    h=(f'<div style="font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Arial,sans-serif;'
-       f'max-width:300px;width:calc(100vw - 80px);line-height:1.5;">'
-       f'<div style="background:{c};color:white;padding:8px 12px;">'
-       f'<strong style="font-size:14px;">{name}</strong><br>'
-       f'<span style="font-size:11px;opacity:0.9;">{DAY_LABELS[day]} · {st.capitalize()}</span></div>'
-       f'<div style="padding:10px 14px 12px 14px;">')
+    h=(f'<div style="font-family:var(--sans);max-width:300px;width:calc(100vw - 80px);line-height:1.55;">'
+       f'<div style="background:{c};color:white;padding:11px 14px;">'
+       f'<span class="pop-h">{name}</span><br>'
+       f'<span style="font-size:11px;opacity:0.92;">{DAY_LABELS[day]} · {st.capitalize()}</span></div>'
+       f'<div style="padding:12px 14px 13px 14px;">')
     if wx:
         h+=wx_block(wx, c)
     elif city in CLIMATE and city!="Transit":
         h+=climate_block(city, c)
-    h+=f'<div style="font-size:12px;color:#333;white-space:pre-wrap;">{notes}</div>'
+    h+=f'<div style="font-size:12.5px;color:var(--ink2);white-space:pre-wrap;">{notes}</div>'
     parts=[]
     if link:
-        parts.append(f'<a href="{link}" target="_blank" style="color:{c};text-decoration:none;font-size:13px;font-weight:600;">🔗 Book / Info →</a>')
-    parts.append(f'<a href="https://www.google.com/maps?q={lat},{lon}" target="_blank" style="color:{c};text-decoration:none;font-size:13px;font-weight:600;">📍 Map</a>')
+        parts.append(f'<a href="{link}" target="_blank" style="color:{c};text-decoration:none;font-size:12.5px;font-weight:600;">🔗 Book / Info →</a>')
+    parts.append(f'<a href="https://www.google.com/maps?q={lat},{lon}" target="_blank" style="color:{c};text-decoration:none;font-size:12.5px;font-weight:600;">📍 Map</a>')
     if day in DAY_MAP:
-        parts.append(f'<a href="{DAY_MAP[day]}" target="_blank" style="color:{c};text-decoration:none;font-size:13px;font-weight:600;">🗺 Day route</a>')
-    h+=f'<div style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;display:flex;gap:14px;flex-wrap:wrap;">{"".join(parts)}</div>'
+        parts.append(f'<a href="{DAY_MAP[day]}" target="_blank" style="color:{c};text-decoration:none;font-size:12.5px;font-weight:600;">🗺 Day route</a>')
+    h+=f'<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line);display:flex;gap:14px;flex-wrap:wrap;">{"".join(parts)}</div>'
     return h+"</div></div>"
 
 # ═══════════════════════ MAP ═══════════════════════
@@ -980,7 +979,7 @@ def build_agenda(weather, paths):
     .dh{{display:flex;align-items:center;gap:11px;padding:24px 2px 11px;font-family:var(--serif);font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-0.2px}}
     .dh:first-child{{padding-top:10px}}
     .dd{{width:10px;height:10px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 3px color-mix(in srgb,var(--ink) 6%,transparent)}}
-    .sc{{position:relative;background:var(--panel);border-radius:14px;padding:15px 16px 14px;margin-bottom:11px;box-shadow:var(--shadow);border:1px solid var(--line);border-left:3px solid var(--line);transition:transform 0.18s,box-shadow 0.18s,border-color 0.18s}}
+    .sc{{position:relative;background:var(--panel);border-radius:16px;padding:16px 17px 15px;margin-bottom:12px;box-shadow:var(--shadow);border:1px solid var(--line);border-left:3px solid var(--line);transition:transform 0.18s,box-shadow 0.18s,border-color 0.18s}}
     .sc:hover{{border-color:color-mix(in srgb,var(--ink) 16%,var(--line));transform:translateY(-1px)}}
     .sc.now{{box-shadow:0 0 0 2px var(--brand),var(--shadow)}}
     .amode{{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;margin-bottom:10px;padding:3px 10px;border-radius:20px;background:color-mix(in srgb,var(--ink) 5%,transparent);letter-spacing:0.2px}}
@@ -996,11 +995,11 @@ def build_agenda(weather, paths):
     .sl{{display:flex;gap:16px;flex-wrap:wrap;margin-top:11px;padding-top:11px;border-top:1px solid var(--line)}}
     .sl a{{font-size:12px;font-weight:600;text-decoration:none;padding:1px 0;opacity:0.92}}
     .sl a:hover{{opacity:1}}
-    .infocard{{background:var(--panel);border-radius:14px;padding:14px 16px;margin-bottom:11px;box-shadow:var(--shadow);border:1px solid var(--line);border-left:3px solid var(--brand);font-size:12px;color:var(--ink2);line-height:1.65}}
+    .infocard{{background:var(--panel);border-radius:16px;padding:15px 17px;margin-bottom:12px;box-shadow:var(--shadow);border:1px solid var(--line);border-left:3px solid var(--brand);font-size:12px;color:var(--ink2);line-height:1.65}}
     .infocard b{{color:var(--ink)}}
     .infocard a{{color:var(--accent);font-weight:600;text-decoration:none}}
     .mod-ov{{position:fixed;inset:0;background:rgba(20,17,14,0.5);z-index:3000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}}
-    .mod-bx{{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:18px;padding:24px;width:90%;max-width:360px;box-shadow:0 16px 44px rgba(0,0,0,0.3)}}
+    .mod-bx{{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:20px;padding:24px;width:90%;max-width:360px;box-shadow:0 16px 44px rgba(0,0,0,0.3)}}
     .mod-bx div{{color:var(--ink)}} .mod-bx label{{color:var(--ink2) !important}}
     .mod-bx input,.mod-bx select{{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}}
     .mbtn{{padding:8px 12px;background:var(--accent-soft);border:1px solid var(--line);border-radius:9px;font-weight:600;color:var(--accent);cursor:pointer;flex:1}}
@@ -1164,10 +1163,10 @@ def build_theme():
       --shadow:0 1px 2px rgba(40,32,24,0.05),0 2px 14px rgba(40,32,24,0.04);
     }
     :root[data-theme="dark"]{
-      --bg:#191714; --panel:#211f1b; --panel2:#2a2722; --line:#332f29;
-      --ink:#ece8e0; --ink2:#a49d92; --ink3:#7a7367;
-      --accent:#e08a6b; --accent-soft:#2c231c; --brand:#d97757;
-      --shadow:0 1px 2px rgba(0,0,0,0.35);
+      --bg:#111113; --panel:#1a1a1c; --panel2:#222225; --line:#2c2c30;
+      --ink:#ededee; --ink2:#9a9a9e; --ink3:#6b6b70;
+      --accent:#e0876a; --accent-soft:#241d18; --brand:#d97757;
+      --shadow:0 1px 2px rgba(0,0,0,0.45);
     }
     #theme-tog{position:fixed;top:12px;right:12px;z-index:2600;width:40px;height:40px;border-radius:50%;
       border:1px solid var(--line);background:var(--panel);color:var(--ink);box-shadow:var(--shadow);
@@ -1180,9 +1179,15 @@ def build_theme():
     .mt-t{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--ink);letter-spacing:-0.2px;}
     #map-title .title-sub{color:var(--ink2) !important;}
     #map-title .title-legend,#map-title .title-credits{color:var(--ink3) !important;}
+    /* Marker popups → panel + serif header, theme-aware */
+    .leaflet-popup-content-wrapper{background:var(--panel) !important;border:1px solid var(--line);
+      border-radius:16px !important;box-shadow:0 10px 34px rgba(0,0,0,0.20) !important;color:var(--ink);}
+    .leaflet-popup-tip{background:var(--panel) !important;box-shadow:none !important;}
+    .leaflet-popup-content{color:var(--ink);}
+    .pop-h{font-family:var(--serif);font-size:15px;font-weight:600;letter-spacing:-0.1px;}
     /* Leaflet chrome */
     #av{background:var(--bg);}
-    :root[data-theme="dark"] .leaflet-container{background:#0f0e0c;}
+    :root[data-theme="dark"] .leaflet-container{background:#0b0b0c;}
     .leaflet-control-layers{background:var(--panel) !important;color:var(--ink) !important;border:1px solid var(--line) !important;border-radius:12px !important;box-shadow:var(--shadow) !important;}
     .leaflet-control-layers label{color:var(--ink);}
     :root[data-theme="dark"] .leaflet-control-layers-toggle{filter:invert(0.85) hue-rotate(180deg);}
