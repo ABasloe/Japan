@@ -204,6 +204,9 @@ S = [
 ("Dom Luís I Bridge 🌄",41.1399,-8.6094,2,"viewpoint","Porto",
  "Walk the upper deck across to Gaia for the classic skyline. 15-min walk up from Ribeira; sunset ~8:50 PM, plenty of light.",
  None,20,45,False),
+("Miradouro da Serra do Pilar 🌄",41.1373,-8.6098,2,"viewpoint","Porto",
+ "🌄 The postcard panorama of Porto — the whole Ribeira waterfront and both decks of the Dom Luís I bridge line up from this UNESCO-listed monastery terrace on the Gaia side. 5-min walk from the bridge's upper deck; catch it at golden hour before the ~8:50 PM sunset (esplanade free; monastery dome/cloister ~€4).",
+ None,20,30,False),
 ("Café Santiago (dinner)",41.1487,-8.6060,2,"food","Porto",
  "🍽 Francesinha benchmark, ~€13; expect a short queue. Or book a river-view table in Ribeira. Early night.",
  None,20,60,False),
@@ -218,6 +221,9 @@ S = [
 ("São Bento azulejo hall",41.1457,-8.6106,3,"moorish","Porto",
  "🕌 Blue-and-white azulejo tiles — the Portuguese craft that descends directly from Moorish tradition. Free station concourse.",
  None,10,20,False),
+("Sé do Porto (Cathedral)",41.1426,-8.6115,3,"attraction","Porto",
+ "The hilltop Romanesque cathedral above Ribeira — its Gothic cloister is lined with blue azulejos, and the terrace (Terreiro da Sé) opens a sweeping view over the old town. 5-min walk uphill from São Bento; free entry, cloister ~€3. Quick 25-min stop before the 11 AM Bolsa slot.",
+ None,10,25,False),
 ("⭐ Palácio da Bolsa (Arab Room)",41.1414,-8.6153,3,"moorish","Porto",
  "🕌⭐ 11:00 AM guided visit (~€12, 45 min): the gilded Arab Room is a 19th-c. neo-Moorish fantasy — a perfect on-theme bonus.",
  "https://palaciodabolsa.com/en/",11,45,False),
@@ -792,6 +798,7 @@ def guide_links(name, city, c, small=False):
 # Sintra suburban train — the one remaining rail leg without a booking link).
 BOOKINFO = {
  "Rossio → Sintra train 🚆":"https://www.cp.pt/passageiros/en",
+ "Sé do Porto (Cathedral)":"https://www.diocese-porto.pt/pt/se-catedral-do-porto/",
  "Clérigos Tower":"https://www.torredosclerigos.pt/en/",
  "✊ Museu do Aljube":"https://www.museudoaljube.pt",
  "⭐ Quinta da Regaleira (optional)":"https://www.regaleira.pt/en/",
