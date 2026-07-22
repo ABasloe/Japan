@@ -884,10 +884,9 @@ def build_map(paths, weather):
 
     title="""<div id="map-title" style="position:fixed;top:10px;left:55px;z-index:1000;background:white;padding:10px 18px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.2);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;max-width:calc(100vw - 120px);">
     <div class="mt-t">Portugal &amp; Spain</div>
-    <div class="title-sub" style="font-size:12px;margin-top:3px;">Aug 6–20, 2026 · 15 Days<span class="title-route"> · Porto → Lisbon → Seville → Granada → Madrid · all trains + one flight</span></div>
+    <div class="title-sub" style="font-size:12px;margin-top:3px;">Aug 6–20, 2026 · 15 Days<span class="title-route"> · Porto → Lisbon → Seville → Granada → Madrid</span></div>
     <div class="title-legend" style="font-size:10px;margin-top:5px;">🕌 Moorish  ✊ History  🏨 Hotel  🍽️ Food  🛍️ Shop  🌄 View  🌘 Eclipse</div>
-    <div class="title-legend" style="font-size:10px;color:#999;margin-top:2px;">Paths: <span style="color:#5f8b57;font-weight:700">━ 🚶Walk</span>  <span style="color:#cc8642;font-weight:700">━ 🚕Taxi</span>  <span style="color:#4a6fa5;font-weight:700">┄ 🚇Metro</span>  <span style="color:#8a6193;font-weight:700">┄ 🚊Tram</span>  <span style="color:#3c8f8a;font-weight:700">━ 🚌Bus</span>  <span style="color:#b8503a;font-weight:700">━ 🚆Train</span>  <span style="color:#7d7770;font-weight:700">┄ ✈️Flight</span></div>
-    <div class="title-credits" style="font-size:9px;color:#bbb;margin-top:3px;">Walk/taxi/bus paths follow streets (Valhalla/OSM); rail &amp; air are direct hops · Toggle days ↗</div></div>"""
+    <div class="title-legend" style="font-size:10px;color:#999;margin-top:2px;">Paths: <span style="color:#5f8b57;font-weight:700">━ 🚶Walk</span>  <span style="color:#cc8642;font-weight:700">━ 🚕Taxi</span>  <span style="color:#4a6fa5;font-weight:700">┄ 🚇Metro</span>  <span style="color:#8a6193;font-weight:700">┄ 🚊Tram</span>  <span style="color:#3c8f8a;font-weight:700">━ 🚌Bus</span>  <span style="color:#b8503a;font-weight:700">━ 🚆Train</span>  <span style="color:#7d7770;font-weight:700">┄ ✈️Flight</span></div></div>"""
     m.get_root().html.add_child(folium.Element(title))
     m.get_root().html.add_child(folium.Element(RESPONSIVE_CSS))
     m.get_root().html.add_child(folium.Element(build_agenda(weather, paths)))
