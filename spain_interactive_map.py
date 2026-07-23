@@ -76,9 +76,9 @@ DAY_LABELS = {
 DAY_MAP = {
  2:"https://www.google.com/maps/dir/?api=1&origin=Porto%20Airport%20OPO&destination=Adega%20Sao%20Nicolau%2C%20Porto&waypoints=Sheraton%20Porto%20Hotel%20%26%20Spa%2C%20Porto%7CRibeira%2C%20Porto%7CPonte%20Luis%20I%2C%20Porto&travelmode=driving",
  3:"https://www.google.com/maps/dir/?api=1&origin=Sheraton%20Porto%20Hotel%20%26%20Spa%2C%20Porto&destination=O%20Valentim%2C%20Matosinhos&waypoints=Livraria%20Lello%2C%20Porto%7CSao%20Bento%20Station%2C%20Porto%7CPalacio%20da%20Bolsa%2C%20Porto%7CMercado%20do%20Bolhao%2C%20Porto%7CGraham%27s%20Port%20Lodge%2C%20Vila%20Nova%20de%20Gaia&travelmode=walking",
- 4:"https://www.google.com/maps/dir/?api=1&origin=Lisboa%20Santa%20Apolonia%20Station&destination=Taberna%20Sal%20Grosso%2C%20Lisbon&waypoints=HF%20Fenix%20Urban%2C%20Lisbon%7CMiradouro%20de%20Santa%20Luzia%2C%20Lisbon%7CMuseu%20do%20Aljube%2C%20Lisbon%7CCastelo%20de%20Sao%20Jorge%2C%20Lisbon&travelmode=driving",
- 5:"https://www.google.com/maps/dir/?api=1&origin=Rossio%20Railway%20Station%2C%20Lisbon&destination=Tascantiga%2C%20Sintra&waypoints=Sintra%20Station%7CCastelo%20dos%20Mouros%2C%20Sintra%7CPalacio%20Nacional%20da%20Pena%2C%20Sintra&travelmode=transit",
- 6:"https://www.google.com/maps/dir/?api=1&origin=HF%20Fenix%20Urban%2C%20Lisbon&destination=Time%20Out%20Market%2C%20Lisbon&waypoints=Mosteiro%20dos%20Jeronimos%2C%20Lisbon%7CPasteis%20de%20Belem%2C%20Lisbon%7CEmbaixada%2C%20Principe%20Real%2C%20Lisbon%7CA%20Vida%20Portuguesa%2C%20Rua%20Anchieta%2C%20Lisbon%7CLargo%20do%20Carmo%2C%20Lisbon&travelmode=driving",
+ 4:"https://www.google.com/maps/dir/?api=1&origin=Lisboa%20Santa%20Apolonia%20Station&destination=Taberna%20Sal%20Grosso%2C%20Lisbon&waypoints=Corinthia%20Lisbon%2C%20Lisbon%7CMiradouro%20de%20Santa%20Luzia%2C%20Lisbon%7CMuseu%20do%20Aljube%2C%20Lisbon%7CCastelo%20de%20Sao%20Jorge%2C%20Lisbon&travelmode=driving",
+ 5:"https://www.google.com/maps/dir/?api=1&origin=Sete%20Rios%20Station%2C%20Lisbon&destination=Tascantiga%2C%20Sintra&waypoints=Sintra%20Station%7CCastelo%20dos%20Mouros%2C%20Sintra%7CPalacio%20Nacional%20da%20Pena%2C%20Sintra&travelmode=transit",
+ 6:"https://www.google.com/maps/dir/?api=1&origin=Corinthia%20Lisbon%2C%20Lisbon&destination=Time%20Out%20Market%2C%20Lisbon&waypoints=Mosteiro%20dos%20Jeronimos%2C%20Lisbon%7CPasteis%20de%20Belem%2C%20Lisbon%7CEmbaixada%2C%20Principe%20Real%2C%20Lisbon%7CA%20Vida%20Portuguesa%2C%20Rua%20Anchieta%2C%20Lisbon%7CLargo%20do%20Carmo%2C%20Lisbon&travelmode=driving",
  7:"https://www.google.com/maps/dir/?api=1&origin=Seville%20Airport&destination=Bodega%20Santa%20Cruz%20Las%20Columnas%2C%20Seville&waypoints=Prado%20de%20San%20Sebastian%2C%20Seville%7CHotel%20Giralda%20Center%2C%20Seville%7CBarrio%20Santa%20Cruz%2C%20Seville&travelmode=driving",
  8:"https://www.google.com/maps/dir/?api=1&origin=Hotel%20Giralda%20Center%2C%20Seville&destination=Plaza%20de%20Espana%2C%20Seville&waypoints=Real%20Alcazar%2C%20Seville%7CCatedral%20de%20Sevilla%7CEl%20Rinconcillo%2C%20Seville%7CCasa%20de%20Pilatos%2C%20Seville%7CSetas%20de%20Sevilla&travelmode=walking",
  9:"https://www.google.com/maps/dir/?api=1&origin=Cordoba%20Railway%20Station&destination=Palacio%20de%20Viana%2C%20Cordoba&waypoints=Mezquita-Catedral%20de%20Cordoba%7CBar%20Santos%2C%20Cordoba%7CAlcazar%20de%20los%20Reyes%20Cristianos%2C%20Cordoba%7CPuente%20Romano%20de%20Cordoba&travelmode=walking",
@@ -256,8 +256,8 @@ S = [
 ("Porto Campanhã → Lisbon 🚆",41.1490,-8.5850,4,"train","Lisbon",
  "🚆 9:00 AM Alfa Pendular to Lisboa Santa Apolónia, ~3h (book cp.pt, promo from €9.50). Taxi to Campanhã (NOT São Bento) ~12 min. Arrive ~12:30 PM.",
  "https://www.cp.pt/passageiros/en",9,180,True),
-("HF Fénix Urban 🏨",38.7267,-9.1500,4,"hotel","Lisbon",
- "🏨 Aug 9–12 (BOOKED, $649.79; refundable before Aug 5). Marquês de Pombal — metro hub on the doorstep, family room with 2 queens sleeps 3. Verify breakfast.",
+("Corinthia Lisbon 🏨",38.7370,-9.1656,4,"hotel","Lisbon",
+ "🏨 Aug 9–12 (BOOKED, $802.14; fully refundable before Aug 8). Deluxe King — 1 king + sofa bed, fits 3. At Praça de Espanha / Sete Rios: a few minutes' walk to Sete Rios station, which is on the Blue-line metro AND the Sintra line (board there for Day 5, skipping Rossio). Premier Collection perks — $100 experience credit, daily breakfast for 2, WiFi, on-site spa. Check-in 2 PM, checkout noon on the 12th. A little out from the old town, but the metro links you straight in.",
  None,13,0,True),
 ("🕌 Alfama + Miradouro de Santa Luzia",38.7118,-9.1300,4,"moorish","Lisbon",
  "🕌 2:00 PM the old Moorish quarter (from Arabic al-hamma) — wander the lanes up to the tiled Santa Luzia terrace.",
@@ -273,8 +273,8 @@ S = [
  None,20,90,False),
 
 # ---- Day 5: Sintra day trip ----
-("Rossio → Sintra train 🚆",38.7143,-9.1400,5,"train","Sintra",
- "🚆 8:30 AM train from Rossio (every 20–30 min, Viva Viagem card; no advance booking). Leave the hotel by 8:00. Sintra is Portugal's busiest day trip — the early train matters.",
+("Sete Rios → Sintra train 🚆",38.7397,-9.1689,5,"train","Sintra",
+ "🚆 8:30 AM train to Sintra (every 20–30 min, Viva Viagem card; no advance booking). Sete Rios is a few minutes' walk from the Corinthia and sits right on the Sintra line, so board here instead of trekking to Rossio. Leave the hotel by 8:15. Sintra is Portugal's busiest day trip — the early train matters. (Coming back, ride through to Rossio for the evening.)",
  None,8,40,True),
 ("🕌 Castelo dos Mouros, Sintra",38.7925,-9.3888,5,"moorish","Sintra",
  "🕌 9:30 AM the 8th–9th c. Moorish hilltop fortress — Portugal's Moorish highlight. Bus 434 loop from Sintra station ~15 min + short climb.",
@@ -541,7 +541,7 @@ def arrive_mode(day, name, first):
 # Named coordinates for transfer hops (hotels, stations, airports)
 _C = {
  "OPO":(41.2481,-8.6814),"Sheraton":(41.1580,-8.6293),"Campanha":(41.1490,-8.5850),"Lello":(41.1470,-8.6146),
- "HFFenix":(38.7267,-9.1500),"SantaApolonia":(38.7139,-9.1224),"Rossio":(38.7143,-9.1400),
+ "Corinthia":(38.7370,-9.1656),"SeteRios":(38.7397,-9.1689),"SantaApolonia":(38.7139,-9.1224),"Rossio":(38.7143,-9.1400),
  "SintraSt":(38.7986,-9.3866),"Castelo":(38.7925,-9.3888),"Regaleira":(38.7963,-9.3963),
  "BairroAlto":(38.7118,-9.1447),"Jeronimos":(38.6979,-9.2065),"Gulbenkian":(38.7376,-9.1537),"LIS":(38.7742,-9.1342),
  "Giralda":(37.3833,-5.9822),"Alcazar":(37.3830,-5.9906),"SantaJusta":(37.3919,-5.9757),
@@ -557,15 +557,15 @@ TRANSFERS = [
  (2,"taxi","OPO","Sheraton"),
  (3,"metro","Sheraton","Lello"),
  (4,"taxi","Sheraton","Campanha"),              # hotel → station, last day in Porto
- (4,"metro","SantaApolonia","HFFenix"),          # arrival station → hotel
- (5,"metro","HFFenix","Rossio"),
- (5,"train","Rossio","SintraSt"),
+ (4,"metro","SantaApolonia","Corinthia"),          # arrival station → hotel
+ (5,"walk","Corinthia","SeteRios"),
+ (5,"train","SeteRios","SintraSt"),
  (5,"bus","SintraSt","Castelo"),
  (5,"walk","Regaleira","SintraSt"),
  (5,"train","SintraSt","Rossio"),
  (5,"walk","Rossio","BairroAlto"),
- (6,"taxi","HFFenix","Jeronimos"),
- (7,"walk","HFFenix","Gulbenkian"),
+ (6,"taxi","Corinthia","Jeronimos"),
+ (7,"walk","Corinthia","Gulbenkian"),
  (7,"taxi","Gulbenkian","LIS"),                  # hotel-area → airport, last day in Lisbon
  (8,"walk","Giralda","Alcazar"),
  (9,"taxi","Giralda","SantaJusta"),
@@ -582,7 +582,7 @@ TRANSFERS = [
 ]
 _LABEL = {
  "OPO":"OPO Airport","Sheraton":"Sheraton Porto","Campanha":"Porto Campanhã","Lello":"Livraria Lello",
- "HFFenix":"HF Fénix Urban","SantaApolonia":"Santa Apolónia","Rossio":"Rossio station",
+ "Corinthia":"Corinthia Lisbon","SeteRios":"Sete Rios station","SantaApolonia":"Santa Apolónia","Rossio":"Rossio station",
  "SintraSt":"Sintra station","Castelo":"Castelo dos Mouros","Regaleira":"Quinta da Regaleira",
  "BairroAlto":"Bairro Alto","Jeronimos":"Jerónimos, Belém","Gulbenkian":"Gulbenkian Museum","LIS":"LIS Airport",
  "Giralda":"Hotel Giralda","Alcazar":"Real Alcázar","SantaJusta":"Sevilla Santa Justa",
