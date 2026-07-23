@@ -611,6 +611,25 @@ _LABEL = {
  "ToledoSt":"Toledo station","Cristo":"Cristo de la Luz","MAD":"MAD Airport",
 }
 
+# Metro/tram hops can't be street-routed (Valhalla has no rail), so trace them
+# through the real intermediate stations of the line they ride. Keyed by the
+# segment's (from, to) names; drawn as a polyline through these station coords.
+SEG_VIA = {
+ # ── Lisbon Metro · Blue line (Santa Apolónia ↔ Praça de Espanha) ──
+ #   Terreiro do Paço · Baixa-Chiado · Restauradores · Avenida · Marquês · São Sebastião
+ ("Santa Apolónia","Corinthia Lisbon"):
+   [(38.7076,-9.1349),(38.7108,-9.1394),(38.7155,-9.1417),(38.7200,-9.1448),(38.7248,-9.1502),(38.7370,-9.1543)],
+ ("Corinthia Lisbon 🏨","🕌 Alfama + Miradouro de Santa Luzia"):
+   [(38.7370,-9.1543),(38.7248,-9.1502),(38.7200,-9.1448),(38.7155,-9.1417),(38.7108,-9.1394),(38.7076,-9.1349)],
+ ("🕌 National Tile Museum (Azulejo)","As Bifanas do Afonso 🥪"):
+   [(38.7139,-9.1224),(38.7076,-9.1349)],                       # Santa Apolónia → Terreiro do Paço
+ # ── Porto Metro · via the Trindade interchange ──
+ ("Sheraton Porto","Livraria Lello"):
+   [(41.1585,-8.6295),(41.1520,-8.6098),(41.1490,-8.6113)],     # Casa da Música · Trindade · Aliados
+ ("🍷 Graham's 1890 Port Lodge","O Valentim (dinner, Matosinhos)"):
+   [(41.1385,-8.6088),(41.1520,-8.6098),(41.1585,-8.6295)],     # Jardim do Morro → bridge → Trindade → Casa da Música (Line A on to Matosinhos)
+}
+
 def _haversine(a, b):
     from math import radians, sin, cos, asin, sqrt
     la1,lo1,la2,lo2=map(radians,[a[0],a[1],b[0],b[1]])
@@ -629,11 +648,17 @@ def build_segments():
             if prev[4] in ("train","flight") or cur[4] in ("train","flight"): continue
             a,b=(prev[1],prev[2]),(cur[1],cur[2])
             if _haversine(a,b)>20: continue   # inter-city jump → handled by a leg/transfer
-            segs.append({"day":d,"mode":MODE_TO.get(cur[0],"walk"),
-                         "a":a,"b":b,"from":prev[0],"to":cur[0]})
+            sg={"day":d,"mode":MODE_TO.get(cur[0],"walk"),
+                "a":a,"b":b,"from":prev[0],"to":cur[0]}
+            v=SEG_VIA.get((sg["from"],sg["to"]))
+            if v: sg["via"]=v
+            segs.append(sg)
     for d,mode,fa,fb in TRANSFERS:
-        segs.append({"day":d,"mode":mode,"a":_C[fa],"b":_C[fb],
-                     "from":_LABEL[fa],"to":_LABEL[fb],"transfer":True})
+        sg={"day":d,"mode":mode,"a":_C[fa],"b":_C[fb],
+            "from":_LABEL[fa],"to":_LABEL[fb],"transfer":True}
+        v=SEG_VIA.get((sg["from"],sg["to"]))
+        if v: sg["via"]=v
+        segs.append(sg)
     return segs
 
 def valhalla_route(a, b, costing):
@@ -717,6 +742,8 @@ def build_paths():
     for sg in build_segments():
         costing=MODE_STYLE[sg["mode"]]["costing"]
         coords=[list(sg["a"]),list(sg["b"])]; secs=None
+        if sg.get("via"):                          # metro/tram traced through its real stations
+            coords=[list(sg["a"])]+[list(v) for v in sg["via"]]+[list(sg["b"])]
         if costing:
             key=hashlib.md5(f'{sg["a"]}{sg["b"]}{costing}'.encode()).hexdigest()
             ce=cache.get(key)
@@ -1336,6 +1363,19 @@ def build_scrubber():
         bPrev.disabled=!active || !(stopIdx>0 || sel>1);
         bNext.disabled=!active || !(stopIdx<st.length-1 || sel<N);
       }
+      function openStopCard(s){
+        // open the marker popup for the stepped-to stop; closes any prior one
+        var mp=getMap(); if(!mp||!s) return;
+        mp.closePopup();
+        var best=null, bd=9e9;
+        mp.eachLayer(function(l){
+          if(l&&l.getLatLng&&l.getPopup&&l.getPopup()){
+            var ll=l.getLatLng(), d=Math.abs(ll.lat-s.lat)+Math.abs(ll.lng-s.lon);
+            if(d<bd){bd=d;best=l;}
+          }
+        });
+        if(best&&bd<0.0008) best.openPopup();
+      }
       function focusStop(){
         var st=curStops(); if(!st.length) return;
         var mp=getMap(); if(!mp){updateStepUI();return;}
@@ -1351,12 +1391,12 @@ def build_scrubber():
             try{ mp.fitBounds(L.latLngBounds([[p.lat,p.lon],[s.lat,s.lon],peak]),
                  {paddingTopLeft:[50,95],paddingBottomRight:[50,130],maxZoom:8}); }catch(e){}
             lab.textContent='Day '+sel+' · '+(stopIdx+1)+'/'+st.length+' · '+s.name;
-            updateStepUI(); return;
+            openStopCard(s); updateStepUI(); return;
           }
         }
         mp.setView([s.lat,s.lon], 15);
         lab.textContent='Day '+sel+' · '+(stopIdx+1)+'/'+st.length+' · '+s.name;
-        updateStepUI();
+        openStopCard(s); updateStepUI();
       }
       function pos(i){return N<2?0:(i/(N-1))*100;}
       DAYS.forEach(function(o,i){
@@ -1377,6 +1417,7 @@ def build_scrubber():
       }
       function pick(s){
         sel=s; stopIdx=-1;
+        var _mp=getMap(); if(_mp) _mp.closePopup();   // clear any stepped-open card
         if(s==='all'){allb.classList.add('on');thumb.style.opacity=0;line.style.background=GRAD;
           lab.textContent='Aug 6–20 · whole trip';document.body.classList.add('hide-far');}
         else{allb.classList.remove('on');var o=DAYS[s-1];
