@@ -211,8 +211,8 @@ S = [
  "🌄 The higher, wider panorama — the whole Ribeira waterfront and both decks of the bridge line up from this UNESCO-listed monastery terrace, a 3-min climb above Jardim do Morro. Catch it before the ~8:50 PM sunset (esplanade free; monastery dome/cloister ~€4).",
  None,20,30,False),
 ("Café Santiago (dinner)",41.1487,-8.6060,2,"food","Porto",
- "🍽 Francesinha benchmark, ~€13; expect a short queue. Or book a river-view table in Ribeira. Early night.",
- None,20,60,False),
+ "🍽 ~9 PM, after the sunset from the bridge — the Francesinha benchmark, ~€13; expect a short queue. Or book a river-view table in Ribeira. Early night after the red-eye.",
+ None,21,60,False),
 
 # ---- Day 3: Porto full day + port lodges ----
 ("Livraria Lello 📚",41.1470,-8.6146,3,"shop","Porto",
@@ -266,7 +266,7 @@ S = [
  "✊ 4:00 PM (~€3, 45 min): the Estado Novo's political prison, now a museum of the dictatorship and the resistance — the essential primer before Largo do Carmo on Day 6.",
  None,16,45,False),
 ("🕌 Castelo de São Jorge",38.7139,-9.1335,4,"moorish","Lisbon",
- "🕌 5:30 PM (book online, ~€15): the Moorish-era citadel, for golden-hour views over the city and river.",
+ "🕌 5:30 PM (book online, ~€15): the Moorish-era citadel, for sweeping views over the city and river. Open till ~9 PM in summer — true golden light isn't until ~8 PM, so linger or come back later if you want it.",
  "https://castelodesaojorge.pt/en/",17,90,False),
 ("Tasca do Chico (fado + dinner)",38.7113,-9.1447,4,"food","Lisbon",
  "🍽 8:30 PM Alfama/Bairro Alto dinner; for fado, Tasca do Chico (cheap, authentic) or a booked show ~€20–35.",
@@ -380,10 +380,10 @@ S = [
  "🏨 Aug 15–17 (BOOKED, $438.50). Puerta Real — most central base of the trip. Premium Double booked for 3 — call +34 958 22 74 00 to add a bed. 15-min walk to Plaza Nueva. 1:30–6 PM check in, lunch, rest through the heat.",
  None,13,0,True),
 ("🕌 Albaicín → Mirador de San Nicolás 🌄",37.1809,-3.5924,10,"moorish","Granada",
- "🕌 7:00 PM the old Moorish quarter (UNESCO) up to the Mirador de San Nicolás: sunset over the Alhambra with the Sierra Nevada behind — the single best free view of the trip. 20–25 min uphill walk or C31/C32 minibus.",
- None,19,90,False),
+ "🕌🌄 Head into the old Moorish quarter (UNESCO) ~7:30 PM and work your way up — but time it to be at the Mirador de San Nicolás railing for the ~9:08 PM sunset, when the light sets the Alhambra glowing with the Sierra Nevada behind. The single best free view of the trip; go early enough to claim a spot on the wall. 20–25 min uphill walk or C31/C32 minibus.",
+ None,19,135,False),
 ("Calle Navas — free-tapas crawl",37.1740,-3.5975,10,"food","Granada",
- "🍽 9:00 PM free-tapas crawl on Calle Navas or Plaza Nueva — in Granada a ~€3 drink still buys a tapa. Bodegas Castañeda, Los Diamantes, Bar Poë.",
+ "🍽 ~9:30 PM free-tapas crawl on Calle Navas or Plaza Nueva (Granada eats late — a post-sunset start is normal) — a ~€3 drink still buys a tapa. Bodegas Castañeda, Los Diamantes, Bar Poë.",
  None,21,90,False),
 ("Taberna La Tana 🍷",37.1726,-3.5946,10,"food","Granada",
  "🍷 Anthony Bourdain's Granada tapas stop on 'Parts Unknown' — a snug Realejo wine bar (since 1993) with a 600-bottle cellar and a free tapa with every glass (~€3). A few doors off the Calle Navas crawl; the deepest wine list in town.",
@@ -403,7 +403,7 @@ S = [
  "✊ Lorca — Spain's great leftist literary martyr — was executed by Francoist forces outside Granada in August 1936. His centre (often free); his summer house Huerta de San Vicente sits in a park 15 min south for the fuller pilgrimage.",
  None,17,45,False),
 ("Sacromonte — carmen dinner 🌄",37.1830,-3.5870,11,"food","Granada",
- "🍽 8:30 PM Sacromonte cave district; dinner at a carmen with Alhambra views — Carmen Mirador de Aixa or Casa Juanillo (in-budget). Reserve. Perseids peak this week under a new Moon — the trip's darkest skies.",
+ "🍽 8:30 PM Sacromonte cave district; dinner at a carmen with Alhambra views — Carmen Mirador de Aixa or Casa Juanillo (in-budget). Reserve. The terrace catches the ~9:08 PM Alhambra sunset; later, the Perseids are still flying (just past their Aug 12–13 peak) and the young crescent Moon sets early for decent dark skies.",
  None,20,120,False),
 
 # ---- Day 12: Train to Madrid ----
@@ -440,7 +440,7 @@ S = [
  "🍽 1:30 PM carcamusas or venison stew; Toledo marzipan for dessert. Bar Ludeña is THE carcamusas stop, €12–15.",
  None,13,60,False),
 ("⭐ Santo Tomé (El Greco) + Cathedral",39.8574,-4.0283,13,"attraction","Toledo",
- "⭐ 3:30 PM Santo Tomé (~€4): El Greco's Burial of the Count of Orgaz — one canvas, ten minutes, unmissable. Then the Cathedral (~€10–12) if energy allows. Golden-hour old town after the ~17:00 crowds leave; ~19:00 train back.",
+ "⭐ 3:30 PM Santo Tomé (~€4): El Greco's Burial of the Count of Orgaz — one canvas, ten minutes, unmissable. Then the Cathedral (~€10–12) if energy allows. The old town quiets beautifully once the ~5 PM day-trip crowds clear; catch a ~7 PM train back, or hold for a later one if you want the Mirador del Valle panorama at dusk (~9 PM).",
  None,15,90,False),
 
 # ---- Day 14: Madrid full day + farewell ----
