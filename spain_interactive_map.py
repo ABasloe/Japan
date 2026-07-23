@@ -507,6 +507,15 @@ LEGS = [
  {"name":"Madrid ⇄ Toledo","mode":"train","day":13,"note":"Avant · 33 min · LAV Toledo",
   "a":(40.4067,-3.6906),"b":(39.8628,-4.0273),
   "via":[(40.1000,-3.8300),(39.9300,-3.9600)]},
+ # Transatlantic + US flight legs. Drawn on their day layer; the timeline
+ # selector frames these only when you pick Day 1 or Day 15 (see build_scrubber),
+ # so the rest of the trip keeps its Iberia-only zoom.
+ {"name":"Washington → Paris","mode":"flight","day":1,"note":"Delta DL8752 (Air France) · IAD→CDG · ~7h30 overnight",
+  "a":(38.9531,-77.4565),"b":(49.0097,2.5479)},
+ {"name":"Madrid → Boston","mode":"flight","day":15,"note":"Delta DL63 · MAD→BOS · transatlantic ~8h",
+  "a":(40.4936,-3.5668),"b":(42.3656,-71.0096)},
+ {"name":"Boston → Washington","mode":"flight","day":15,"note":"Delta DL5666 · BOS→DCA · ~1h30",
+  "a":(42.3656,-71.0096),"b":(38.8512,-77.0402)},
 ]
 
 # ─── Transport modes: colour + line style + routing engine per mode ─────────
@@ -1196,6 +1205,12 @@ def build_scrubber():
         # that day's stop coords, limited to Iberia so the transatlantic
         # endpoints don't blow up the fit
         pts=[[round(s[1],5),round(s[2],5)] for s in S if s[3]==d and s[2]>=-10]
+        # …but on a day with a transatlantic / US flight, extend the fit to
+        # frame that flight line (both endpoints) so picking the day shows it.
+        for lg in LEGS:
+            if lg.get("day")==d and lg.get("mode")=="flight" and (lg["a"][1]<-10 or lg["b"][1]<-10):
+                pts.append([round(lg["a"][0],5),round(lg["a"][1],5)])
+                pts.append([round(lg["b"][0],5),round(lg["b"][1],5)])
         days.append({"d":d,
                      "date":f"{int(DAY_DATES[d][5:7])}/{int(DAY_DATES[d][8:10])}",
                      "city":DAY_CITY[d],
