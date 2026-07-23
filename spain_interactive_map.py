@@ -510,11 +510,11 @@ LEGS = [
  # Transatlantic + US flight legs. Drawn on their day layer; the timeline
  # selector frames these only when you pick Day 1 or Day 15 (see build_scrubber),
  # so the rest of the trip keeps its Iberia-only zoom.
- {"name":"Washington → Paris","mode":"flight","day":1,"note":"Delta DL8752 (Air France) · IAD→CDG · ~7h30 overnight",
+ {"name":"Washington → Paris","mode":"flight","day":1,"far":True,"note":"Delta DL8752 (Air France) · IAD→CDG · ~7h30 overnight",
   "a":(38.9531,-77.4565),"b":(49.0097,2.5479)},
- {"name":"Madrid → Boston","mode":"flight","day":15,"note":"Delta DL63 · MAD→BOS · transatlantic ~8h",
+ {"name":"Madrid → Boston","mode":"flight","day":15,"far":True,"note":"Delta DL63 · MAD→BOS · transatlantic ~8h",
   "a":(40.4936,-3.5668),"b":(42.3656,-71.0096)},
- {"name":"Boston → Washington","mode":"flight","day":15,"note":"Delta DL5666 · BOS→DCA · ~1h30",
+ {"name":"Boston → Washington","mode":"flight","day":15,"far":True,"note":"Delta DL5666 · BOS→DCA · ~1h30",
   "a":(42.3656,-71.0096),"b":(38.8512,-77.0402)},
 ]
 
@@ -682,6 +682,23 @@ def catmull_rom(pts, n=22, alpha=0.5):
     out.append([round(pts[-1][0],5),round(pts[-1][1],5)])
     return out
 
+def flight_arc(a, b, n=26, k=0.11):
+    """Gentle upward (northward) bow so flight paths read differently from
+    land travel — a quadratic Bézier with the control point lifted north of
+    the midpoint, scaled to the leg length (peak ≈ k/2 · chord)."""
+    alat,alon=a; blat,blon=b
+    mlat=(alat+blat)/2; mlon=(alon+blon)/2
+    chord=((blon-alon)**2+(blat-alat)**2)**0.5
+    clat=mlat + k*chord      # lift the control point north → arcs upward
+    clon=mlon
+    out=[]
+    for i in range(n+1):
+        t=i/n; u=1-t
+        lat=u*u*alat + 2*u*t*clat + t*t*blat
+        lon=u*u*alon + 2*u*t*clon + t*t*blon
+        out.append([round(lat,4),round(lon,4)])
+    return out
+
 def build_paths():
     cache={}
     if os.path.exists(ROUTE_CACHE):
@@ -689,8 +706,11 @@ def build_paths():
         except Exception: cache={}
     legs=[]
     for lg in LEGS:
-        pts=[list(lg["a"])]+[list(v) for v in lg.get("via",[])]+[list(lg["b"])]
-        if lg["mode"]=="train": pts=catmull_rom(pts)   # smooth rail curve
+        if lg["mode"]=="flight":
+            pts=flight_arc(lg["a"], lg["b"])           # gentle upward arc
+        else:
+            pts=[list(lg["a"])]+[list(v) for v in lg.get("via",[])]+[list(lg["b"])]
+            if lg["mode"]=="train": pts=catmull_rom(pts)   # smooth rail curve
         legs.append((lg,pts))
     print("Resolving intra-city paths…")
     segs=[]; routed=0
@@ -899,8 +919,11 @@ def build_map(paths, weather):
     # Intercity legs (rail/air) → their travel day's layer
     for lg,coords in paths["legs"]:
         stl=MODE_STYLE[lg["mode"]]
+        # Long-haul flights (transatlantic + US) carry a class so the scrubber
+        # can hide them on the "All 15 days" overview.
+        pl_kw={"className":"farflight"} if lg.get("far") else {}
         PolyLine(locations=coords, color=stl["color"], weight=5, opacity=0.9, smooth_factor=1,
-                 dash_array=stl["dash"],
+                 dash_array=stl["dash"], **pl_kw,
                  tooltip=f"<b>{stl['label']}: {lg['name']}</b><br>{lg['note']}").add_to(dg[lg["day"]])
 
     # Intra-city hops (walk/taxi/metro/…) → their day's layer, styled by mode
@@ -1200,28 +1223,39 @@ def build_agenda(weather, paths):
     """
 
 def build_scrubber():
+    def _largest_cluster(coords):
+        # single-link group a day's stops by ~6° proximity, return the biggest
+        # group — frames the day's MAIN location (DC for Day 1, Madrid for
+        # Day 15) and drops lone transatlantic outliers from the default fit.
+        clusters=[]
+        for p in coords:
+            placed=False
+            for c in clusters:
+                if any(abs(p[0]-q[0])<6 and abs(p[1]-q[1])<6 for q in c):
+                    c.append(p); placed=True; break
+            if not placed: clusters.append([p])
+        return max(clusters, key=len) if clusters else []
     days=[]
     for d in range(1,16):
-        # that day's stop coords, limited to Iberia so the transatlantic
-        # endpoints don't blow up the fit
-        pts=[[round(s[1],5),round(s[2],5)] for s in S if s[3]==d and s[2]>=-10]
-        # …but on a day with a transatlantic / US flight, extend the fit to
-        # frame that flight line (both endpoints) so picking the day shows it.
-        for lg in LEGS:
-            if lg.get("day")==d and lg.get("mode")=="flight" and (lg["a"][1]<-10 or lg["b"][1]<-10):
-                pts.append([round(lg["a"][0],5),round(lg["a"][1],5)])
-                pts.append([round(lg["b"][0],5),round(lg["b"][1],5)])
+        allpts=[[round(s[1],5),round(s[2],5)] for s in S if s[3]==d]
         days.append({"d":d,
                      "date":f"{int(DAY_DATES[d][5:7])}/{int(DAY_DATES[d][8:10])}",
                      "city":DAY_CITY[d],
                      "color":REGION_COLORS[region(DAY_CITY[d])],
-                     "pts":pts})
+                     "pts":_largest_cluster(allpts),          # default day zoom = main cluster
+                     "stops":[{"lat":round(s[1],5),"lon":round(s[2],5),"name":s[0]}
+                              for s in S if s[3]==d]})         # ordered → drives the stop-stepper
     DAYS_JS=json.dumps(days)
     html=r"""
     <div id="scrub" role="group" aria-label="Trip day timeline">
       <div id="scrub-top">
         <button id="scrub-all" class="on" type="button">All 15 days</button>
         <span id="scrub-label">Aug 6–20 · whole trip</span>
+        <div id="scrub-step" class="dis" aria-label="Step through the day's stops">
+          <button id="step-prev" type="button" title="Previous stop" aria-label="Previous stop">‹</button>
+          <button id="step-focus" type="button" title="Focus this day's stops" aria-label="Focus stops">◎</button>
+          <button id="step-next" type="button" title="Next stop" aria-label="Next stop">›</button>
+        </div>
       </div>
       <div id="scrub-track">
         <div id="scrub-line"></div>
@@ -1237,8 +1271,16 @@ def build_scrubber():
     #scrub-all{border:1px solid var(--line);background:transparent;color:var(--ink2);border-radius:20px;
       padding:4px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;}
     #scrub-all.on{background:var(--brand);color:#fff;border-color:var(--brand);}
-    #scrub-label{font-size:13px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    #scrub-label{font-size:13px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1 1 auto;min-width:0;}
     #scrub-label b{color:var(--accent);font-weight:700;}
+    #scrub-step{display:flex;align-items:center;gap:5px;margin-left:auto;flex-shrink:0;}
+    #scrub-step button{width:27px;height:27px;border-radius:8px;border:1px solid var(--line);
+      background:transparent;color:var(--ink2);font-size:16px;line-height:1;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;padding:0;transition:all .15s;}
+    #scrub-step button:hover:not(:disabled){background:var(--brand);color:#fff;border-color:var(--brand);}
+    #scrub-step #step-focus{font-size:14px;}
+    #scrub-step button:disabled,#scrub-step.dis button{opacity:0.32;cursor:default;}
+    body.hide-far path.farflight{display:none !important;}
     #scrub-track{position:relative;height:40px;margin:0 12px;cursor:pointer;}
     #scrub-line{position:absolute;top:19px;left:0;right:0;height:5px;border-radius:3px;
       background:linear-gradient(90deg,#41827b,#4c72a0,#c15f3c,#b3812f,#8c6183);opacity:0.88;}
@@ -1259,12 +1301,16 @@ def build_scrubber():
     </style>
     <script>
     (function(){
-      var DAYS=__DAYS__, N=DAYS.length, sel='all', dragging=false;
+      var DAYS=__DAYS__, N=DAYS.length, sel='all', dragging=false, stopIdx=-1;
       var track=document.getElementById('scrub-track');
       var thumb=document.getElementById('scrub-thumb');
       var line=document.getElementById('scrub-line');
       var lab=document.getElementById('scrub-label');
       var allb=document.getElementById('scrub-all');
+      var stepWrap=document.getElementById('scrub-step');
+      var bPrev=document.getElementById('step-prev');
+      var bFocus=document.getElementById('step-focus');
+      var bNext=document.getElementById('step-next');
       var GRAD='linear-gradient(90deg,#41827b,#4c72a0,#c15f3c,#b3812f,#8c6183)';
       var MC=[40.0,-5.6], MZ=6, _map=null;
       function getMap(){
@@ -1281,6 +1327,35 @@ def build_scrubber():
         if(pts.length===1){ mp.setView(pts[0], 14); return; }
         try{ mp.fitBounds(L.latLngBounds(pts), {paddingTopLeft:[40,90], paddingBottomRight:[40,130], maxZoom:15}); }
         catch(e){ mp.setView(pts[0], 13); }
+      }
+      function curStops(){ return (sel!=='all'&&DAYS[sel-1])?(DAYS[sel-1].stops||[]):[]; }
+      function updateStepUI(){
+        var st=curStops(), has=st.length>0;
+        stepWrap.classList.toggle('dis', !has);
+        bPrev.disabled=!has||stopIdx<=0;
+        bNext.disabled=!has||stopIdx>=st.length-1;
+      }
+      function focusStop(){
+        var st=curStops(); if(!st.length) return;
+        var mp=getMap(); if(!mp){updateStepUI();return;}
+        var s=st[stopIdx]; if(!s){updateStepUI();return;}
+        // A long hop from the previous stop (e.g. the transatlantic leg to
+        // Boston) zooms out to frame the flight path; otherwise centre the stop.
+        if(stopIdx>0){
+          var p=st[stopIdx-1];
+          if(Math.abs(s.lat-p.lat)>4||Math.abs(s.lon-p.lon)>4){
+            var mlat=(s.lat+p.lat)/2, mlon=(s.lon+p.lon)/2;
+            var chord=Math.sqrt(Math.pow(s.lon-p.lon,2)+Math.pow(s.lat-p.lat,2));
+            var peak=[mlat+0.055*chord, mlon];   // matches the flight-path bow
+            try{ mp.fitBounds(L.latLngBounds([[p.lat,p.lon],[s.lat,s.lon],peak]),
+                 {paddingTopLeft:[50,95],paddingBottomRight:[50,130],maxZoom:8}); }catch(e){}
+            lab.textContent='Day '+sel+' · '+(stopIdx+1)+'/'+st.length+' · '+s.name;
+            updateStepUI(); return;
+          }
+        }
+        mp.setView([s.lat,s.lon], 15);
+        lab.textContent='Day '+sel+' · '+(stopIdx+1)+'/'+st.length+' · '+s.name;
+        updateStepUI();
       }
       function pos(i){return N<2?0:(i/(N-1))*100;}
       DAYS.forEach(function(o,i){
@@ -1300,17 +1375,18 @@ def build_scrubber():
         });
       }
       function pick(s){
-        sel=s;
+        sel=s; stopIdx=-1;
         if(s==='all'){allb.classList.add('on');thumb.style.opacity=0;line.style.background=GRAD;
-          lab.textContent='Aug 6–20 · whole trip';}
+          lab.textContent='Aug 6–20 · whole trip';document.body.classList.add('hide-far');}
         else{allb.classList.remove('on');var o=DAYS[s-1];
           thumb.style.opacity=1;thumb.style.left=pos(s-1)+'%';thumb.style.background=o.color;
           line.style.background='#e6e6e6';
-          lab.innerHTML='<b>Day '+s+'</b> · '+o.date+' · '+o.city;}
+          lab.innerHTML='<b>Day '+s+'</b> · '+o.date+' · '+o.city;document.body.classList.remove('hide-far');}
         var ticks=document.querySelectorAll('.scrub-tick');
         for(var k=0;k<ticks.length;k++){ticks[k].classList.toggle('act',sel!=='all'&&k===s-1);}
         setDayLayers(s);
         zoomTo(s);
+        updateStepUI();
       }
       function dayFromX(x){var r=track.getBoundingClientRect();var f=(x-r.left)/r.width;
         f=Math.max(0,Math.min(1,f));return Math.round(f*(N-1))+1;}
@@ -1319,6 +1395,12 @@ def build_scrubber():
       track.addEventListener('pointermove',function(e){if(dragging)pick(dayFromX(e.clientX));});
       window.addEventListener('pointerup',function(){dragging=false;});
       allb.addEventListener('click',function(){pick('all');});
+      bFocus.addEventListener('click',function(e){e.stopPropagation();
+        if(sel==='all')return; stopIdx=0; focusStop();});
+      bNext.addEventListener('click',function(e){e.stopPropagation();
+        if(sel==='all')return; var st=curStops(); if(stopIdx<st.length-1){stopIdx++;focusStop();}});
+      bPrev.addEventListener('click',function(e){e.stopPropagation();
+        if(sel==='all')return; if(stopIdx>0){stopIdx--;focusStop();}});
       pick('all');
     })();
     </script>
