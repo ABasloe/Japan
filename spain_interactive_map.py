@@ -1275,7 +1275,7 @@ def build_scrubber():
     #scrub-label b{color:var(--accent);font-weight:700;}
     #scrub-step{display:flex;align-items:center;gap:5px;margin-left:auto;flex-shrink:0;}
     #scrub-step button{width:27px;height:27px;border-radius:8px;border:1px solid var(--line);
-      background:transparent;color:var(--ink2);font-size:16px;line-height:1;cursor:pointer;
+      background:transparent;color:var(--brand);font-size:16px;line-height:1;cursor:pointer;
       display:flex;align-items:center;justify-content:center;padding:0;transition:all .15s;}
     #scrub-step button:hover:not(:disabled){background:var(--brand);color:#fff;border-color:var(--brand);}
     #scrub-step #step-focus{font-size:14px;}
@@ -1324,16 +1324,17 @@ def build_scrubber():
         if(s==='all'){ mp.setView(MC, MZ); return; }
         var pts=(DAYS[s-1]||{}).pts;
         if(!pts||!pts.length){ mp.setView(MC, MZ); return; }
-        if(pts.length===1){ mp.setView(pts[0], 14); return; }
-        try{ mp.fitBounds(L.latLngBounds(pts), {paddingTopLeft:[40,90], paddingBottomRight:[40,130], maxZoom:15}); }
-        catch(e){ mp.setView(pts[0], 13); }
+        if(pts.length===1){ mp.setView(pts[0], 13); return; }
+        try{ mp.fitBounds(L.latLngBounds(pts), {paddingTopLeft:[70,110], paddingBottomRight:[70,160], maxZoom:14}); }
+        catch(e){ mp.setView(pts[0], 12); }
       }
       function curStops(){ return (sel!=='all'&&DAYS[sel-1])?(DAYS[sel-1].stops||[]):[]; }
       function updateStepUI(){
-        var st=curStops(), has=st.length>0;
-        stepWrap.classList.toggle('dis', !has);
-        bPrev.disabled=!has||stopIdx<=0;
-        bNext.disabled=!has||stopIdx>=st.length-1;
+        var st=curStops(), active=(sel!=='all');
+        stepWrap.classList.toggle('dis', !active);
+        // arrows also roll over to the prev/next DAY at the ends of a day
+        bPrev.disabled=!active || !(stopIdx>0 || sel>1);
+        bNext.disabled=!active || !(stopIdx<st.length-1 || sel<N);
       }
       function focusStop(){
         var st=curStops(); if(!st.length) return;
@@ -1398,9 +1399,13 @@ def build_scrubber():
       bFocus.addEventListener('click',function(e){e.stopPropagation();
         if(sel==='all')return; stopIdx=0; focusStop();});
       bNext.addEventListener('click',function(e){e.stopPropagation();
-        if(sel==='all')return; var st=curStops(); if(stopIdx<st.length-1){stopIdx++;focusStop();}});
+        if(sel==='all')return; var st=curStops();
+        if(stopIdx<st.length-1){stopIdx++;focusStop();}
+        else if(sel<N){pick(sel+1);}});          // past last stop → next day overview
       bPrev.addEventListener('click',function(e){e.stopPropagation();
-        if(sel==='all')return; if(stopIdx>0){stopIdx--;focusStop();}});
+        if(sel==='all')return;
+        if(stopIdx>0){stopIdx--;focusStop();}
+        else if(sel>1){pick(sel-1);}});           // before first stop → prev day overview
       pick('all');
     })();
     </script>
