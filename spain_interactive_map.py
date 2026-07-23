@@ -191,7 +191,7 @@ S = [
  "🛋️ Before boarding — Capital One Lounge (free for all of you on Venture X, and the pick over Priority Pass). Main Terminal, just past security between the East & West checkpoints on the ticketing level, so you hit it before taking the AeroTrain out to the A/B international gates. Hot food, barista coffee, full bar. Open till 9 PM — your flight's 9:45 PM, so settle in ~7:15 and head to the gate by 9. ⚠️ Confirm it's out of its temporary limited-service refurb before counting on the full spread.",
  "https://www.capitalone.com/lounges/",19,90,True),
 ("IAD — Depart Washington ✈️",38.9531,-77.4565,1,"flight","Transit",
- "6:45 PM arrive IAD (3 hrs early). 9:45 PM Delta/Air France, 1 stop → Porto. Sleep on the transatlantic leg — a plane nap is the whole jetlag strategy. Pack a layer; the cabin runs cold.",
+ "6:45 PM arrive IAD (3 hrs early). 9:45 PM Delta DL8752 (Air France metal) IAD→Paris CDG, land 11:15 AM; 2h45 layover, then DL8306 CDG→Porto (land 3:25 PM Fri). Sleep on the transatlantic leg — the plane nap is the jetlag strategy; pack a layer, the cabin runs cold. ⚠️ CDG lounge: on a Main Basic fare your only access is Priority Pass, and CDG's Air France lounges (the ones on your 2E→2F path) don't accept it — the lone PP option is the YOTELAIR nap-cabins in 2E, awkward to reach heading to the Schengen 2F gates. Plan to grab food near 2F rather than bank on a lounge.",
  "https://www.delta.com",21,0,True),
 
 # ---- Day 2: Arrive Porto → Ribeira ----
@@ -477,7 +477,7 @@ S = [
  "🛋️ Before the flight home — no Capital One lounge in Madrid, so Priority Pass: Sala VIP Cibeles, Terminal 1, airside past passport control by gates B26–B29 (stairs/lift up to level 2), with runway views and an outdoor terrace. Priority Pass caps you at 3 hours, which fits neatly between your ~11:35 AM arrival and the 2:35 PM flight. ⚠️ Check your boarding pass says T1 — if it's T2/T3, use the Sala VIP Puerta del Sol instead (also Priority Pass).",
  "https://www.prioritypass.com/lounges/spain/madrid-barajas/madc-sala-vip-cibeles",12,120,True),
 ("MAD → DCA ✈️ (depart 2:35 PM)",40.4936,-3.5668,15,"flight","Transit",
- "✈️ 11:00 AM taxi to MAD (flat €33, ~30 min) — arrive ~11:35, 3 hrs before departure. Claim VAT refunds at the DIVA kiosks airside (Spain has no minimum spend). KLM/Delta 2:35 PM → connect Boston → land DCA 10:05 PM EDT. You land at DCA, not IAD.",
+ "✈️ 11:00 AM taxi to MAD (flat €33, ~30 min) — arrive ~11:35, 3 hrs early. Claim VAT refunds at the DIVA kiosks airside (Spain has no minimum spend). Delta DL63 MAD→Boston 2:35 PM (land 4:31 PM), 3h34 layover, then DL5666 BOS→DCA (land 10:05 PM EDT). You land at DCA, not IAD. ⚠️ BOS lounge: after immigration/customs you re-clear into Terminal A for the DCA hop, and A has no Priority Pass lounge (Delta Sky Clubs only). The PP lounges sit in Terminal E where you land, and the Terminal B Chase Sapphire lounge won't take a Capital One Priority Pass — so don't count on a lounge here either.",
  "https://www.delta.com",11,0,True),
 ]
 
