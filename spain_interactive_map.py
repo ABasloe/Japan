@@ -187,6 +187,9 @@ def get_wx(weather, city, day, hour):
 #  type → icon/colour.  🕌 moorish · ✊ history · ⭐ must-see · 📚 books · 🇪🇸 friend tip
 S = [
 # ---- Day 1: Depart Washington ----
+("Capital One Lounge — IAD 🛋️",38.9528,-77.4558,1,"lounge","Transit",
+ "🛋️ Before boarding — Capital One Lounge (free for all of you on Venture X, and the pick over Priority Pass). Main Terminal, just past security between the East & West checkpoints on the ticketing level, so you hit it before taking the AeroTrain out to the A/B international gates. Hot food, barista coffee, full bar. Open till 9 PM — your flight's 9:45 PM, so settle in ~7:15 and head to the gate by 9. ⚠️ Confirm it's out of its temporary limited-service refurb before counting on the full spread.",
+ "https://www.capitalone.com/lounges/",19,90,True),
 ("IAD — Depart Washington ✈️",38.9531,-77.4565,1,"flight","Transit",
  "6:45 PM arrive IAD (3 hrs early). 9:45 PM Delta/Air France, 1 stop → Porto. Sleep on the transatlantic leg — a plane nap is the whole jetlag strategy. Pack a layer; the cabin runs cold.",
  "https://www.delta.com",21,0,True),
@@ -470,6 +473,9 @@ S = [
 ("Free Madrid morning",40.4155,-3.7075,15,"attraction","Madrid",
  "☕ Plaza Mayor at 9 AM is empty and beautiful — coffee on the square, San Ginés churros 3 min away, pack up. The 2:35 PM departure leaves room for it.",
  None,9,90,True),
+("Sala VIP Cibeles (Priority Pass) — MAD 🛋️",40.4900,-3.5700,15,"lounge","Transit",
+ "🛋️ Before the flight home — no Capital One lounge in Madrid, so Priority Pass: Sala VIP Cibeles, Terminal 1, airside past passport control by gates B26–B29 (stairs/lift up to level 2), with runway views and an outdoor terrace. Priority Pass caps you at 3 hours, which fits neatly between your ~11:35 AM arrival and the 2:35 PM flight. ⚠️ Check your boarding pass says T1 — if it's T2/T3, use the Sala VIP Puerta del Sol instead (also Priority Pass).",
+ "https://www.prioritypass.com/lounges/spain/madrid-barajas/madc-sala-vip-cibeles",12,120,True),
 ("MAD → DCA ✈️ (depart 2:35 PM)",40.4936,-3.5668,15,"flight","Transit",
  "✈️ 11:00 AM taxi to MAD (flat €33, ~30 min) — arrive ~11:35, 3 hrs before departure. Claim VAT refunds at the DIVA kiosks airside (Spain has no minimum spend). KLM/Delta 2:35 PM → connect Boston → land DCA 10:05 PM EDT. You land at DCA, not IAD.",
  "https://www.delta.com",11,0,True),
@@ -532,6 +538,7 @@ MODE_TO = {
  "🕌 Muralla Árabe":"taxi",
  "⭐ Templo de Debod (sunset) 🌄":"taxi",
  "Botín — farewell dinner":"taxi",
+ "Sala VIP Cibeles (Priority Pass) — MAD 🛋️":"taxi",
 }
 
 def arrive_mode(day, name, first):
@@ -704,10 +711,11 @@ TYPE_ICON = {  # (fa icon, override marker colour or None → use region colour)
  "moorish":("mosque","darkred"),"history":("fist-raised","black"),
  "museum":("palette",None),"attraction":("camera",None),
  "viewpoint":("binoculars",None),"church":("church",None),"eclipse":("sun","black"),
+ "lounge":("couch","darkblue"),
 }
 TYPE_EMOJI = {"hotel":"🏨","flight":"✈️","train":"🚆","food":"🍽️","shop":"🛍️",
  "moorish":"🕌","history":"✊","museum":"🎨","attraction":"📷","viewpoint":"🌄",
- "church":"⛪","eclipse":"🌘"}
+ "church":"⛪","eclipse":"🌘","lounge":"🛋️"}
 
 def is_moorish(notes): return "🕌" in notes
 def is_history(notes): return "✊" in notes
