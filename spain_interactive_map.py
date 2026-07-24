@@ -257,8 +257,8 @@ S = [
 
 # ---- Day 4: Train to Lisbon → Alfama ----
 ("Porto Campanhã → Lisbon 🚆",41.1490,-8.5850,4,"train","Lisbon",
- "🚆 Sun Aug 9: no 9 AM Alfa Pendular runs today — take the 08:45 Intercidades (IC) → Lisboa Santa Apolónia, arrive 12:00 (~€84 total for 3, 2nd class). Cheaper/earlier alt: the 06:40 AP arrives 09:30 (promo ~€64.50 for 3, non-refundable). Book cp.pt. Taxi to Campanhã (NOT São Bento) ~12 min; check in, then Alfama at 2.",
- "https://www.cp.pt/passageiros/en",9,180,True),
+ "🚆 BOOKED — Intercidades 522, 08:45 Porto Campanhã → 12:00 Lisboa Santa Apolónia (2ª classe, Sun Aug 9). Taxi to Campanhã (NOT São Bento) ~12 min; drop bags / check in, then Alfama at 2.",
+ "https://www.cp.pt/passageiros/en",9,195,True),
 ("Corinthia Lisbon 🏨",38.7370,-9.1656,4,"hotel","Lisbon",
  "🏨 Aug 9–12 (BOOKED, $802.14; fully refundable before Aug 8). Deluxe King — 1 king + sofa bed, fits 3. At Praça de Espanha / Sete Rios: a few minutes' walk to Sete Rios station, which is on the Blue-line metro AND the Sintra line (board there for Day 5, skipping Rossio). Premier Collection perks — $100 experience credit, daily breakfast for 2, WiFi, on-site spa. Check-in 2 PM, checkout noon on the 12th. A little out from the old town, but the metro links you straight in.",
  None,13,0,True),
@@ -377,8 +377,8 @@ S = [
 
 # ---- Day 10: Train to Granada → Albaicín ----
 ("Seville → Granada 🚆",37.3919,-5.9757,10,"train","Granada",
- "🚆 Morning Avant (Renfe's high-speed regional, ~4 direct/day), ~2h40 (first ~07:40). ⚠️ Aug 15 is Assumption Day — book the moment Renfe opens sales. Arrive ~1:00 PM.",
- "https://www.renfe.com/es/en",8,180,True),
+ "🚆 BOOKED — Avant 08295, 09:55 Sevilla Santa Justa → 12:35 Granada (Turista, Sat Aug 15). ⚠️ Assumption Day — glad it's locked in. Arrive 12:35; hotel check-in from 1:30.",
+ "https://www.renfe.com/es/en",10,160,True),
 ("Meliá Granada 🏨",37.1735,-3.5990,10,"hotel","Granada",
  "🏨 Aug 15–17 (BOOKED, $438.50). Puerta Real — most central base of the trip. Premium Double booked for 3 — call +34 958 22 74 00 to add a bed. 15-min walk to Plaza Nueva. 1:30–6 PM check in, lunch, rest through the heat.",
  None,13,0,True),
