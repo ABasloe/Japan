@@ -377,7 +377,7 @@ S = [
 
 # ---- Day 10: Train to Granada → Albaicín ----
 ("Seville → Granada 🚆",37.3919,-5.9757,10,"train","Granada",
- "🚆 Morning Renfe direct, 2.5–3h (first ~07:40). ⚠️ Aug 15 is Assumption Day — book the moment Renfe opens sales. Arrive ~1:00 PM.",
+ "🚆 Morning Avant (Renfe's high-speed regional, ~4 direct/day), ~2h40 (first ~07:40). ⚠️ Aug 15 is Assumption Day — book the moment Renfe opens sales. Arrive ~1:00 PM.",
  "https://www.renfe.com/es/en",8,180,True),
 ("Meliá Granada 🏨",37.1735,-3.5990,10,"hotel","Granada",
  "🏨 Aug 15–17 (BOOKED, $438.50). Puerta Real — most central base of the trip. Premium Double booked for 3 — call +34 958 22 74 00 to add a bed. 15-min walk to Plaza Nueva. 1:30–6 PM check in, lunch, rest through the heat.",
@@ -497,7 +497,7 @@ LEGS = [
  {"name":"Seville ⇄ Cordoba","mode":"train","day":9,"note":"AVE/Avant · 45 min · LAV Madrid–Sevilla",
   "a":(37.3919,-5.9757),"b":(37.8918,-4.7908),
   "via":[(37.5300,-5.5800),(37.7700,-5.0800),(37.8400,-4.8600)]},
- {"name":"Seville → Granada","mode":"train","day":10,"note":"Renfe AVE via Antequera · 2.5–3h",
+ {"name":"Seville → Granada","mode":"train","day":10,"note":"Renfe Avant · direct ~2h40 via Antequera",
   "a":(37.3919,-5.9757),"b":(37.1918,-3.6089),
   "via":[(37.2950,-5.4400),(37.2380,-5.1000),(37.1600,-4.6100),(37.1800,-4.1000),(37.1900,-3.7500)]},  # Osuna·Antequera-Santa Ana
  {"name":"Granada → Madrid","mode":"train","day":12,"note":"AVE via Antequera & Córdoba · ~3h20",
