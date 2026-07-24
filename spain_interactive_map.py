@@ -257,7 +257,7 @@ S = [
 
 # ---- Day 4: Train to Lisbon → Alfama ----
 ("Porto Campanhã → Lisbon 🚆",41.1490,-8.5850,4,"train","Lisbon",
- "🚆 9:00 AM Alfa Pendular to Lisboa Santa Apolónia, ~3h (book cp.pt, promo from €9.50). Taxi to Campanhã (NOT São Bento) ~12 min. Arrive ~12:30 PM.",
+ "🚆 Sun Aug 9: no 9 AM Alfa Pendular runs today — take the 08:45 Intercidades (IC) → Lisboa Santa Apolónia, arrive 12:00 (~€84 total for 3, 2nd class). Cheaper/earlier alt: the 06:40 AP arrives 09:30 (promo ~€64.50 for 3, non-refundable). Book cp.pt. Taxi to Campanhã (NOT São Bento) ~12 min; check in, then Alfama at 2.",
  "https://www.cp.pt/passageiros/en",9,180,True),
 ("Corinthia Lisbon 🏨",38.7370,-9.1656,4,"hotel","Lisbon",
  "🏨 Aug 9–12 (BOOKED, $802.14; fully refundable before Aug 8). Deluxe King — 1 king + sofa bed, fits 3. At Praça de Espanha / Sete Rios: a few minutes' walk to Sete Rios station, which is on the Blue-line metro AND the Sintra line (board there for Day 5, skipping Rossio). Premier Collection perks — $100 experience credit, daily breakfast for 2, WiFi, on-site spa. Check-in 2 PM, checkout noon on the 12th. A little out from the old town, but the metro links you straight in.",
