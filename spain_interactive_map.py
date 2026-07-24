@@ -616,18 +616,19 @@ _LABEL = {
 # segment's (from, to) names; drawn as a polyline through these station coords.
 SEG_VIA = {
  # ── Lisbon Metro · Blue line (Santa Apolónia ↔ Praça de Espanha) ──
- #   Terreiro do Paço · Baixa-Chiado · Restauradores · Avenida · Marquês · São Sebastião
+ #   Terreiro do Paço · Baixa-Chiado · Restauradores · Avenida · Marquês · Parque · São Sebastião
  ("Santa Apolónia","Corinthia Lisbon"):
-   [(38.7076,-9.1349),(38.7108,-9.1394),(38.7155,-9.1417),(38.7200,-9.1448),(38.7248,-9.1502),(38.7370,-9.1543)],
+   [(38.7076,-9.1349),(38.7107,-9.1394),(38.7147,-9.1416),(38.7199,-9.1451),(38.7247,-9.1503),(38.7277,-9.1495),(38.7371,-9.1543)],
  ("Corinthia Lisbon 🏨","🕌 Alfama + Miradouro de Santa Luzia"):
-   [(38.7370,-9.1543),(38.7248,-9.1502),(38.7200,-9.1448),(38.7155,-9.1417),(38.7108,-9.1394),(38.7076,-9.1349)],
+   [(38.7371,-9.1543),(38.7277,-9.1495),(38.7247,-9.1503),(38.7199,-9.1451),(38.7147,-9.1416),(38.7107,-9.1394),(38.7076,-9.1349)],
  ("🕌 National Tile Museum (Azulejo)","As Bifanas do Afonso 🥪"):
    [(38.7139,-9.1224),(38.7076,-9.1349)],                       # Santa Apolónia → Terreiro do Paço
- # ── Porto Metro · via the Trindade interchange ──
+ # ── Porto Metro · Line A, following Carolina Michaëlis / Lapa / Trindade ──
  ("Sheraton Porto","Livraria Lello"):
-   [(41.1585,-8.6295),(41.1520,-8.6098),(41.1490,-8.6113)],     # Casa da Música · Trindade · Aliados
+   [(41.1580,-8.6295),(41.1575,-8.6218),(41.1592,-8.6152),(41.1522,-8.6094),(41.1487,-8.6111)],  # Casa da Música·Carolina Michaëlis·Lapa·Trindade·Aliados
+ # Gaia → bridge → Trindade, change to Line A and curve NW out to the Matosinhos coast
  ("🍷 Graham's 1890 Port Lodge","O Valentim (dinner, Matosinhos)"):
-   [(41.1385,-8.6088),(41.1520,-8.6098),(41.1585,-8.6295)],     # Jardim do Morro → bridge → Trindade → Casa da Música (Line A on to Matosinhos)
+   [(41.1383,-8.6089),(41.1522,-8.6094),(41.1580,-8.6295),(41.1665,-8.6390),(41.1760,-8.6510),(41.1855,-8.6625),(41.1870,-8.6820)],  # Jardim do Morro·Trindade·Casa da Música·Francos·Viso·Senhora da Hora·Estádio do Mar
 }
 
 def _haversine(a, b):
