@@ -29,7 +29,7 @@ ROUTE_CACHE = "spain_route_cache.json"
 # Sub-cities (Sintra/Cordoba/Toledo/Transit) fold into a base region.
 REGION_OF = {
     "Porto": "Porto", "Lisbon": "Lisbon", "Sintra": "Lisbon",
-    "Seville": "Seville", "Cordoba": "Seville",
+    "Seville": "Seville", "Cordoba": "Seville", "Setenil": "Seville", "Ronda": "Seville",
     "Granada": "Granada", "Madrid": "Madrid", "Toledo": "Madrid",
     "Transit": "Transit",
 }
@@ -52,7 +52,7 @@ def rcolor(city):
 # ─── Days ──────────────────────────────────────────────────────────────────
 DAY_DATES = {d: f"2026-08-{5+d:02d}" for d in range(1, 16)}  # 1→08/06 … 15→08/20
 DAY_CITY = {1:"Transit",2:"Porto",3:"Porto",4:"Lisbon",5:"Sintra",6:"Lisbon",
-            7:"Seville",8:"Seville",9:"Cordoba",10:"Granada",11:"Granada",
+            7:"Seville",8:"Cordoba",9:"Seville",10:"Granada",11:"Granada",
             12:"Madrid",13:"Toledo",14:"Madrid",15:"Transit"}
 DAY_LABELS = {
     1:"Day 1 — Thu Aug 6: Depart Washington",
@@ -62,8 +62,8 @@ DAY_LABELS = {
     5:"Day 5 — Mon Aug 10: Sintra day trip",
     6:"Day 6 — Tue Aug 11: Belém + azulejos",
     7:"Day 7 — Wed Aug 12: Fly to Seville · Eclipse",
-    8:"Day 8 — Thu Aug 13: Seville's Moorish core",
-    9:"Day 9 — Fri Aug 14: Cordoba day trip",
+    8:"Day 8 — Thu Aug 13: Córdoba · Setenil · Ronda (guided tour)",
+    9:"Day 9 — Fri Aug 14: Seville's Moorish core",
     10:"Day 10 — Sat Aug 15: Train to Granada → Albaicín",
     11:"Day 11 — Sun Aug 16: THE ALHAMBRA",
     12:"Day 12 — Mon Aug 17: Train to Madrid",
@@ -80,8 +80,8 @@ DAY_MAP = {
  5:"https://www.google.com/maps/dir/?api=1&origin=Sete%20Rios%20Station%2C%20Lisbon&destination=Tascantiga%2C%20Sintra&waypoints=Sintra%20Station%7CCastelo%20dos%20Mouros%2C%20Sintra%7CPalacio%20Nacional%20da%20Pena%2C%20Sintra&travelmode=transit",
  6:"https://www.google.com/maps/dir/?api=1&origin=Corinthia%20Lisbon%2C%20Lisbon&destination=Time%20Out%20Market%2C%20Lisbon&waypoints=Mosteiro%20dos%20Jeronimos%2C%20Lisbon%7CPasteis%20de%20Belem%2C%20Lisbon%7CEmbaixada%2C%20Principe%20Real%2C%20Lisbon%7CA%20Vida%20Portuguesa%2C%20Rua%20Anchieta%2C%20Lisbon%7CLargo%20do%20Carmo%2C%20Lisbon&travelmode=driving",
  7:"https://www.google.com/maps/dir/?api=1&origin=Seville%20Airport&destination=Bodega%20Santa%20Cruz%20Las%20Columnas%2C%20Seville&waypoints=Prado%20de%20San%20Sebastian%2C%20Seville%7CHotel%20Giralda%20Center%2C%20Seville%7CBarrio%20Santa%20Cruz%2C%20Seville&travelmode=driving",
- 8:"https://www.google.com/maps/dir/?api=1&origin=Hotel%20Giralda%20Center%2C%20Seville&destination=Plaza%20de%20Espana%2C%20Seville&waypoints=Real%20Alcazar%2C%20Seville%7CCatedral%20de%20Sevilla%7CEl%20Rinconcillo%2C%20Seville%7CCasa%20de%20Pilatos%2C%20Seville%7CSetas%20de%20Sevilla&travelmode=walking",
- 9:"https://www.google.com/maps/dir/?api=1&origin=Cordoba%20Railway%20Station&destination=Palacio%20de%20Viana%2C%20Cordoba&waypoints=Mezquita-Catedral%20de%20Cordoba%7CBar%20Santos%2C%20Cordoba%7CAlcazar%20de%20los%20Reyes%20Cristianos%2C%20Cordoba%7CPuente%20Romano%20de%20Cordoba&travelmode=walking",
+ 8:"https://www.google.com/maps/dir/?api=1&origin=Avenida%20de%20Menendez%20Pelayo%201%2C%20Sevilla&destination=Avenida%20de%20Menendez%20Pelayo%201%2C%20Sevilla&waypoints=Mezquita-Catedral%20de%20Cordoba%7CSetenil%20de%20las%20Bodegas%7CPuente%20Nuevo%2C%20Ronda&travelmode=driving",
+ 9:"https://www.google.com/maps/dir/?api=1&origin=Hotel%20Giralda%20Center%2C%20Seville&destination=Plaza%20de%20Espana%2C%20Seville&waypoints=Real%20Alcazar%2C%20Seville%7CCatedral%20de%20Sevilla%7CEl%20Rinconcillo%2C%20Seville%7CCasa%20de%20Pilatos%2C%20Seville%7CSetas%20de%20Sevilla&travelmode=walking",
  10:"https://www.google.com/maps/dir/?api=1&origin=Granada%20Railway%20Station&destination=Los%20Diamantes%2C%20Calle%20Navas%2C%20Granada&waypoints=Melia%20Granada%7CPlaza%20Nueva%2C%20Granada%7CMirador%20de%20San%20Nicolas%2C%20Granada&travelmode=driving",
  11:"https://www.google.com/maps/dir/?api=1&origin=Melia%20Granada&destination=Casa%20Juanillo%2C%20Sacromonte%2C%20Granada&waypoints=Alhambra%2C%20Granada%7CCapilla%20Real%20de%20Granada%7CCentro%20Federico%20Garcia%20Lorca%2C%20Granada&travelmode=walking",
  12:"https://www.google.com/maps/dir/?api=1&origin=Madrid%20Atocha%20Station&destination=Mercado%20de%20San%20Miguel%2C%20Madrid&waypoints=Calle%20de%20Felipe%20III%206%2C%20Madrid%7CLa%20Casa%20del%20Abuelo%2C%20Madrid%7CLa%20Latina%2C%20Madrid&travelmode=walking",
@@ -97,6 +97,8 @@ CLIMATE = {
  "Sintra": {"hi":"75°F / 24°C","lo":"62°F / 17°C","pat":"Cooler hilltop, misty mornings","emoji":"🌤","warn":0},
  "Seville":{"hi":"97–102°F / 36–39°C","lo":"68°F / 20°C","pat":"Extreme dry heat; 104°F+ days routine","emoji":"🔥","warn":1},
  "Cordoba":{"hi":"100°F / 38°C","lo":"70°F / 21°C","pat":"Spain's hottest city — mornings only","emoji":"🔥","warn":1},
+ "Setenil": {"hi":"93°F / 34°C","lo":"63°F / 17°C","pat":"Hot, but the cliff overhangs give real shade","emoji":"☀️","warn":1},
+ "Ronda":  {"hi":"90°F / 32°C","lo":"61°F / 16°C","pat":"Cooler at 750 m; breezy on the gorge","emoji":"🌤","warn":0},
  "Granada":{"hi":"94°F / 34°C","lo":"63°F / 17°C","pat":"Very hot days, cooler nights (680 m)","emoji":"☀️","warn":1},
  "Madrid": {"hi":"92°F / 33°C","lo":"66°F / 19°C","pat":"Hot, dry, big daily swing","emoji":"☀️","warn":1},
  "Toledo": {"hi":"94°F / 34°C","lo":"66°F / 19°C","pat":"Hot, exposed stone streets","emoji":"☀️","warn":1},
@@ -108,6 +110,7 @@ CITY_GUIDE = {
  "Porto":"https://visitporto.travel/en-GB/","Lisbon":"https://www.visitlisboa.com/en",
  "Sintra":"https://www.parquesdesintra.pt/en/","Seville":"https://visitasevilla.es/en",
  "Cordoba":"https://www.turismodecordoba.org/en","Granada":"https://www.granadatur.com/en/",
+ "Setenil":"https://www.andalucia.org/en/setenil-de-las-bodegas","Ronda":"https://www.turismoderonda.es/en/",
  "Madrid":"https://www.esmadrid.com/en","Toledo":"https://toledomonumental.com","Transit":None,
 }
 
@@ -119,11 +122,13 @@ CACHE_MAX_AGE_HOURS = 1
 WX_COORD = {
  "Porto":(41.15,-8.61),"Lisbon":(38.72,-9.14),"Sintra":(38.79,-9.39),
  "Seville":(37.38,-5.99),"Cordoba":(37.88,-4.78),"Granada":(37.17,-3.60),
+ "Setenil":(36.86,-5.18),"Ronda":(36.74,-5.17),
  "Madrid":(40.41,-3.70),"Toledo":(39.86,-4.02),
 }
 WX_TZ = {  # Portugal is WEST (UTC+1) in August, Spain is CEST (UTC+2)
  "Porto":"Europe/Lisbon","Lisbon":"Europe/Lisbon","Sintra":"Europe/Lisbon",
  "Seville":"Europe/Madrid","Cordoba":"Europe/Madrid","Granada":"Europe/Madrid",
+ "Setenil":"Europe/Madrid","Ronda":"Europe/Madrid",
  "Madrid":"Europe/Madrid","Toledo":"Europe/Madrid",
 }
 WMO = {
@@ -341,39 +346,45 @@ S = [
  "🍽 9:45 PM Santa Cruz lanes by night + rooftop drink with Giralda view (La Terraza de EME). 10:15 PM late tapas — Spanish dinner time from night one.",
  None,22,90,False),
 
-# ---- Day 8: Seville's Moorish core ----
-("🕌 Real Alcázar",37.3830,-5.9906,8,"moorish","Seville",
+# ---- Day 8: Córdoba · Setenil · Ronda (guided bus tour) ----
+("🚌 Tour pickup — Prado de San Sebastián",37.3852,-5.9857,8,"bus","Seville",
+ "🚌 BOOKED full-day guided tour: Córdoba + Setenil de las Bodegas + Ronda. Meet at the Touristic Bus Stop, Av. de Menéndez Pelayo 1. ⚠️ Be there 08:15 (15 min before) — departs 08:30 sharp and won't wait. ~8-min walk from the hotel. Long day: back here 21:30. Water, hat, sunscreen, real walking shoes.",
+ None,8,15,True),
+("🕌 Córdoba old town — guided walk",37.8785,-4.7800,8,"moorish","Cordoba",
+ "🕌 10:15 AM, after the 1h45 coach ride — guided walking tour of the old town: the Judería's whitewashed lanes, the flower-hung patios, and the Roman bridge over the Guadalquivir. Córdoba is routinely Spain's hottest city (38–41°C); the guide sets the pace, so keep water on you.",
+ "https://www.turismodecordoba.org/en",10,60,False),
+("⭐🕌 Mezquita-Catedral, Córdoba",37.8790,-4.7794,8,"moorish","Cordoba",
+ "🕌⭐ 11:15 AM — TICKETS BOOKED, guided tour of the Mosque-Cathedral. The great mosque's forest of red-and-white arches (8th–10th c.) with a Renaissance cathedral dropped into the middle of it. The centrepiece of the whole Moorish thread and the best thing in Córdoba.",
+ "https://mezquita-catedraldecordoba.es/en/",11,60,False),
+("Lunch in Córdoba (free time)",37.8846,-4.7772,8,"food","Cordoba",
+ "🍽 12:15–13:30 free time for lunch. Salmorejo + flamenquín: Taberna Salinas (patio taberna since 1879), or Bar Santos' famous giant tortilla slice right by the Mezquita. ⚠️ Back at the coach by 13:30 — it leaves for Setenil without you.",
+ None,12,75,False),
+("Setenil de las Bodegas 🌄",36.8642,-5.1808,8,"attraction","Setenil",
+ "🌄 15:15 arrive (1h45 coach). The town built INTO the rock — whitewashed houses tucked under vast overhanging cliffs along the Trejo, whole streets roofed by stone. Guided walk; Calle Cuevas del Sol is the famous stretch. Genuinely shady — a relief after Córdoba. Depart 16:00.",
+ "https://www.andalucia.org/en/setenil-de-las-bodegas",15,45,False),
+("⭐ Ronda — Puente Nuevo 🌄",36.7420,-5.1662,8,"viewpoint","Ronda",
+ "⭐🌄 16:30 arrive (30-min drive). Guided walk across the Puente Nuevo — the 18th-c. bridge spanning the 120 m El Tajo gorge — plus the historic quarter and the clifftop miradores. At 750 m it's the coolest, breeziest stop of the day. 1h45 here; depart 18:15 for the 3h15 ride back.",
+ "https://www.turismoderonda.es/en/",16,105,False),
+("🚌 Back in Seville",37.3852,-5.9857,8,"bus","Seville",
+ "🚌 21:30 drop-off at the same Touristic Bus Stop, ~8-min walk home. Thirteen hours door to door — Spanish kitchens are still going at 22:00 if you want late tapas in Santa Cruz, or just collapse. Tomorrow starts at 9:30, so there's no rush.",
+ None,21,0,False),
+
+# ---- Day 9: Seville's Moorish core ----
+("🕌 Real Alcázar",37.3830,-5.9906,9,"moorish","Seville",
  "🕌 9:30 AM at opening — Spain's finest Mudéjar palace. Book the earliest slot 2+ weeks ahead on the OFFICIAL site (€15.50; resellers charge 2–3×). Allow 2.5h; add Cuarto Real Alto if offered.",
  "https://realalcazarsevilla.sacatuentrada.es/en",9,150,False),
-("🕌 Cathedral + Giralda",37.3859,-5.9932,8,"moorish","Seville",
+("🕌 Cathedral + Giralda",37.3859,-5.9932,9,"moorish","Seville",
  "🕌 12:30 PM (~€13 timed) — climb the 12th-c. Almohad minaret; ramps, not stairs, built for a horse.",
  "https://www.catedraldesevilla.es",12,90,False),
-("Siesta / pool 🏊",37.3833,-5.9822,8,"hotel","Seville",
- "☀️ 2:00–6:00 PM long lunch, siesta, pool. Heat protocol: sights 8:30–12:00, rest 14:00–18:00, back out after 19:00.",
+("Siesta / pool 🏊",37.3833,-5.9822,9,"hotel","Seville",
+ "☀️ 2:00–6:00 PM long lunch, siesta, pool — and you'll want it after yesterday's 13-hour tour. Heat protocol: sights 8:30–12:00, rest 14:00–18:00, back out after 19:00.",
  None,14,0,True),
-("⭐🕌 Casa de Pilatos",37.3906,-5.9878,8,"moorish","Seville",
+("⭐🕌 Casa de Pilatos",37.3906,-5.9878,9,"moorish","Seville",
  "⭐🕌 6:30 PM (~€12) — Mudéjar-Renaissance mansion, gorgeous and nearly empty late-day. Or ⭐ Setas de Sevilla rooftop at sunset (~€15).",
  None,18,75,False),
-("⭐ Plaza de España",37.3775,-5.9868,8,"attraction","Seville",
- "⭐ 8:30 PM in golden light (free), your closest big sight. Then optional Triana flamenco — Teatro Flamenco Triana or Casa de la Guitarra, €20–30.",
+("⭐ Plaza de España",37.3775,-5.9868,9,"attraction","Seville",
+ "⭐ 8:30 PM in golden light (free), your closest big sight. Then optional Triana flamenco — Teatro Flamenco Triana or Casa de la Guitarra, €20–30. Pack tonight: the Granada train leaves 09:55 tomorrow.",
  None,20,60,False),
-
-# ---- Day 9: Cordoba day trip ----
-("Seville → Cordoba 🚆",37.3919,-5.9757,9,"train","Cordoba",
- "🚆 8:00 AM AVE to Cordoba, 45 min (book RT on renfe.com, €15–22 each way). Cordoba is routinely Spain's hottest city (38–41°C) — morning only, be on a train back by mid-afternoon.",
- "https://www.renfe.com/es/en",8,45,True),
-("🕌 Mezquita-Catedral, Cordoba",37.8790,-4.7794,9,"moorish","Cordoba",
- "🕌 9:00 AM first slots (€13) — the great mosque's forest of red-and-white arches, 8th–10th c. Allow 2h. 25-min walk from the station or €8 taxi.",
- "https://mezquita-catedraldecordoba.es/en/",9,120,False),
-("Alcázar + Judería + Roman bridge",37.8765,-4.7817,9,"attraction","Cordoba",
- "11:00 AM Alcázar de los Reyes Cristianos, the Roman bridge, and the Judería patios.",
- None,11,60,False),
-("⭐ Palacio de Viana (patios)",37.8890,-4.7745,9,"attraction","Cordoba",
- "⭐ If patios are your thing, Palacio de Viana (12 courtyards, ~€14) is the connoisseur stop.",
- None,12,60,False),
-("Taberna Salinas (lunch)",37.8846,-4.7772,9,"food","Cordoba",
- "🍽 1:30 PM old-town lunch — salmorejo + flamenquín. Taberna Salinas (patio taberna since 1879) or Bar Santos' giant tortilla slice by the Mezquita. Train back ~3:30 PM; easy Triana / Calle Betis evening in Seville.",
- None,13,60,False),
 
 # ---- Day 10: Train to Granada → Albaicín ----
 ("Seville → Granada 🚆",37.3919,-5.9757,10,"train","Granada",
@@ -494,9 +505,16 @@ LEGS = [
          (39.4650,-8.4720),(39.2630,-8.6870),(38.9550,-8.9900)]},  # Espinho·Aveiro·Coimbra·Pombal·Entroncamento·Santarém·VFXira
  {"name":"Lisbon → Seville","mode":"flight","day":7,"note":"Ryanair FR3628 · 1h05",
   "a":(38.7742,-9.1342),"b":(37.4180,-5.8931)},
- {"name":"Seville ⇄ Cordoba","mode":"train","day":9,"note":"AVE/Avant · 45 min · LAV Madrid–Sevilla",
-  "a":(37.3919,-5.9757),"b":(37.8918,-4.7908),
-  "via":[(37.5300,-5.5800),(37.7700,-5.0800),(37.8400,-4.8600)]},
+ # Day 8 guided-coach legs (Setenil → Ronda is short enough to street-route as a segment)
+ {"name":"Seville → Córdoba","mode":"bus","day":8,"note":"Tour coach · 08:30–10:15 · A-4 via Carmona & Écija",
+  "a":(37.3852,-5.9857),"b":(37.8785,-4.7800),
+  "via":[(37.4716,-5.6417),(37.5417,-5.0825),(37.6733,-4.9317)]},
+ {"name":"Córdoba → Setenil","mode":"bus","day":8,"note":"Tour coach · 13:30–15:15 · south through the campiña",
+  "a":(37.8785,-4.7800),"b":(36.8642,-5.1808),
+  "via":[(37.5500,-4.6500),(37.1500,-4.7500),(36.9800,-4.9500),(36.9000,-5.1000)]},
+ {"name":"Ronda → Seville","mode":"bus","day":8,"note":"Tour coach · 18:15–21:30 · A-374/A-375 via Algodonales",
+  "a":(36.7420,-5.1662),"b":(37.3852,-5.9857),
+  "via":[(36.8850,-5.4050),(36.9800,-5.5800),(37.1800,-5.7800)]},
  {"name":"Seville → Granada","mode":"train","day":10,"note":"Renfe Avant · direct ~2h40 via Antequera",
   "a":(37.3919,-5.9757),"b":(37.1918,-3.6089),
   "via":[(37.2950,-5.4400),(37.2380,-5.1000),(37.1600,-4.6100),(37.1800,-4.1000),(37.1900,-3.7500)]},  # Osuna·Antequera-Santa Ana
@@ -544,6 +562,7 @@ MODE_TO = {
  "⭐ Tram 28 / Ler Devagar 📚":"tram",
  "⭐🛍 Embaixada (Príncipe Real)":"metro",
  "Hotel Giralda Center 🏨":"taxi",
+ "⭐ Ronda — Puente Nuevo 🌄":"bus",
  "🕌 Albaicín → Mirador de San Nicolás 🌄":"bus",
  "Rest / pool 🏊":"taxi",
  "Sacromonte — carmen dinner 🌄":"taxi",
@@ -564,6 +583,7 @@ _C = {
  "SintraSt":(38.7986,-9.3866),"Castelo":(38.7925,-9.3888),"Regaleira":(38.7963,-9.3963),
  "BairroAlto":(38.7118,-9.1447),"Jeronimos":(38.6979,-9.2065),"Gulbenkian":(38.7376,-9.1537),"LIS":(38.7742,-9.1342),
  "Giralda":(37.3833,-5.9822),"Alcazar":(37.3830,-5.9906),"SantaJusta":(37.3919,-5.9757),
+ "BusStop":(37.3852,-5.9857),
  "CordobaSt":(37.8918,-4.7908),"Mezquita":(37.8790,-4.7794),
  "GranadaSt":(37.1918,-3.6089),"Melia":(37.1735,-3.5990),"Alhambra":(37.1760,-3.5881),
  "Atocha":(40.4067,-3.6906),"Airbnb":(40.4155,-3.7075),"ReinaSofia":(40.4079,-3.6947),
@@ -586,9 +606,8 @@ TRANSFERS = [
  (6,"taxi","Corinthia","Jeronimos"),
  (7,"walk","Corinthia","Gulbenkian"),
  (7,"taxi","Gulbenkian","LIS"),                  # hotel-area → airport, last day in Lisbon
- (8,"walk","Giralda","Alcazar"),
- (9,"taxi","Giralda","SantaJusta"),
- (9,"walk","CordobaSt","Mezquita"),
+ (8,"walk","Giralda","BusStop"),                 # hotel → guided-tour pickup
+ (9,"walk","Giralda","Alcazar"),
  (10,"taxi","Giralda","SantaJusta"),             # hotel → station, last day in Seville
  (10,"taxi","GranadaSt","Melia"),
  (11,"bus","Melia","Alhambra"),
@@ -605,6 +624,7 @@ _LABEL = {
  "SintraSt":"Sintra station","Castelo":"Castelo dos Mouros","Regaleira":"Quinta da Regaleira",
  "BairroAlto":"Bairro Alto","Jeronimos":"Jerónimos, Belém","Gulbenkian":"Gulbenkian Museum","LIS":"LIS Airport",
  "Giralda":"Hotel Giralda","Alcazar":"Real Alcázar","SantaJusta":"Sevilla Santa Justa",
+ "BusStop":"Tour bus stop (Menéndez Pelayo)",
  "CordobaSt":"Córdoba station","Mezquita":"Mezquita-Catedral",
  "GranadaSt":"Granada station","Melia":"Meliá Granada","Alhambra":"The Alhambra",
  "Atocha":"Madrid Atocha","Airbnb":"Plaza Mayor Airbnb","ReinaSofia":"Reina Sofía",
@@ -771,11 +791,11 @@ TYPE_ICON = {  # (fa icon, override marker colour or None → use region colour)
  "moorish":("mosque","darkred"),"history":("fist-raised","black"),
  "museum":("palette",None),"attraction":("camera",None),
  "viewpoint":("binoculars",None),"church":("church",None),"eclipse":("sun","black"),
- "lounge":("couch","darkblue"),
+ "lounge":("couch","darkblue"),"bus":("bus","gray"),
 }
 TYPE_EMOJI = {"hotel":"🏨","flight":"✈️","train":"🚆","food":"🍽️","shop":"🛍️",
  "moorish":"🕌","history":"✊","museum":"🎨","attraction":"📷","viewpoint":"🌄",
- "church":"⛪","eclipse":"🌘","lounge":"🛋️"}
+ "church":"⛪","eclipse":"🌘","lounge":"🛋️","bus":"🚌"}
 
 def is_moorish(notes): return "🕌" in notes
 def is_history(notes): return "✊" in notes
