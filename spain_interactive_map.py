@@ -752,10 +752,28 @@ def build_paths():
         except Exception: cache={}
     legs=[]
     for lg in LEGS:
+        fallback=[list(lg["a"])]+[list(v) for v in lg.get("via",[])]+[list(lg["b"])]
         if lg["mode"]=="flight":
             pts=flight_arc(lg["a"], lg["b"])           # gentle upward arc
+        elif lg["mode"]=="bus":
+            # Coach legs run on real roads → street-route them (cached), routing
+            # through the via points so the corridor matches the tour's actual line.
+            pts=[]; ok=True
+            for i in range(len(fallback)-1):
+                a,b=tuple(fallback[i]),tuple(fallback[i+1])
+                key=hashlib.md5(f'leg{a}{b}bus'.encode()).hexdigest()
+                ce=cache.get(key)
+                if isinstance(ce, dict): part=ce["c"]
+                else:
+                    res=valhalla_route(a,b,"bus")
+                    if res:
+                        part,secs=res; cache[key]={"c":part,"t":secs}; time.sleep(0.4)
+                    else: ok=False; break
+                if pts and part and pts[-1]==part[0]: part=part[1:]
+                pts.extend(part)
+            if not ok or not pts: pts=fallback      # straight fallback until a networked run
         else:
-            pts=[list(lg["a"])]+[list(v) for v in lg.get("via",[])]+[list(lg["b"])]
+            pts=fallback
             if lg["mode"]=="train": pts=catmull_rom(pts)   # smooth rail curve
         legs.append((lg,pts))
     print("Resolving intra-city paths…")
