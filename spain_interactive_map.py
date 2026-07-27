@@ -594,7 +594,6 @@ _C = {
 # day-trip train legs. This is where the "gaps" were.
 TRANSFERS = [
  (2,"taxi","OPO","Sheraton"),
- (3,"metro","Sheraton","Lello"),
  (4,"taxi","Sheraton","Campanha"),              # hotel → station, last day in Porto
  (4,"metro","SantaApolonia","Corinthia"),          # arrival station → hotel
  (5,"walk","Corinthia","SeteRios"),
@@ -603,19 +602,14 @@ TRANSFERS = [
  (5,"walk","Regaleira","SintraSt"),
  (5,"train","SintraSt","Rossio"),
  (5,"walk","Rossio","BairroAlto"),
- (6,"taxi","Corinthia","Jeronimos"),
- (7,"walk","Corinthia","Gulbenkian"),
  (7,"taxi","Gulbenkian","LIS"),                  # hotel-area → airport, last day in Lisbon
- (8,"walk","Giralda","BusStop"),                 # hotel → guided-tour pickup
- (9,"walk","Giralda","Alcazar"),
  (10,"taxi","Giralda","SantaJusta"),             # hotel → station, last day in Seville
  (10,"taxi","GranadaSt","Melia"),
- (11,"bus","Melia","Alhambra"),
  (12,"taxi","Melia","GranadaSt"),                # hotel → station, last day in Granada
  (12,"walk","Atocha","Airbnb"),
  (13,"walk","Airbnb","Atocha"),
  (13,"bus","ToledoSt","Cristo"),
- (14,"walk","Airbnb","ReinaSofia"),
+ (13,"walk","Atocha","Airbnb"),          # station → flat, back from Toledo
  (15,"taxi","Airbnb","MAD"),                     # hotel → airport, last day of the trip
 ]
 _LABEL = {
@@ -630,6 +624,50 @@ _LABEL = {
  "Atocha":"Madrid Atocha","Airbnb":"Plaza Mayor Airbnb","ReinaSofia":"Reina Sofía",
  "ToledoSt":"Toledo station","Cristo":"Cristo de la Luz","MAD":"MAD Airport",
 }
+
+# ─── Hotel bookends ─────────────────────────────────────────────────────────
+# Which bed each day starts from and returns to, so every day reads
+# hotel → … → hotel. Markers are only inserted when the day doesn't already
+# begin/end at that hotel (so Botín, 2 min from the Madrid door, adds nothing).
+DAY_HOTEL = {
+ 2:(None,"Sheraton"),      3:("Sheraton","Sheraton"),  4:("Sheraton","Corinthia"),
+ 5:("Corinthia","Corinthia"), 6:("Corinthia","Corinthia"), 7:("Corinthia","Giralda"),
+ 8:("Giralda","Giralda"),  9:("Giralda","Giralda"),    10:("Giralda","Melia"),
+ 11:("Melia","Melia"),     12:("Melia","Airbnb"),      13:("Airbnb","Airbnb"),
+ 14:("Airbnb","Airbnb"),   15:("Airbnb",None),
+}
+HOTEL_LABEL = {
+ "Sheraton":"the Sheraton","Corinthia":"the Corinthia","Giralda":"the Giralda Center",
+ "Melia":"the Meliá","Airbnb":"the Plaza Mayor flat",
+}
+HOTEL_CITY = {"Sheraton":"Porto","Corinthia":"Lisbon","Giralda":"Seville",
+              "Melia":"Granada","Airbnb":"Madrid"}
+# Transport for the first hop out ("out") and the last hop back ("in"); default walk.
+HOTEL_MODE = {
+ (3,"out"):"metro", (6,"out"):"taxi", (11,"out"):"bus",
+ (2,"in"):"taxi", (3,"in"):"metro", (4,"in"):"taxi", (5,"in"):"taxi",
+ (6,"in"):"taxi", (11,"in"):"taxi",
+}
+
+def _with_hotel_bookends(stops):
+    """Insert 'Leave …' / 'Back to …' hotel markers so each day is a closed loop."""
+    out=[]
+    for d in range(1,16):
+        ds=[s for s in stops if s[3]==d]
+        if not ds: continue
+        start,end=DAY_HOTEL.get(d,(None,None))
+        if start and _haversine((ds[0][1],ds[0][2]), _C[start])>0.15:
+            la,lo=_C[start]
+            ds.insert(0,(f"Leave {HOTEL_LABEL[start]}",la,lo,d,"hotel",HOTEL_CITY[start],
+                f"🏨 Head out from {HOTEL_LABEL[start]} to start the day.",None,
+                max(0,ds[0][8]-1),0,False))
+        if end and _haversine((ds[-1][1],ds[-1][2]), _C[end])>0.15:
+            la,lo=_C[end]
+            ds.append((f"Back to {HOTEL_LABEL[end]}",la,lo,d,"hotel",HOTEL_CITY[end],
+                f"🏨 Wind down — back to {HOTEL_LABEL[end]} for the night.",None,
+                min(23,ds[-1][8]+1),0,False))
+        out.extend(ds)
+    return out
 
 # Metro/tram hops can't be street-routed (Valhalla has no rail), so trace them
 # through the real intermediate stations of the line they ride. Keyed by the
@@ -657,6 +695,8 @@ def _haversine(a, b):
     h=sin((la2-la1)/2)**2+cos(la1)*cos(la2)*sin((lo2-lo1)/2)**2
     return 2*6371*asin(sqrt(h))
 
+S = _with_hotel_bookends(S)   # every day now reads hotel → … → hotel
+
 def build_segments():
     """Ordered intra-day hops between consecutive place-stops, plus the explicit
     hotel↔station↔airport transfers. Skips hops into/out of a train/flight stop
@@ -669,7 +709,10 @@ def build_segments():
             if prev[4] in ("train","flight") or cur[4] in ("train","flight"): continue
             a,b=(prev[1],prev[2]),(cur[1],cur[2])
             if _haversine(a,b)>20: continue   # inter-city jump → handled by a leg/transfer
-            sg={"day":d,"mode":MODE_TO.get(cur[0],"walk"),
+            if cur[0].startswith("Back to "):    mode=HOTEL_MODE.get((d,"in"),"walk")
+            elif prev[0].startswith("Leave "):   mode=HOTEL_MODE.get((d,"out"),MODE_TO.get(cur[0],"walk"))
+            else:                                mode=MODE_TO.get(cur[0],"walk")
+            sg={"day":d,"mode":mode,
                 "a":a,"b":b,"from":prev[0],"to":cur[0]}
             v=SEG_VIA.get((sg["from"],sg["to"]))
             if v: sg["via"]=v
