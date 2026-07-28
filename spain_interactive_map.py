@@ -1101,6 +1101,7 @@ def build_map(paths, weather):
     m.get_root().html.add_child(folium.Element(build_agenda(weather, paths)))
     m.get_root().html.add_child(folium.Element(build_scrubber()))
     m.get_root().html.add_child(folium.Element(build_vscrubber()))
+    m.get_root().html.add_child(folium.Element(build_popup_fit()))
     m.get_root().html.add_child(folium.Element(build_theme()))
     return m
 
@@ -1366,6 +1367,44 @@ def build_agenda(weather, paths):
       }}).catch(function(){{}});
     }});}}
     applyDelays();
+    </script>
+    """
+
+def build_popup_fit():
+    """Keep marker cards inside the clear area of the screen.
+
+    Leaflet auto-pans an opening popup into view, but it only knows about the
+    map edges — not the floating title bar, view switcher and timeline layered
+    on top. So a card would settle underneath them and get covered. Teaching it
+    the real clear region fixes the placement without shrinking the card or
+    making it scroll internally (which just hides the text)."""
+    return r"""
+    <style>
+    /* Slightly tighter leading on phones — a real height saving, unlike a
+       max-height, which only hides the text behind an inner scrollbar. */
+    @media(max-width:600px){
+      .leaflet-popup-content > div{line-height:1.46 !important;}
+    }
+    </style>
+    <script>
+    (function(){
+      function apply(){
+        if(!window.L||!L.Popup||!L.point) return false;
+        var small=window.matchMedia('(max-width:600px)').matches;
+        // top: title card.  bottom: view switcher + day timeline.
+        L.Popup.mergeOptions({
+          autoPanPaddingTopLeft:     L.point(12, small? 78 : 100),
+          autoPanPaddingBottomRight: L.point(12, small? 200 : 150),
+          autoPan:true, keepInView:false
+        });
+        return true;
+      }
+      if(!apply()){
+        var n=0, t=setInterval(function(){ if(apply()||++n>40) clearInterval(t); },100);
+      }
+      window.addEventListener('resize',apply);
+      window.addEventListener('orientationchange',function(){ setTimeout(apply,250); });
+    })();
     </script>
     """
 
