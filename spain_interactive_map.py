@@ -1404,6 +1404,11 @@ def build_vscrubber():
       .vs-tick i{width:11px}
       .vs-tick.act i{width:18px}
       #vs-flag{right:34px;font-size:11px;padding:4px 9px}
+      /* behave like a native scrollbar: appear while scrolling, fade out when
+         idle so the rail never sits on top of the cards */
+      body.ag-on #vscrub{opacity:0;pointer-events:none;
+        transition:opacity .28s ease;}
+      body.ag-on #vscrub.vis{opacity:1;pointer-events:auto;}
     }
     @media(max-height:540px){ .vs-tick{height:10px} }
     </style>
@@ -1443,10 +1448,19 @@ def build_vscrubber():
       var ft=null;
       function flash(){ flag.classList.add('on'); clearTimeout(ft);
         ft=setTimeout(function(){ flag.classList.remove('on'); },1200); }
+      // Reveal the rail while the user is scrolling or using it, then let it
+      // fade back out — on phones it would otherwise cover the cards.
+      var hideT=null;
+      function showRail(hold){
+        box.classList.add('vis'); clearTimeout(hideT);
+        if(!hold) hideT=setTimeout(function(){
+          if(!drag) box.classList.remove('vis');
+        },1500);
+      }
       ticks.forEach(function(t){
         t.addEventListener('click',function(e){
           e.preventDefault(); e.stopPropagation();
-          goTo(+t.getAttribute('data-day'),true); flash();
+          goTo(+t.getAttribute('data-day'),true); flash(); showRail();
         });
       });
       var drag=false;
@@ -1463,12 +1477,13 @@ def build_vscrubber():
       }
       rail.addEventListener('pointerdown',function(e){
         drag=true; try{ rail.setPointerCapture(e.pointerId); }catch(_){}
-        goTo(dayFromY(e.clientY),false); flag.classList.add('on'); e.preventDefault();
+        showRail(true); goTo(dayFromY(e.clientY),false); flag.classList.add('on'); e.preventDefault();
       });
       rail.addEventListener('pointermove',function(e){ if(drag) goTo(dayFromY(e.clientY),false); });
-      window.addEventListener('pointerup',function(){ if(drag){ drag=false; flash(); } });
+      window.addEventListener('pointerup',function(){ if(drag){ drag=false; flash(); showRail(); } });
       var raf=null;
       av.addEventListener('scroll',function(){
+        showRail();
         if(raf||drag) return;
         raf=requestAnimationFrame(function(){
           raf=null; if(drag) return;
