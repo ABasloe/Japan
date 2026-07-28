@@ -601,16 +601,14 @@ TRANSFERS = [
  (5,"bus","SintraSt","Castelo"),
  (5,"walk","Regaleira","SintraSt"),
  (5,"train","SintraSt","Rossio"),
- (5,"walk","Rossio","BairroAlto"),
  (7,"taxi","Gulbenkian","LIS"),                  # hotel-area → airport, last day in Lisbon
  (10,"taxi","Giralda","SantaJusta"),             # hotel → station, last day in Seville
  (10,"taxi","GranadaSt","Melia"),
  (12,"taxi","Melia","GranadaSt"),                # hotel → station, last day in Granada
- (12,"walk","Atocha","Airbnb"),
+ (12,"taxi","Atocha","Airbnb"),          # arriving with luggage
  (13,"walk","Airbnb","Atocha"),
  (13,"bus","ToledoSt","Cristo"),
  (13,"walk","Atocha","Airbnb"),          # station → flat, back from Toledo
- (15,"taxi","Airbnb","MAD"),                     # hotel → airport, last day of the trip
 ]
 _LABEL = {
  "OPO":"OPO Airport","Sheraton":"Sheraton Porto","Campanha":"Porto Campanhã","Lello":"Livraria Lello",
@@ -685,8 +683,18 @@ SEG_VIA = {
  ("Sheraton Porto","Livraria Lello"):
    [(41.1580,-8.6295),(41.1575,-8.6218),(41.1592,-8.6152),(41.1522,-8.6094),(41.1487,-8.6111)],  # Casa da Música·Carolina Michaëlis·Lapa·Trindade·Aliados
  # Gaia → bridge → Trindade, change to Line A and curve NW out to the Matosinhos coast
+ # ── Road corridors: without these the router loops the long way round ──
+ ("🌘 Solar eclipse — SVQ arrival","Hotel Giralda Center 🏨"):
+   [(37.4060,-5.9350)],                                          # A-4 airport road into Seville
+ ("Royal Palace (from below) + Campo del Moro","Sala VIP Cibeles (Priority Pass) — MAD 🛋️"):
+   [(40.4480,-3.6350)],                                          # A-2 out to Barajas
  ("🍷 Graham's 1890 Port Lodge","O Valentim (dinner, Matosinhos)"):
    [(41.1383,-8.6089),(41.1522,-8.6094),(41.1580,-8.6295),(41.1665,-8.6390),(41.1760,-8.6510),(41.1855,-8.6625),(41.1870,-8.6820)],  # Jardim do Morro·Trindade·Casa da Música·Francos·Viso·Senhora da Hora·Estádio do Mar
+}
+
+# Real-world durations that beat any router estimate (booked schedules, etc.).
+SEG_MIN = {
+ ("Setenil de las Bodegas 🌄","⭐ Ronda — Puente Nuevo 🌄"):30,   # the tour's own 16:00→16:30
 }
 
 def _haversine(a, b):
@@ -747,7 +755,11 @@ def _poly_len(coords):
 
 def _est_minutes(coords, mode):
     km=_poly_len(coords); spd=MODE_STYLE[mode]["spd"]
-    return max(1, round(km/spd*60)) if spd else 1
+    if not spd: return 1
+    mins=km/spd*60
+    # rail isn't door-to-door: add walking to the platform, waiting and exiting
+    mins+={"metro":5,"tram":4}.get(mode,0)
+    return max(1, round(mins))
 
 def catmull_rom(pts, n=22, alpha=0.5):
     """Centripetal Catmull-Rom spline through the waypoints → smooth rail curve."""
@@ -823,22 +835,32 @@ def build_paths():
     segs=[]; routed=0
     for sg in build_segments():
         costing=MODE_STYLE[sg["mode"]]["costing"]
-        coords=[list(sg["a"]),list(sg["b"])]; secs=None
-        if sg.get("via"):                          # metro/tram traced through its real stations
-            coords=[list(sg["a"])]+[list(v) for v in sg["via"]]+[list(sg["b"])]
+        via=sg.get("via")
+        coords=[list(sg["a"])]+[list(v) for v in (via or [])]+[list(sg["b"])]; secs=None
         if costing:
-            key=hashlib.md5(f'{sg["a"]}{sg["b"]}{costing}'.encode()).hexdigest()
-            ce=cache.get(key)
-            if isinstance(ce, dict):                 # geometry + real duration
-                coords=ce["c"]; secs=ce.get("t"); routed+=1
-            else:
-                res=valhalla_route(sg["a"],sg["b"],costing)  # (coords, seconds)
-                if res:
-                    coords,secs=res; cache[key]={"c":coords,"t":secs}; routed+=1; time.sleep(0.4)
-                elif isinstance(ce, list):           # old coords-only cache: keep geometry
-                    coords=ce; routed+=1
-                # else: straight fallback, not cached → upgraded on a networked run
+            # Route each consecutive pair, so a `via` corridor is honoured on roads
+            # too (the plain a→b route sometimes takes an absurd detour).
+            chain=[tuple(sg["a"])]+[tuple(v) for v in (via or [])]+[tuple(sg["b"])]
+            parts=[]; tot=0.0; ok=True
+            for i in range(len(chain)-1):
+                a,b=chain[i],chain[i+1]
+                key=hashlib.md5(f'{a}{b}{costing}'.encode()).hexdigest()
+                ce=cache.get(key); part=None; t=None
+                if isinstance(ce, dict): part=ce["c"]; t=ce.get("t")
+                else:
+                    res=valhalla_route(a,b,costing)
+                    if res:
+                        part,t=res; cache[key]={"c":part,"t":t}; time.sleep(0.4)
+                    elif isinstance(ce, list) and len(chain)==2:
+                        part=ce                      # old coords-only cache
+                if part is None: ok=False; break
+                if parts and part and parts[-1]==part[0]: part=part[1:]
+                parts.extend(part)
+                tot=None if (t is None or tot is None) else tot+t
+            if ok and parts:
+                coords=parts; secs=tot; routed+=1
         sg["min"]=max(1, round(secs/60)) if secs is not None else _est_minutes(coords, sg["mode"])
+        sg["min"]=SEG_MIN.get((sg["from"],sg["to"]), sg["min"])   # known real-world timings win
         segs.append((sg,coords))
     try: json.dump(cache,open(ROUTE_CACHE,"w"))
     except Exception: pass
