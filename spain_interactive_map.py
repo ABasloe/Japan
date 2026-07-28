@@ -1612,6 +1612,7 @@ def build_scrubber():
         try{ mp.fitBounds(L.latLngBounds(pts), {paddingTopLeft:[70,110], paddingBottomRight:[70,160], maxZoom:14}); }
         catch(e){ mp.setView(pts[0], 12); }
       }
+      function SMALL(){ return window.matchMedia('(max-width:600px)').matches; }
       function curStops(){ return (sel!=='all'&&DAYS[sel-1])?(DAYS[sel-1].stops||[]):[]; }
       function updateStepUI(){
         var st=curStops(), active=(sel!=='all');
@@ -1631,7 +1632,20 @@ def build_scrubber():
             if(d<bd){bd=d;best=l;}
           }
         });
-        if(best&&bd<0.0008) best.openPopup();
+        if(best&&bd<0.0008){
+          var pop=best.getPopup();
+          if(pop&&pop.options){
+            // keep the card compact on a phone, and let Leaflet auto-pan it
+            // clear of the title header and the timeline along the bottom
+            if(SMALL()){ pop.options.maxWidth=250; pop.options.maxHeight=260; }
+            else       { pop.options.maxWidth=340; pop.options.maxHeight=null; }
+            try{
+              pop.options.autoPanPaddingTopLeft=L.point(14, SMALL()?86:104);
+              pop.options.autoPanPaddingBottomRight=L.point(14, SMALL()?190:150);
+            }catch(e){}
+          }
+          best.openPopup();
+        }
       }
       function focusStop(){
         var st=curStops(); if(!st.length) return;
@@ -1651,7 +1665,9 @@ def build_scrubber():
             openStopCard(s); updateStepUI(); return;
           }
         }
-        mp.setView([s.lat,s.lon], 15);
+        // phones get a wider view: zoom 15 shows only a couple of blocks with
+        // no sense of where the stop actually sits
+        mp.setView([s.lat,s.lon], SMALL()?14:15);
         lab.textContent='Day '+sel+' · '+(stopIdx+1)+'/'+st.length+' · '+s.name;
         openStopCard(s); updateStepUI();
       }
@@ -1811,6 +1827,11 @@ def build_theme():
       /* reserve the top-right corner so the sticky filter chips never slide
          underneath the floating dark-mode toggle when the itinerary scrolls */
       #af{padding-right:62px !important;}
+      /* tighter marker cards — the full-size ones covered half the screen */
+      .leaflet-popup-content{margin:0 !important;font-size:12px !important;}
+      .leaflet-popup-content-wrapper{max-width:76vw !important;}
+      .leaflet-popup-content .pop-h{font-size:14.5px !important;}
+      .leaflet-popup-content > div{width:auto !important;max-width:76vw !important;}
     }
     /* The page now fills the LARGE viewport, so anything pinned to the bottom
        would hide behind Safari's floating toolbar. (100lvh - 100dvh) is exactly
