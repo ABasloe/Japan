@@ -1800,13 +1800,22 @@ def build_theme():
        controls ride just above it and follow it as it hides and reappears. */
     @supports (height:100dvh) and (height:100lvh){
       @media(max-width:600px){
-        #scrub{bottom:calc(100lvh - 100dvh + 12px + env(safe-area-inset-bottom)) !important;}
-        #vtog{bottom:calc(100lvh - 100dvh + 118px + env(safe-area-inset-bottom)) !important;}
-        #vtog.agenda-mode{bottom:calc(100lvh - 100dvh + 16px + env(safe-area-inset-bottom)) !important;}
-        #d-fab{bottom:calc(100lvh - 100dvh + 24px + env(safe-area-inset-bottom)) !important;}
+        /* (100lvh - 100dvh) is the on-screen browser chrome, which ALREADY
+           spans the home indicator — adding the safe-area inset on top of it
+           double-counted ~34px and floated everything too high. Take whichever
+           is larger instead: the toolbar when it's out, the inset when it isn't. */
+        #scrub{bottom:calc(max(100lvh - 100dvh, env(safe-area-inset-bottom)) + 8px) !important;}
+        #vtog{bottom:calc(max(100lvh - 100dvh, env(safe-area-inset-bottom)) + 112px) !important;}
+        #vtog.agenda-mode{bottom:calc(max(100lvh - 100dvh, env(safe-area-inset-bottom)) + 10px) !important;}
+        #d-fab{bottom:calc(max(100lvh - 100dvh, env(safe-area-inset-bottom)) + 18px) !important;}
         /* left-hand bottom controls ride above the toolbar; the attribution
            deliberately stays flush on the true bottom edge */
         .leaflet-bottom.leaflet-left{margin-bottom:calc(100lvh - 100dvh) !important;}
+        /* the itinerary is a fixed pane — pin it to the real screen corners so
+           it fills behind the status bar and home indicator like the map does */
+        #av{top:0 !important;bottom:auto !important;height:100lvh !important;}
+        /* header sits just under the status bar rather than a fixed 50px down */
+        .ah{padding-top:calc(env(safe-area-inset-top) + 12px) !important;}
       }
     }
     </style>
