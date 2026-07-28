@@ -489,7 +489,7 @@ S = [
  "https://www.prioritypass.com/lounges/spain/madrid-barajas/madc-sala-vip-cibeles",12,120,True),
 ("MAD → DCA ✈️ (depart 2:35 PM)",40.4936,-3.5668,15,"flight","Transit",
  "✈️ 11:00 AM taxi to MAD (flat €33, ~30 min) — arrive ~11:35, 3 hrs early. Claim VAT refunds at the DIVA kiosks airside (Spain has no minimum spend). Delta DL63 MAD→Boston 2:35 PM (land 4:31 PM), 3h34 layover, then DL5666 BOS→DCA (land 10:05 PM EDT). You land at DCA, not IAD. At BOS you clear US immigration/customs, then re-clear security for the domestic hop out of Terminal A — see the next stop for the Chase Sapphire Lounge you can use on your Venture X.",
- "https://www.delta.com",11,0,True),
+ "https://www.delta.com",14,0,True),
 ("Chase Sapphire Lounge — BOS 🛋️",42.3665,-71.0175,15,"lounge","Transit",
  "🛋️ BOS layover — Chase Sapphire Lounge by The Club, in the Terminal B–C connector (gates B39–B40). Your Venture X Priority Pass gets each traveller 1 free visit per calendar year here ($75/person after that), so this is the one BOS lounge you can actually use. ⚠️ Catch: your DCA flight leaves Terminal A, which isn't airside-connected to B/C — so you'd clear security at B/C for the lounge, then exit and re-clear at A. Worth it if customs is quick and you've time to spare; otherwise head straight to A. Genuinely stunning space if you go.",
  "https://www.prioritypass.com/en-GB/lounges/united-states-of-america/logan-international/bos19-chase-sapphire-lounge-by-the-club",17,90,False),
@@ -506,13 +506,13 @@ LEGS = [
  {"name":"Lisbon → Seville","mode":"flight","day":7,"note":"Ryanair FR3628 · 1h05",
   "a":(38.7742,-9.1342),"b":(37.4180,-5.8931)},
  # Day 8 guided-coach legs (Setenil → Ronda is short enough to street-route as a segment)
- {"name":"Seville → Córdoba","mode":"bus","day":8,"note":"Tour coach · 08:30–10:15 · A-4 via Carmona & Écija",
+ {"name":"Seville → Córdoba","mode":"bus","day":8,"min":105,"note":"Tour coach · 08:30–10:15 · A-4 via Carmona & Écija",
   "a":(37.3852,-5.9857),"b":(37.8785,-4.7800),
   "via":[(37.4716,-5.6417),(37.5417,-5.0825),(37.6733,-4.9317)]},
- {"name":"Córdoba → Setenil","mode":"bus","day":8,"note":"Tour coach · 13:30–15:15 · south through the campiña",
+ {"name":"Córdoba → Setenil","mode":"bus","day":8,"min":105,"note":"Tour coach · 13:30–15:15 · south through the campiña",
   "a":(37.8785,-4.7800),"b":(36.8642,-5.1808),
   "via":[(37.5500,-4.6500),(37.1500,-4.7500),(36.9800,-4.9500),(36.9000,-5.1000)]},
- {"name":"Ronda → Seville","mode":"bus","day":8,"note":"Tour coach · 18:15–21:30 · A-374/A-375 via Algodonales",
+ {"name":"Ronda → Seville","mode":"bus","day":8,"min":195,"note":"Tour coach · 18:15–21:30 · A-374/A-375 via Algodonales",
   "a":(36.7420,-5.1662),"b":(37.3852,-5.9857),
   "via":[(36.8850,-5.4050),(36.9800,-5.5800),(37.1800,-5.7800)]},
  {"name":"Seville → Granada","mode":"train","day":10,"note":"Renfe Avant · direct ~2h40 via Antequera",
@@ -560,7 +560,7 @@ MODE_TO = {
  "⭐ Oceanário de Lisboa":"taxi",
  "🕌 National Tile Museum (Azulejo)":"taxi",
  "⭐ Tram 28 / Ler Devagar 📚":"tram",
- "⭐🛍 Embaixada (Príncipe Real)":"metro",
+ "⭐🛍 Embaixada (Príncipe Real)":"walk",   # no clean single metro line to Príncipe Real
  "Hotel Giralda Center 🏨":"taxi",
  "⭐ Ronda — Puente Nuevo 🌄":"bus",
  "🕌 Albaicín → Mirador de San Nicolás 🌄":"bus",
@@ -680,8 +680,10 @@ SEG_VIA = {
  ("🕌 National Tile Museum (Azulejo)","As Bifanas do Afonso 🥪"):
    [(38.7139,-9.1224),(38.7076,-9.1349)],                       # Santa Apolónia → Terreiro do Paço
  # ── Porto Metro · Line A, following Carolina Michaëlis / Lapa / Trindade ──
- ("Sheraton Porto","Livraria Lello"):
+ ("Leave the Sheraton","Livraria Lello 📚"):
    [(41.1580,-8.6295),(41.1575,-8.6218),(41.1592,-8.6152),(41.1522,-8.6094),(41.1487,-8.6111)],  # Casa da Música·Carolina Michaëlis·Lapa·Trindade·Aliados
+ ("O Valentim (dinner, Matosinhos)","Back to the Sheraton"):
+   [(41.1870,-8.6820),(41.1855,-8.6625),(41.1760,-8.6510),(41.1665,-8.6390),(41.1580,-8.6295)],  # Line A back: Estádio do Mar·Senhora da Hora·Viso·Francos·Casa da Música
  # Gaia → bridge → Trindade, change to Line A and curve NW out to the Matosinhos coast
  # ── Road corridors: without these the router loops the long way round ──
  ("🌘 Solar eclipse — SVQ arrival","Hotel Giralda Center 🏨"):
@@ -996,7 +998,8 @@ def guide_links(name, city, c, small=False):
 # Official booking / info pages to fill in where a stop had none (incl. the
 # Sintra suburban train — the one remaining rail leg without a booking link).
 BOOKINFO = {
- "Rossio → Sintra train 🚆":"https://www.cp.pt/passageiros/en",
+ "Sete Rios → Sintra train 🚆":"https://www.cp.pt/passageiros/en",
+ "Royal Palace (from below) + Campo del Moro":"https://www.patrimonionacional.es",
  "Sé do Porto (Cathedral)":"https://www.diocese-porto.pt/pt/se-catedral-do-porto/",
  "Clérigos Tower":"https://www.torredosclerigos.pt/en/",
  "✊ Museu do Aljube":"https://www.museudoaljube.pt",
@@ -1004,9 +1007,6 @@ BOOKINFO = {
  "⭐🕌 Jerónimos Monastery, Belém":"https://www.patrimoniocultural.gov.pt",
  "🕌 National Tile Museum (Azulejo)":"https://www.museudoazulejo.gov.pt",
  "⭐🕌 Casa de Pilatos":"https://www.fundacionmedinaceli.org",
- "Alcázar + Judería + Roman bridge":"https://www.turismodecordoba.org/en",
- "⭐ Palacio de Viana (patios)":"https://www.palaciodeviana.com",
- "Royal Palace + Campo del Moro":"https://www.patrimonionacional.es",
  "🕌 Santa María la Blanca + El Tránsito":"https://toledomonumental.com",
  "⭐ Santo Tomé (El Greco) + Cathedral":"https://santotome.org",
 }
@@ -1173,6 +1173,9 @@ def build_agenda(weather, paths):
     # Inbound transport for each stop = the path segment that ENDS at it (keyed by
     # rounded coord + day). Covers first stops too (via the hotel→first-stop transfer).
     inbound={}
+    for lg,coords in paths["legs"]:          # coach/rail/air arrivals count too
+        if lg.get("min"):
+            b=lg["b"]; inbound[(lg["day"], round(b[0],4), round(b[1],4))]=(lg["mode"], lg["min"])
     for sg,coords in paths["segs"]:
         b=sg["b"]
         inbound[(sg["day"], round(b[0],4), round(b[1],4))]=(sg["mode"], sg["min"])
