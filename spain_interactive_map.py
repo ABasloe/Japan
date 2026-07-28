@@ -1793,6 +1793,9 @@ def build_theme():
         padding:0 5px !important;opacity:0.6;margin:0 !important;border-radius:0 !important;}
       .leaflet-control-attribution img{height:7px !important;width:auto !important;}
       .leaflet-bottom.leaflet-right{bottom:0 !important;margin-bottom:0 !important;}
+      /* reserve the top-right corner so the sticky filter chips never slide
+         underneath the floating dark-mode toggle when the itinerary scrolls */
+      #af{padding-right:62px !important;}
     }
     /* The page now fills the LARGE viewport, so anything pinned to the bottom
        would hide behind Safari's floating toolbar. (100lvh - 100dvh) is exactly
@@ -1832,6 +1835,10 @@ def build_theme():
       #theme-tog{top:calc(12px + env(safe-area-inset-top)) !important;}
       .leaflet-top.leaflet-left{margin-top:calc(62px + env(safe-area-inset-top)) !important;}
       .ah{padding-top:calc(env(safe-area-inset-top) + 16px) !important;}
+      /* content runs under the status bar here, so the sticky filter bar has to
+         park below it rather than at y=0 — otherwise it sits under the clock
+         and collides with the dark-mode toggle */
+      #af{top:env(safe-area-inset-top) !important;padding-right:62px !important;}
       #scrub{bottom:calc(env(safe-area-inset-bottom) + 10px) !important;}
       #vtog{bottom:calc(env(safe-area-inset-bottom) + 114px) !important;}
       #vtog.agenda-mode{bottom:calc(env(safe-area-inset-bottom) + 12px) !important;}
