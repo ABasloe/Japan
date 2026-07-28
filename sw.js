@@ -1,74 +1,81 @@
-const CACHE_NAME = 'trip-map-v2';
-const ASSETS_TO_CACHE = [
-    '/',
-    '/index.html',
-    '/iceland.html',
-    '/spain.html',
-    // We cannot reliable cache all OSM tiles, but we'll cache what the user views
-];
+// Bump this whenever the cached shell should be thrown away.
+const CACHE_NAME = 'trip-map-v4';
+
+// Only the entry point is pre-cached, as an OFFLINE FALLBACK. The generated
+// pages (index/iceland/spain) are deliberately NOT pre-cached: they change on
+// every deploy, and a stale copy of them is exactly the bug this avoids.
+const ASSETS_TO_CACHE = ['/'];
 
 self.addEventListener('install', event => {
+    // Take over immediately instead of waiting for every tab to close — without
+    // this an updated worker sits in "waiting" and the old one keeps serving the
+    // previous build indefinitely.
+    self.skipWaiting();
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-            console.log('Opened cache');
-            return cache.addAll(ASSETS_TO_CACHE).catch(err => console.error("Cache addAll failed", err));
-        })
-    );
-});
-
-self.addEventListener('fetch', event => {
-    const url = new URL(event.request.url);
-
-    // Exclude map tiles from pre-caching, but try to cache them as they are loaded
-    if (url.hostname.includes('tile.openstreetmap.org') || url.hostname.includes('arcgisonline.com')) {
-        event.respondWith(
-            caches.match(event.request).then(response => {
-                if (response) return response;
-                return fetch(event.request).then(res => {
-                    if (!res || res.status !== 200 || res.type !== 'basic' && res.type !== 'cors') {
-                        return res;
-                    }
-                    const resClone = res.clone();
-                    caches.open(CACHE_NAME).then(cache => {
-                        cache.put(event.request, resClone);
-                    });
-                    return res;
-                }).catch(() => {
-                    // If offline and tile not in cache, just fail silently (show empty grey map tile)
-                });
-            })
-        );
-        return;
-    }
-
-    // General Network-First Strategy for everything else to ensure we always see the latest version
-    event.respondWith(
-        fetch(event.request).then(response => {
-            if (!response || response.status !== 200) {
-                return response;
-            }
-            const resClone = response.clone();
-            caches.open(CACHE_NAME).then(cache => {
-                cache.put(event.request, resClone);
-            });
-            return response;
-        }).catch(() => {
-            return caches.match(event.request);
-        })
+        caches.open(CACHE_NAME)
+            .then(cache => cache.addAll(ASSETS_TO_CACHE))
+            .catch(err => console.error('Pre-cache failed', err))
     );
 });
 
 self.addEventListener('activate', event => {
-    const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (cacheWhitelist.indexOf(cacheName) === -1) {
-                        return caches.delete(cacheName);
+        caches.keys()
+            .then(names => Promise.all(
+                names.filter(n => n !== CACHE_NAME).map(n => caches.delete(n))
+            ))
+            .then(() => self.clients.claim())   // control open pages right away
+    );
+});
+
+self.addEventListener('fetch', event => {
+    const req = event.request;
+    if (req.method !== 'GET') return;
+    const url = new URL(req.url);
+
+    // Map tiles: cache-first (they don't change and are expensive to refetch).
+    if (url.hostname.includes('tile.openstreetmap.org') ||
+        url.hostname.includes('basemaps.cartocdn.com') ||
+        url.hostname.includes('arcgisonline.com')) {
+        event.respondWith(
+            caches.match(req).then(hit => hit || fetch(req).then(res => {
+                if (res && res.status === 200) {
+                    const copy = res.clone();
+                    caches.open(CACHE_NAME).then(c => c.put(req, copy));
+                }
+                return res;
+            }).catch(() => undefined))
+        );
+        return;
+    }
+
+    // HTML documents: always go to the network, and only fall back to a cached
+    // copy when genuinely offline.
+    const isDoc = req.mode === 'navigate' ||
+                  (req.headers.get('accept') || '').includes('text/html');
+    if (isDoc) {
+        event.respondWith(
+            fetch(req, { cache: 'no-store' })
+                .then(res => {
+                    if (res && res.status === 200) {
+                        const copy = res.clone();
+                        caches.open(CACHE_NAME).then(c => c.put(req, copy));
                     }
+                    return res;
                 })
-            );
-        })
+                .catch(() => caches.match(req).then(hit => hit || caches.match('/')))
+        );
+        return;
+    }
+
+    // Everything else: network-first, cache as a fallback.
+    event.respondWith(
+        fetch(req).then(res => {
+            if (res && res.status === 200) {
+                const copy = res.clone();
+                caches.open(CACHE_NAME).then(c => c.put(req, copy));
+            }
+            return res;
+        }).catch(() => caches.match(req))
     );
 });

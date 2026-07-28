@@ -1355,7 +1355,16 @@ def build_agenda(weather, paths):
     function tf(b){{var f=b.getAttribute('data-f');if(f==='all'){{_f=new Set(['all'].concat(CITIES).concat(['moor','food','hist']));document.querySelectorAll('.fp').forEach(function(p){{p.className='fp active';}});}}else{{if(b.className.indexOf('active')>=0){{b.className='fp';_f.delete(f);}}else{{b.className='fp active';_f.add(f);}}if(CITIES.indexOf(f)>=0){{var ok=CITIES.every(function(x){{return _f.has(x);}});var ab=document.querySelector('[data-f="all"]');if(ok){{ab.className='fp active';_f.add('all');}}else{{ab.className='fp';_f.delete('all');}}}}}}af();}}
     function af(){{var cs=document.querySelectorAll('#atl .sc');var hs=document.querySelectorAll('#atl .dh');for(var i=0;i<cs.length;i++){{var c=cs[i];var ci=c.getAttribute('data-city');var tp=c.getAttribute('data-type');var mo=c.getAttribute('data-moor');var hi=c.getAttribute('data-hist');if(!ci)continue;var cityOk=(ci==='Transit')||_f.has(ci);var tok=true;if(tp==='food'&&!_f.has('food'))tok=false;if(mo==='true'&&!_f.has('moor'))tok=false;if(hi==='true'&&!_f.has('hist'))tok=false;c.style.display=(cityOk&&tok)?'':'none';}}for(var j=0;j<hs.length;j++){{var h=hs[j];var hc=h.getAttribute('data-city');h.style.display=(hc==='Transit'||_f.has(hc))?'':'none';}}}}
     function asc(){{var n=new Date();var uh=n.getHours();var today=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');var td=null;for(var k in DD){{if(DD[k]===today)td=parseInt(k);}}if(!td)return;var cs=document.querySelectorAll('.sc[data-hour]');for(var i=0;i<cs.length;i++){{var c=cs[i];var cd=parseInt(c.getAttribute('data-day'));var ch=parseInt(c.getAttribute('data-hour'));if((cd===td&&ch>=uh)||cd>td){{c.className+=' now';(function(el){{setTimeout(function(){{el.scrollIntoView({{behavior:'smooth',block:'center'}});}},200);}})(c);return;}}}}}}
-    if('serviceWorker' in navigator){{window.addEventListener('load',function(){{navigator.serviceWorker.register('sw.js').catch(function(){{}});}});}}
+    if('serviceWorker' in navigator){{window.addEventListener('load',function(){{
+      navigator.serviceWorker.register('sw.js',{{updateViaCache:'none'}}).then(function(reg){{
+        reg.update();                       // check for a new worker on every load
+        // when a new worker takes control, reload once so the fresh page shows
+        var reloaded=false;
+        navigator.serviceWorker.addEventListener('controllerchange',function(){{
+          if(reloaded) return; reloaded=true; window.location.reload();
+        }});
+      }}).catch(function(){{}});
+    }});}}
     applyDelays();
     </script>
     """
@@ -1779,10 +1788,11 @@ def build_theme():
       #vtog{bottom:calc(118px + env(safe-area-inset-bottom)) !important;}  /* clears the ~95px scrubber sitting 12px up */
       #vtog.agenda-mode{bottom:calc(16px + env(safe-area-inset-bottom)) !important;}  /* low, tab-bar style, in the itinerary */
       #d-fab{bottom:calc(24px + env(safe-area-inset-bottom)) !important;}
-      /* shrink the OSM/CARTO credit so it stops competing with the map */
-      .leaflet-control-attribution{font-size:8px !important;line-height:1.25 !important;
-        padding:1px 5px !important;opacity:0.65;}
+      /* shrink the OSM/CARTO credit and sit it flush on the very bottom edge */
+      .leaflet-control-attribution{font-size:8px !important;line-height:1.2 !important;
+        padding:0 5px !important;opacity:0.6;margin:0 !important;border-radius:0 !important;}
       .leaflet-control-attribution img{height:7px !important;width:auto !important;}
+      .leaflet-bottom.leaflet-right{bottom:0 !important;margin-bottom:0 !important;}
     }
     /* The page now fills the LARGE viewport, so anything pinned to the bottom
        would hide behind Safari's floating toolbar. (100lvh - 100dvh) is exactly
@@ -1794,7 +1804,9 @@ def build_theme():
         #vtog{bottom:calc(100lvh - 100dvh + 118px + env(safe-area-inset-bottom)) !important;}
         #vtog.agenda-mode{bottom:calc(100lvh - 100dvh + 16px + env(safe-area-inset-bottom)) !important;}
         #d-fab{bottom:calc(100lvh - 100dvh + 24px + env(safe-area-inset-bottom)) !important;}
-        .leaflet-bottom{margin-bottom:calc(100lvh - 100dvh) !important;}
+        /* left-hand bottom controls ride above the toolbar; the attribution
+           deliberately stays flush on the true bottom edge */
+        .leaflet-bottom.leaflet-left{margin-bottom:calc(100lvh - 100dvh) !important;}
       }
     }
     </style>
