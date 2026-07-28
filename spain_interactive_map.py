@@ -682,14 +682,22 @@ SEG_VIA = {
  # ── Porto Metro · Line A, following Carolina Michaëlis / Lapa / Trindade ──
  ("Leave the Sheraton","Livraria Lello 📚"):
    [(41.1580,-8.6295),(41.1575,-8.6218),(41.1592,-8.6152),(41.1522,-8.6094),(41.1487,-8.6111)],  # Casa da Música·Carolina Michaëlis·Lapa·Trindade·Aliados
+ # Line A back east to Boavista; the hotel sits beside Casa da Música
  ("O Valentim (dinner, Matosinhos)","Back to the Sheraton"):
-   [(41.1870,-8.6820),(41.1855,-8.6625),(41.1760,-8.6510),(41.1665,-8.6390),(41.1580,-8.6295)],  # Line A back: Estádio do Mar·Senhora da Hora·Viso·Francos·Casa da Música
+   [(41.1880,-8.6790),(41.1868,-8.6700),(41.1855,-8.6600),(41.1810,-8.6560),
+    (41.1745,-8.6500),(41.1700,-8.6440),(41.1637,-8.6390),(41.1580,-8.6295)],
  # Gaia → bridge → Trindade, change to Line A and curve NW out to the Matosinhos coast
  # ── Road corridors: without these the router loops the long way round ──
  ("🌘 Solar eclipse — SVQ arrival","Hotel Giralda Center 🏨"):
    [(37.4150,-5.9050),(37.4020,-5.9450)],                        # straight down the A-4 into Seville
  ("🍷 Graham's 1890 Port Lodge","O Valentim (dinner, Matosinhos)"):
-   [(41.1383,-8.6089),(41.1522,-8.6094),(41.1580,-8.6295),(41.1665,-8.6390),(41.1760,-8.6510),(41.1855,-8.6625),(41.1870,-8.6820)],  # Jardim do Morro·Trindade·Casa da Música·Francos·Viso·Senhora da Hora·Estádio do Mar
+   # line D over the bridge: Jardim do Morro·São Bento·Aliados·Trindade, then
+   # line A: Lapa·Carolina Michaëlis·Casa da Música·Francos·Ramalde·Viso·
+   #         Sete Bicas·Senhora da Hora·Vasco da Gama·Estádio do Mar
+   [(41.1383,-8.6089),(41.1457,-8.6106),(41.1487,-8.6111),(41.1522,-8.6094),
+    (41.1592,-8.6152),(41.1575,-8.6218),(41.1580,-8.6295),(41.1637,-8.6390),
+    (41.1700,-8.6440),(41.1745,-8.6500),(41.1810,-8.6560),(41.1855,-8.6600),
+    (41.1868,-8.6700),(41.1880,-8.6790)],
 }
 
 # Real-world durations that beat any router estimate (booked schedules, etc.).
