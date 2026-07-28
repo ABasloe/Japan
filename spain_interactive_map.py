@@ -30,7 +30,7 @@ ROUTE_CACHE = "spain_route_cache.json"
 REGION_OF = {
     "Porto": "Porto", "Lisbon": "Lisbon", "Sintra": "Lisbon",
     "Seville": "Seville", "Cordoba": "Seville", "Setenil": "Seville", "Ronda": "Seville",
-    "Granada": "Granada", "Madrid": "Madrid", "Toledo": "Madrid",
+    "Granada": "Granada", "Madrid": "Madrid", "Toledo": "Madrid", "Segovia": "Madrid",
     "Transit": "Transit",
 }
 # Muted, earthy Anthropic-leaning palette — distinct hues, calm on ivory & deep grey.
@@ -53,7 +53,7 @@ def rcolor(city):
 DAY_DATES = {d: f"2026-08-{5+d:02d}" for d in range(1, 16)}  # 1→08/06 … 15→08/20
 DAY_CITY = {1:"Transit",2:"Porto",3:"Porto",4:"Lisbon",5:"Sintra",6:"Lisbon",
             7:"Seville",8:"Cordoba",9:"Seville",10:"Granada",11:"Granada",
-            12:"Madrid",13:"Toledo",14:"Madrid",15:"Transit"}
+            12:"Madrid",13:"Madrid",14:"Segovia",15:"Transit"}
 DAY_LABELS = {
     1:"Day 1 — Thu Aug 6: Depart Washington",
     2:"Day 2 — Fri Aug 7: Arrive Porto → Ribeira",
@@ -67,8 +67,8 @@ DAY_LABELS = {
     10:"Day 10 — Sat Aug 15: Train to Granada → Albaicín",
     11:"Day 11 — Sun Aug 16: THE ALHAMBRA",
     12:"Day 12 — Mon Aug 17: Train to Madrid",
-    13:"Day 13 — Tue Aug 18: Toledo day trip",
-    14:"Day 14 — Wed Aug 19: Madrid full day + farewell",
+    13:"Day 13 — Tue Aug 18: Madrid full day",
+    14:"Day 14 — Wed Aug 19: Segovia + Toledo tour · farewell",
     15:"Day 15 — Thu Aug 20: Fly home",
 }
 
@@ -85,8 +85,8 @@ DAY_MAP = {
  10:"https://www.google.com/maps/dir/?api=1&origin=Granada%20Railway%20Station&destination=Los%20Diamantes%2C%20Calle%20Navas%2C%20Granada&waypoints=Melia%20Granada%7CPlaza%20Nueva%2C%20Granada%7CMirador%20de%20San%20Nicolas%2C%20Granada&travelmode=driving",
  11:"https://www.google.com/maps/dir/?api=1&origin=Melia%20Granada&destination=Casa%20Juanillo%2C%20Sacromonte%2C%20Granada&waypoints=Alhambra%2C%20Granada%7CCapilla%20Real%20de%20Granada%7CCentro%20Federico%20Garcia%20Lorca%2C%20Granada&travelmode=walking",
  12:"https://www.google.com/maps/dir/?api=1&origin=Madrid%20Atocha%20Station&destination=Mercado%20de%20San%20Miguel%2C%20Madrid&waypoints=Calle%20de%20Felipe%20III%206%2C%20Madrid%7CLa%20Casa%20del%20Abuelo%2C%20Madrid%7CLa%20Latina%2C%20Madrid&travelmode=walking",
- 13:"https://www.google.com/maps/dir/?api=1&origin=Toledo%20Railway%20Station&destination=Catedral%20de%20Toledo&waypoints=Mezquita%20del%20Cristo%20de%20la%20Luz%2C%20Toledo%7CBar%20Ludena%2C%20Toledo%7CSanta%20Maria%20la%20Blanca%2C%20Toledo%7CSinagoga%20del%20Transito%2C%20Toledo%7CIglesia%20de%20Santo%20Tome%2C%20Toledo&travelmode=walking",
- 14:"https://www.google.com/maps/dir/?api=1&origin=Calle%20de%20Felipe%20III%206%2C%20Madrid&destination=Templo%20de%20Debod%2C%20Madrid&waypoints=Museo%20Reina%20Sofia%2C%20Madrid%7CCuesta%20de%20Moyano%2C%20Madrid%7CMuralla%20Arabe%2C%20Madrid%7CChocolateria%20San%20Gines%2C%20Madrid%7CCasa%20Hernanz%2C%20Madrid%7CMuseo%20del%20Prado%2C%20Madrid&travelmode=walking",
+ 13:"https://www.google.com/maps/dir/?api=1&origin=Calle%20de%20Felipe%20III%206%2C%20Madrid&destination=Templo%20de%20Debod%2C%20Madrid&waypoints=Museo%20Reina%20Sofia%2C%20Madrid%7CCuesta%20de%20Moyano%2C%20Madrid%7CMuralla%20Arabe%2C%20Madrid%7CChocolateria%20San%20Gines%2C%20Madrid%7CCasa%20Hernanz%2C%20Madrid%7CMuseo%20del%20Prado%2C%20Madrid&travelmode=walking",
+ 14:"https://www.google.com/maps/dir/?api=1&origin=Calle%20de%20Julio%20Camba%2013%2C%20Madrid&destination=Calle%20de%20Julio%20Camba%2013%2C%20Madrid&waypoints=Acueducto%20de%20Segovia%7CAlcazar%20de%20Segovia%7CCatedral%20de%20Toledo&travelmode=driving",
  15:"https://www.google.com/maps/dir/?api=1&origin=Calle%20de%20Felipe%20III%206%2C%20Madrid&destination=Adolfo%20Suarez%20Madrid-Barajas%20Airport&travelmode=driving",
 }
 
@@ -102,6 +102,7 @@ CLIMATE = {
  "Granada":{"hi":"94°F / 34°C","lo":"63°F / 17°C","pat":"Very hot days, cooler nights (680 m)","emoji":"☀️","warn":1},
  "Madrid": {"hi":"92°F / 33°C","lo":"66°F / 19°C","pat":"Hot, dry, big daily swing","emoji":"☀️","warn":1},
  "Toledo": {"hi":"94°F / 34°C","lo":"66°F / 19°C","pat":"Hot, exposed stone streets","emoji":"☀️","warn":1},
+ "Segovia":{"hi":"86°F / 30°C","lo":"57°F / 14°C","pat":"High meseta at 1,000 m — warm days, cool evenings","emoji":"🌤","warn":0},
  "Transit":{"hi":"—","lo":"—","pat":"Travel day","emoji":"✈️","warn":0},
 }
 
@@ -111,7 +112,8 @@ CITY_GUIDE = {
  "Sintra":"https://www.parquesdesintra.pt/en/","Seville":"https://visitasevilla.es/en",
  "Cordoba":"https://www.turismodecordoba.org/en","Granada":"https://www.granadatur.com/en/",
  "Setenil":"https://www.andalucia.org/en/setenil-de-las-bodegas","Ronda":"https://www.turismoderonda.es/en/",
- "Madrid":"https://www.esmadrid.com/en","Toledo":"https://toledomonumental.com","Transit":None,
+ "Madrid":"https://www.esmadrid.com/en","Toledo":"https://toledomonumental.com",
+ "Segovia":"https://www.turismodesegovia.com/en/","Transit":None,
 }
 
 # ─── Live weather (Open-Meteo) — same engine as the Iceland map ─────────────
@@ -123,13 +125,13 @@ WX_COORD = {
  "Porto":(41.15,-8.61),"Lisbon":(38.72,-9.14),"Sintra":(38.79,-9.39),
  "Seville":(37.38,-5.99),"Cordoba":(37.88,-4.78),"Granada":(37.17,-3.60),
  "Setenil":(36.86,-5.18),"Ronda":(36.74,-5.17),
- "Madrid":(40.41,-3.70),"Toledo":(39.86,-4.02),
+ "Madrid":(40.41,-3.70),"Toledo":(39.86,-4.02),"Segovia":(40.95,-4.12),
 }
 WX_TZ = {  # Portugal is WEST (UTC+1) in August, Spain is CEST (UTC+2)
  "Porto":"Europe/Lisbon","Lisbon":"Europe/Lisbon","Sintra":"Europe/Lisbon",
  "Seville":"Europe/Madrid","Cordoba":"Europe/Madrid","Granada":"Europe/Madrid",
  "Setenil":"Europe/Madrid","Ronda":"Europe/Madrid",
- "Madrid":"Europe/Madrid","Toledo":"Europe/Madrid",
+ "Madrid":"Europe/Madrid","Toledo":"Europe/Madrid","Segovia":"Europe/Madrid",
 }
 WMO = {
  0:("Clear sky","☀️"),1:("Mainly clear","🌤️"),2:("Partly cloudy","⛅"),3:("Overcast","☁️"),
@@ -434,47 +436,58 @@ S = [
  "🍽 8:30 PM La Latina tapas crawl → Plaza Mayor → Mercado de San Miguel (2 min from your door). 🇪🇸 Friend alt in Lavapiés: Taberna El Sur, near ✊ Traficantes de Sueños left bookshop.",
  None,20,120,False),
 
-# ---- Day 13: Toledo day trip ----
-("Madrid Atocha → Toledo 🚆",40.4067,-3.6906,13,"train","Toledo",
- "🚆 9:00 AM Avant from Atocha, 33 min (renfe.com, ~€14 RT, fixed fares). ⚠️ Atocha has airport-style security — arrive 15–20 min early. Toledo station sits below the old town: bus L61/L62 up, walk down.",
- "https://www.renfe.com/es/en",9,33,True),
-("🕌 Mezquita del Cristo de la Luz",39.8607,-4.0247,13,"moorish","Toledo",
- "🕌 10:00 AM a mosque of 999 AD. Part of the Moorish/Mudéjar circuit with the Puerta del Sol gate. The €12 tourist wristband (toledomonumental.com) covers seven monuments.",
- "https://toledomonumental.com",10,45,False),
-("🕌 Santa María la Blanca + El Tránsito",39.8563,-4.0296,13,"moorish","Toledo",
- "🕌 Mudéjar-built synagogues — Santa María la Blanca and the Sinagoga del Tránsito. The three-faith heart of medieval Toledo.",
- None,11,60,False),
-("Bar Ludeña (lunch)",39.8578,-4.0237,13,"food","Toledo",
- "🍽 1:30 PM carcamusas or venison stew; Toledo marzipan for dessert. Bar Ludeña is THE carcamusas stop, €12–15.",
- None,13,60,False),
-("⭐ Santo Tomé (El Greco) + Cathedral",39.8574,-4.0283,13,"attraction","Toledo",
- "⭐ 3:30 PM Santo Tomé (~€4): El Greco's Burial of the Count of Orgaz — one canvas, ten minutes, unmissable. Then the Cathedral (~€10–12) if energy allows. The old town quiets beautifully once the ~5 PM day-trip crowds clear; catch a ~7 PM train back, or hold for a later one if you want the Mirador del Valle panorama at dusk (~9 PM).",
- None,15,90,False),
-
-# ---- Day 14: Madrid full day + farewell ----
-("✊ Reina Sofía (Guernica)",40.4079,-3.6947,14,"museum","Madrid",
- "✊ 10:00 AM (€12) — built around Picasso's Guernica, the century's great anti-fascist painting. 🇪🇸 One friend rates it over the Prado; the Prado's Monday free window already covered that.",
+# ---- Day 13: Madrid full day ----
+("✊ Reina Sofía (Guernica)",40.4079,-3.6947,13,"museum","Madrid",
+ "✊ 10:00 AM (€12) — built around Picasso's Guernica, the century's great anti-fascist painting. 🇪🇸 One friend rates it over the Prado; the Prado is later today in its free window.",
  "https://www.museoreinasofia.es/en",10,105,False),
-("📚 Cuesta de Moyano book stalls",40.4103,-3.6890,14,"history","Madrid",
+("📚 Cuesta de Moyano book stalls",40.4103,-3.6890,13,"history","Madrid",
  "📚 11:45 AM open-air secondhand book stalls (since 1925) on the rise between Atocha and Retiro — Madrid's classic radical-and-rare browse, 20 min, en route to the Muralla.",
  None,11,20,False),
-("🕌 Muralla Árabe",40.4150,-3.7135,14,"moorish","Madrid",
+("🕌 Muralla Árabe",40.4150,-3.7135,13,"moorish","Madrid",
  "🕌 12:30 PM the 9th-c. Arab wall below Almudena Cathedral, from Madrid's founding as Moorish Mayrit (free). 🇪🇸 From this low angle the cathedral finally shows real depth — the below-the-parks approach the friends recommend.",
  None,12,45,False),
-("⭐ San Ginés churros",40.4165,-3.7065,14,"food","Madrid",
+("⭐ San Ginés churros",40.4165,-3.7065,13,"food","Madrid",
  "🍽⭐ 2:00 PM long lunch; San Ginés churros con chocolate (since 1894) for dessert, 12-min walk up Calle Mayor. Casa Revuelta (fried bacalao) 2 min from the Airbnb.",
  None,14,90,False),
-("⭐🛍 Casa Hernanz → Gran Vía shops",40.4130,-3.7080,14,"shop","Madrid",
+("⭐🛍 Casa Hernanz → Gran Vía shops",40.4130,-3.7080,13,"shop","Madrid",
  "⭐🛍 4:30 PM Casa Hernanz (handmade espadrilles since 1845, from ~€15), then Gran Vía → Calle Fuencarral/Chueca for Spanish brands, or Calle de Serrano for leather (Loewe, Camper). Collect tax-free forms; refund at MAD DIVA kiosks tomorrow.",
  None,16,90,False),
-("⭐ Museo del Prado",40.4138,-3.6921,14,"museum","Madrid",
+("⭐ Museo del Prado",40.4138,-3.6921,13,"museum","Madrid",
  "⭐ 6:00 PM the Prado in its free window (Mon–Sat 18:00–20:00) — walk over from the Gran Vía shops, skip the ticket line and hit the greatest hits: Velázquez's Las Meninas, Goya's black paintings, Bosch's Garden of Earthly Delights (~1.5-hr focused loop). Then taxi to Debod for the sunset. The Reina Sofía this morning is its modern counterpart on the same Paseo del Prado axis.",
  "https://www.museodelprado.es/en",18,105,False),
-("⭐ Templo de Debod (sunset) 🌄",40.4240,-3.7176,14,"attraction","Madrid",
+("⭐ Templo de Debod (sunset) 🌄",40.4240,-3.7176,13,"attraction","Madrid",
  "⭐ 8:45 PM an actual 2nd-c. BC Egyptian temple — Madrid's best sunset spot, free, ~25 min on foot from the Airbnb and worth every step at dusk.",
  None,20,45,False),
+# ---- Day 14: Segovia + Toledo guided coach tour ----
+("🚌 Tour meet-up — Calle Julio Camba",40.4300,-3.6670,14,"bus","Madrid",
+ "🚌 BOOKED full-day guided tour: Segovia + Toledo. Meet-up 08:30 at Calle Julio Camba 13 — ⚠️ be there ~08:15. Metro line 2 straight from Sol to Ventas (~10 min) then a 4-min walk, so leave the flat by 07:45; a taxi is ~12 min. Back here 20:30. Water, hat, walking shoes — it's a long day on your feet.",
+ None,8,15,True),
+("Segovia Aqueduct",40.9481,-4.1177,14,"attraction","Segovia",
+ "🏛 ~10:00 arrive Segovia. The Roman aqueduct — 1st-c. AD, 167 arches, 28 m tall, assembled without a drop of mortar — is the tour's first stop and where the guided walk into the old town begins.",
+ "https://www.turismodesegovia.com/en/",10,45,False),
+("⭐ Alcázar of Segovia",40.9526,-4.1327,14,"attraction","Segovia",
+ "⭐ Guided visit, 1 hr, TICKETS INCLUDED in the tour. The castle on the rock spur where the Eresma and Clamores meet — the silhouette that fed Disney's Cinderella Castle. Climb the Torre de Juan II if the tour allows.",
+ "https://www.alcazardesegovia.com/en/",11,60,False),
+("🌄 Mirador de la Pradera de San Marcos (optional)",40.9558,-4.1355,14,"viewpoint","Segovia",
+ "🌄 OPTIONAL, on your own — THE lower view you're after. A grassy riverside glade by the Iglesia de San Marcos, below the castle: from here the Alcázar rears up over the treeline like a ship's prow, unobstructed. This is the Berserk / Disney angle, and it only works from below. ~15-min walk down from the Alcázar (and a stiff climb back), so budget ~40 min round trip and check your guide's meeting time first.",
+ None,12,40,False),
+("Lunch in Segovia (free time)",40.9489,-4.1189,14,"food","Segovia",
+ "🍽 Free time — and Segovia's one dish is cochinillo asado, suckling pig roasted till it's carved with the edge of a plate. Mesón de Cándido by the aqueduct is the famous one (~€30); Mesón José María is the locals' pick. Cheaper: a bocadillo and the ponche segoviano marzipan cake.",
+ None,13,75,False),
+("⭐ Toledo Cathedral (guided)",39.8570,-4.0273,14,"attraction","Toledo",
+ "⭐ ~16:30 after the ~2.5-hr transfer south. Guided visit, 1 hr — ⚠️ PAY ON SITE, not included (~€12), so carry cash/card. Spain's High Gothic primate cathedral: the Transparente, the sacristy's El Grecos and a Goya.",
+ "https://www.catedralprimada.es",16,60,False),
+("🕌 Cristo de la Luz / Santa María la Blanca (free time)",39.8607,-4.0247,14,"moorish","Toledo",
+ "🕌 FREE TIME option while the coach is parked. The mosque of 999 AD (Cristo de la Luz, ~€3) up by the Puerta del Sol gate, or the Mudéjar-built synagogues Santa María la Blanca + El Tránsito on the far side of the old town. ⚠️ Realistically you get ONE of these around the cathedral — they sit at opposite ends of the hill. Skip the €12 seven-monument wristband; single entries are better value on a short stop.",
+ "https://toledomonumental.com",17,45,False),
+("⭐ Santo Tomé (El Greco) — free time",39.8574,-4.0283,14,"attraction","Toledo",
+ "⭐ FREE TIME option (~€4), and the best value if you only have 30 minutes: El Greco's Burial of the Count of Orgaz. One canvas, ten minutes, unmissable — and a 5-min walk from the cathedral, so it's the easiest add-on. Bar Ludeña (carcamusas, €12–15) is nearby if you want an early bite before the coach leaves.",
+ "https://santotome.org",18,30,False),
+("🚌 Back in Madrid — tour drop-off",40.4300,-3.6670,14,"bus","Madrid",
+ "🚌 20:30 drop-off back at Calle Julio Camba 13. Metro line 2 Ventas → Sol (~10 min) or a taxi puts you at Plaza Mayor by ~21:00 — just in time for the farewell dinner around the corner.",
+ None,20,0,False),
 ("Botín — farewell dinner",40.4147,-3.7085,14,"food","Madrid",
- "🍽 9:30 PM farewell dinner (book ahead): Botín, the world's oldest restaurant — cochinillo ~€45–50 pp, the one splurge — now around the corner from your door. In-budget fallback: La Sanabresa, menú ~€15. Pack; pre-book tomorrow's taxi.",
+ "🍽 ~9:15 PM farewell dinner (BOOK AHEAD — 6-week waitlist): Botín, the world's oldest restaurant, cochinillo ~€45–50 pp, 2 min from your door. ⚠️ Tight after a 12-hr tour — book for 21:15 or later, and if it feels like too much, do Botín on the 18th instead and keep tonight easy. In-budget fallback: La Sanabresa, menú ~€15. Pack; pre-book tomorrow's taxi.",
  None,21,120,False),
 
 # ---- Day 15: Fly home ----
@@ -522,9 +535,16 @@ LEGS = [
   "a":(37.1918,-3.6089),"b":(40.4067,-3.6906),
   "via":[(37.1600,-4.6100),(37.8400,-4.8100),(37.8918,-4.7908),(38.3800,-4.4000),
          (38.6900,-4.1070),(38.9860,-3.9270),(39.8600,-3.7300)]},  # Antequera·Córdoba·Puertollano·Ciudad Real
- {"name":"Madrid ⇄ Toledo","mode":"train","day":13,"note":"Avant · 33 min · LAV Toledo",
-  "a":(40.4067,-3.6906),"b":(39.8628,-4.0273),
-  "via":[(40.1000,-3.8300),(39.9300,-3.9600)]},
+ # Day 14 guided coach: Madrid → Segovia → Toledo → Madrid
+ {"name":"Madrid → Segovia","mode":"bus","day":14,"min":90,"note":"Tour coach · 08:30 dep · AP-6 over the Guadarrama",
+  "a":(40.4300,-3.6670),"b":(40.9481,-4.1177),
+  "via":[(40.5200,-3.8100),(40.6900,-4.0200),(40.8300,-4.0900)]},
+ {"name":"Segovia → Toledo","mode":"bus","day":14,"min":150,"note":"Tour coach · ~2h30 south around Madrid",
+  "a":(40.9481,-4.1177),"b":(39.8570,-4.0273),
+  "via":[(40.6600,-4.0100),(40.4200,-3.8600),(40.1000,-3.9200),(39.9300,-3.9900)]},
+ {"name":"Toledo → Madrid","mode":"bus","day":14,"min":90,"note":"Tour coach · back for 20:30",
+  "a":(39.8570,-4.0273),"b":(40.4300,-3.6670),
+  "via":[(39.9700,-3.9200),(40.1600,-3.8200),(40.3300,-3.7300)]},
  # Transatlantic + US flight legs. Drawn on their day layer; the timeline
  # selector frames these only when you pick Day 1 or Day 15 (see build_scrubber),
  # so the rest of the trip keeps its Iberia-only zoom.
@@ -569,6 +589,8 @@ MODE_TO = {
  "🕌 Muralla Árabe":"taxi",
  "⭐ Templo de Debod (sunset) 🌄":"taxi",
  "Botín — farewell dinner":"taxi",
+ "🚌 Tour meet-up — Calle Julio Camba":"metro",
+ "Lunch in Segovia (free time)":"walk",
  "Sala VIP Cibeles (Priority Pass) — MAD 🛋️":"taxi",
 }
 
@@ -588,6 +610,7 @@ _C = {
  "GranadaSt":(37.1918,-3.6089),"Melia":(37.1735,-3.5990),"Alhambra":(37.1760,-3.5881),
  "Atocha":(40.4067,-3.6906),"Airbnb":(40.4155,-3.7075),"ReinaSofia":(40.4079,-3.6947),
  "ToledoSt":(39.8628,-4.0273),"Cristo":(39.8607,-4.0247),"MAD":(40.4936,-3.5668),
+ "JulioCamba":(40.4300,-3.6670),
 }
 # Connective hops the stop-to-stop logic can't derive: getting from the hotel to
 # the station/airport (and from the arrival station to the first stop), plus the
@@ -606,9 +629,6 @@ TRANSFERS = [
  (10,"taxi","GranadaSt","Melia"),
  (12,"taxi","Melia","GranadaSt"),                # hotel → station, last day in Granada
  (12,"taxi","Atocha","Airbnb"),          # arriving with luggage
- (13,"walk","Airbnb","Atocha"),
- (13,"bus","ToledoSt","Cristo"),
- (13,"walk","Atocha","Airbnb"),          # station → flat, back from Toledo
 ]
 _LABEL = {
  "OPO":"OPO Airport","Sheraton":"Sheraton Porto","Campanha":"Porto Campanhã","Lello":"Livraria Lello",
@@ -621,6 +641,7 @@ _LABEL = {
  "GranadaSt":"Granada station","Melia":"Meliá Granada","Alhambra":"The Alhambra",
  "Atocha":"Madrid Atocha","Airbnb":"Plaza Mayor Airbnb","ReinaSofia":"Reina Sofía",
  "ToledoSt":"Toledo station","Cristo":"Cristo de la Luz","MAD":"MAD Airport",
+ "JulioCamba":"Tour meet-up (Calle Julio Camba)",
 }
 
 # ─── Hotel bookends ─────────────────────────────────────────────────────────
