@@ -1,0 +1,11 @@
+{
+  "name": "Portugal & Spain — Aug 2026",
+  "short_name": "Iberia 2026",
+  "description": "Porto → Lisbon → Seville → Granada → Madrid, Aug 6–20 2026",
+  "start_url": "spain.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#111113",
+  "theme_color": "#111113"
+}

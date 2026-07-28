@@ -1818,6 +1818,19 @@ def build_theme():
         .ah{padding-top:calc(env(safe-area-inset-top) + 12px) !important;}
       }
     }
+    /* Installed to the Home Screen there is no browser chrome at all, so the
+       page truly fills the display — but the status bar now floats OVER it,
+       and there is no bottom toolbar to allow for. */
+    @media all and (display-mode:standalone){
+      #map-title{top:calc(10px + env(safe-area-inset-top)) !important;}
+      #theme-tog{top:calc(12px + env(safe-area-inset-top)) !important;}
+      .leaflet-top.leaflet-left{margin-top:calc(62px + env(safe-area-inset-top)) !important;}
+      .ah{padding-top:calc(env(safe-area-inset-top) + 16px) !important;}
+      #scrub{bottom:calc(env(safe-area-inset-bottom) + 10px) !important;}
+      #vtog{bottom:calc(env(safe-area-inset-bottom) + 114px) !important;}
+      #vtog.agenda-mode{bottom:calc(env(safe-area-inset-bottom) + 12px) !important;}
+      #d-fab{bottom:calc(env(safe-area-inset-bottom) + 20px) !important;}
+    }
     </style>
     <script>
     (function(){
@@ -1870,6 +1883,17 @@ if __name__=="__main__":
                 '<meta name="viewport" content="width=device-width, initial-scale=1.0, '
                 'maximum-scale=1.0, user-scalable=no, viewport-fit=cover">',
                 html, count=1)
-    html=html.replace('</head>', '    <meta name="theme-color" content="#111113">\n</head>', 1)
+    # Installable-app metadata. Safari always reserves the status-bar strip for a
+    # normal tab — no site can draw under it. Added to the Home Screen, though,
+    # the page runs standalone with no browser chrome at all: genuinely edge to
+    # edge, and it keeps working offline via the service worker.
+    html=html.replace('</head>',
+        '    <meta name="theme-color" content="#111113">\n'
+        '    <meta name="apple-mobile-web-app-capable" content="yes">\n'
+        '    <meta name="mobile-web-app-capable" content="yes">\n'
+        '    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n'
+        '    <meta name="apple-mobile-web-app-title" content="Iberia 2026">\n'
+        '    <link rel="manifest" href="manifest.json">\n'
+        '</head>', 1)
     open(out,"w",encoding="utf-8").write(html)
     print(f"\n✓ Saved: {out} ({os.path.getsize(out)/1024:.0f} KB)")
