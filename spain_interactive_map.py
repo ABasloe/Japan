@@ -1779,6 +1779,10 @@ def build_theme():
       #vtog{bottom:calc(118px + env(safe-area-inset-bottom)) !important;}  /* clears the ~95px scrubber sitting 12px up */
       #vtog.agenda-mode{bottom:calc(16px + env(safe-area-inset-bottom)) !important;}  /* low, tab-bar style, in the itinerary */
       #d-fab{bottom:calc(24px + env(safe-area-inset-bottom)) !important;}
+      /* shrink the OSM/CARTO credit so it stops competing with the map */
+      .leaflet-control-attribution{font-size:8px !important;line-height:1.25 !important;
+        padding:1px 5px !important;opacity:0.65;}
+      .leaflet-control-attribution img{height:7px !important;width:auto !important;}
     }
     /* The page now fills the LARGE viewport, so anything pinned to the bottom
        would hide behind Safari's floating toolbar. (100lvh - 100dvh) is exactly
