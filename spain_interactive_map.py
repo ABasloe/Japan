@@ -1715,8 +1715,10 @@ def build_theme():
        bottom. Filling the LARGE viewport instead lets the map and the itinerary
        run behind the translucent toolbar, the way a native page does.
        On desktop and Android lvh == vh, so nothing changes there. */
-    html,body{height:100vh;overscroll-behavior:none;}
-    .folium-map{height:100vh;}
+    html,body{height:100vh;overscroll-behavior:none;margin:0;padding:0;}
+    /* pin the map to the true screen corners so it also covers the status-bar
+       and home-indicator strips rather than stopping at the safe-area edges */
+    .folium-map{position:fixed;top:0;left:0;width:100vw;height:100vh;}
     @supports (height:100lvh){
       html,body{height:100lvh;}
       .folium-map{height:100lvh;}
@@ -1835,7 +1837,14 @@ if __name__=="__main__":
     html=open(out,encoding="utf-8").read()
     html=re.sub(r'(<(meta|link|img|br|hr|input)[^>]*?)\s*/>', r'\1>', html)
     # iOS: extend content under the Safari toolbars + tint the browser UI
-    html=re.sub(r'(name="viewport"\s+content="[^"]*?)"', r'\1, viewport-fit=cover"', html, count=1)
+    # Replace folium's multi-line viewport meta outright. Appending to it left a
+    # newline inside content="…", which iOS Safari fails to parse — so
+    # viewport-fit=cover was ignored and the page got inset by the safe areas,
+    # leaving dead bands under the status bar and home indicator.
+    html=re.sub(r'<meta\s+name="viewport"[^>]*>',
+                '<meta name="viewport" content="width=device-width, initial-scale=1.0, '
+                'maximum-scale=1.0, user-scalable=no, viewport-fit=cover">',
+                html, count=1)
     html=html.replace('</head>', '    <meta name="theme-color" content="#111113">\n</head>', 1)
     open(out,"w",encoding="utf-8").write(html)
     print(f"\n✓ Saved: {out} ({os.path.getsize(out)/1024:.0f} KB)")
