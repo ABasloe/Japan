@@ -1709,6 +1709,19 @@ def build_theme():
       --shadow:0 1px 2px rgba(0,0,0,0.45);
     }
     html,body{background:var(--bg);}
+    /* ── Full-bleed on iOS Safari ──
+       Folium sets html/body to height:100%, which Safari resolves to the SMALL
+       viewport (the strip above its toolbar) — leaving a dead band at the
+       bottom. Filling the LARGE viewport instead lets the map and the itinerary
+       run behind the translucent toolbar, the way a native page does.
+       On desktop and Android lvh == vh, so nothing changes there. */
+    html,body{height:100vh;overscroll-behavior:none;}
+    .folium-map{height:100vh;}
+    @supports (height:100lvh){
+      html,body{height:100lvh;}
+      .folium-map{height:100lvh;}
+      #av{bottom:auto;height:100lvh;}
+    }
     #theme-tog{position:fixed;top:calc(12px + env(safe-area-inset-top));right:12px;z-index:2600;width:40px;height:40px;border-radius:50%;
       border:1px solid var(--line);background:var(--panel);color:var(--ink);box-shadow:var(--shadow);
       font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;transition:transform .18s;}
@@ -1764,6 +1777,19 @@ def build_theme():
       #vtog{bottom:calc(118px + env(safe-area-inset-bottom)) !important;}  /* clears the ~95px scrubber sitting 12px up */
       #vtog.agenda-mode{bottom:calc(16px + env(safe-area-inset-bottom)) !important;}  /* low, tab-bar style, in the itinerary */
       #d-fab{bottom:calc(24px + env(safe-area-inset-bottom)) !important;}
+    }
+    /* The page now fills the LARGE viewport, so anything pinned to the bottom
+       would hide behind Safari's floating toolbar. (100lvh - 100dvh) is exactly
+       the height of the chrome currently on screen — 0 when it retracts — so the
+       controls ride just above it and follow it as it hides and reappears. */
+    @supports (height:100dvh) and (height:100lvh){
+      @media(max-width:600px){
+        #scrub{bottom:calc(100lvh - 100dvh + 12px + env(safe-area-inset-bottom)) !important;}
+        #vtog{bottom:calc(100lvh - 100dvh + 118px + env(safe-area-inset-bottom)) !important;}
+        #vtog.agenda-mode{bottom:calc(100lvh - 100dvh + 16px + env(safe-area-inset-bottom)) !important;}
+        #d-fab{bottom:calc(100lvh - 100dvh + 24px + env(safe-area-inset-bottom)) !important;}
+        .leaflet-bottom{margin-bottom:calc(100lvh - 100dvh) !important;}
+      }
     }
     </style>
     <script>
