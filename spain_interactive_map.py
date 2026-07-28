@@ -1412,6 +1412,30 @@ def build_popup_fit():
       }
       window.addEventListener('resize',apply);
       window.addEventListener('orientationchange',function(){ setTimeout(apply,250); });
+
+      // On a touch screen there is no hover, so a marker tap fires the tooltip
+      // AND the popup — the tooltip just repeats the popup's title in the
+      // corner. Drop it for markers only; route lines keep theirs, since the
+      // transit mode and duration have nowhere else to show.
+      function noHover(){ return window.matchMedia('(hover:none)').matches; }
+      function strip(l){
+        try{
+          if(l.getLatLng && l.unbindTooltip) l.unbindTooltip();   // marker, not a path
+          if(l.eachLayer) l.eachLayer(strip);
+        }catch(e){}
+      }
+      function tidy(){
+        if(!window.L||!noHover()) return false;
+        var mp=null;
+        for(var k in window){ try{ if(window[k] instanceof L.Map){ mp=window[k]; break; } }catch(e){} }
+        if(!mp) return false;
+        mp.eachLayer(strip);
+        mp.on('layeradd',function(e){ if(noHover()) strip(e.layer); });  // day layers toggle
+        return true;
+      }
+      if(!tidy()){
+        var n2=0, t2=setInterval(function(){ if(tidy()||++n2>40) clearInterval(t2); },100);
+      }
     })();
     </script>
     """
