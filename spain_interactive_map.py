@@ -1804,10 +1804,16 @@ def build_theme():
            spans the home indicator — adding the safe-area inset on top of it
            double-counted ~34px and floated everything too high. Take whichever
            is larger instead: the toolbar when it's out, the inset when it isn't. */
-        #scrub{bottom:calc(max(100lvh - 100dvh, env(safe-area-inset-bottom)) + 8px) !important;}
-        #vtog{bottom:calc(max(100lvh - 100dvh, env(safe-area-inset-bottom)) + 112px) !important;}
-        #vtog.agenda-mode{bottom:calc(max(100lvh - 100dvh, env(safe-area-inset-bottom)) + 10px) !important;}
-        #d-fab{bottom:calc(max(100lvh - 100dvh, env(safe-area-inset-bottom)) + 18px) !important;}
+        /* --chrome = how far up from the bottom the floating UI must sit.
+           With the toolbar out we trim 40px off its measured height (it left a
+           visible gap); with it retracted we fall back to just clearing the
+           home indicator. max() keeps whichever is larger, so the controls can
+           never slide under the search bar or off the bottom of the screen. */
+        :root{--chrome:max(100lvh - 100dvh - 40px, env(safe-area-inset-bottom) + 6px);}
+        #scrub{bottom:calc(var(--chrome) + 2px) !important;}
+        #vtog{bottom:calc(var(--chrome) + 106px) !important;}
+        #vtog.agenda-mode{bottom:calc(var(--chrome) + 8px) !important;}
+        #d-fab{bottom:calc(var(--chrome) + 14px) !important;}
         /* left-hand bottom controls ride above the toolbar; the attribution
            deliberately stays flush on the true bottom edge */
         .leaflet-bottom.leaflet-left{margin-bottom:calc(100lvh - 100dvh) !important;}
