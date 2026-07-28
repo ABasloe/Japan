@@ -685,9 +685,7 @@ SEG_VIA = {
  # Gaia → bridge → Trindade, change to Line A and curve NW out to the Matosinhos coast
  # ── Road corridors: without these the router loops the long way round ──
  ("🌘 Solar eclipse — SVQ arrival","Hotel Giralda Center 🏨"):
-   [(37.4060,-5.9350)],                                          # A-4 airport road into Seville
- ("Royal Palace (from below) + Campo del Moro","Sala VIP Cibeles (Priority Pass) — MAD 🛋️"):
-   [(40.4480,-3.6350)],                                          # A-2 out to Barajas
+   [(37.4150,-5.9050),(37.4020,-5.9450)],                        # straight down the A-4 into Seville
  ("🍷 Graham's 1890 Port Lodge","O Valentim (dinner, Matosinhos)"):
    [(41.1383,-8.6089),(41.1522,-8.6094),(41.1580,-8.6295),(41.1665,-8.6390),(41.1760,-8.6510),(41.1855,-8.6625),(41.1870,-8.6820)],  # Jardim do Morro·Trindade·Casa da Música·Francos·Viso·Senhora da Hora·Estádio do Mar
 }
@@ -695,6 +693,11 @@ SEG_VIA = {
 # Real-world durations that beat any router estimate (booked schedules, etc.).
 SEG_MIN = {
  ("Setenil de las Bodegas 🌄","⭐ Ronda — Puente Nuevo 🌄"):30,   # the tour's own 16:00→16:30
+ # Long airport runs: the public router returns motorway-less times (60–115 min
+ # for drives that really take 20–30). Use the real-world figures instead.
+ ("🌘 Solar eclipse — SVQ arrival","Hotel Giralda Center 🏨"):20,
+ ("Royal Palace (from below) + Campo del Moro","Sala VIP Cibeles (Priority Pass) — MAD 🛋️"):30,
+ ("Gulbenkian Museum","LIS Airport"):20,
 }
 
 def _haversine(a, b):
