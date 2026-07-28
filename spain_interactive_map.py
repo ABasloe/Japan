@@ -1100,6 +1100,7 @@ def build_map(paths, weather):
     m.get_root().html.add_child(folium.Element(RESPONSIVE_CSS))
     m.get_root().html.add_child(folium.Element(build_agenda(weather, paths)))
     m.get_root().html.add_child(folium.Element(build_scrubber()))
+    m.get_root().html.add_child(folium.Element(build_vscrubber()))
     m.get_root().html.add_child(folium.Element(build_theme()))
     return m
 
@@ -1358,6 +1359,128 @@ def build_agenda(weather, paths):
     applyDelays();
     </script>
     """
+
+def build_vscrubber():
+    """Vertical day rail for the itinerary view — the agenda's answer to the
+    map's horizontal scrubber. Tap or drag to scroll to a day; it also tracks
+    your position as you scroll."""
+    days=[{"d":d,"date":f"{int(DAY_DATES[d][5:7])}/{int(DAY_DATES[d][8:10])}",
+           "city":DAY_CITY[d],"color":REGION_COLORS[region(DAY_CITY[d])]} for d in range(1,16)]
+    html=r"""
+    <div id="vscrub" aria-label="Jump to a day">
+      <div id="vs-flag"></div>
+      <div id="vs-rail"></div>
+    </div>
+    <style>
+    #vscrub{position:fixed;right:10px;top:50%;transform:translateY(-50%);z-index:1600;
+      display:none;flex-direction:row;align-items:center;font-family:var(--sans);
+      touch-action:none;user-select:none;-webkit-user-select:none}
+    body.ag-on #vscrub{display:flex}
+    #vs-rail{display:flex;flex-direction:column;gap:3px;padding:9px 6px;border-radius:16px;
+      background:color-mix(in srgb,var(--panel) 84%,transparent);backdrop-filter:blur(10px);
+      border:1px solid var(--line);box-shadow:var(--shadow)}
+    .vs-tick{width:26px;height:14px;border:none;background:transparent;padding:0;cursor:pointer;
+      display:flex;align-items:center;justify-content:center}
+    .vs-tick i{display:block;width:13px;height:3px;border-radius:2px;background:var(--c);
+      opacity:.42;transition:width .15s,height .15s,opacity .15s}
+    .vs-tick:hover i{opacity:.85}
+    .vs-tick.act i{width:22px;height:5px;opacity:1}
+    #vs-flag{position:absolute;right:46px;white-space:nowrap;font-size:12px;font-weight:700;
+      color:#fff;background:var(--brand);padding:5px 11px;border-radius:9px;opacity:0;
+      transition:opacity .16s;pointer-events:none;box-shadow:var(--shadow)}
+    #vs-flag.on{opacity:1}
+    @media(max-width:600px){
+      #vscrub{right:3px}
+      .vs-tick{width:22px;height:13px}
+      .vs-tick i{width:11px}
+      .vs-tick.act i{width:18px}
+      #vs-flag{right:34px;font-size:11px;padding:4px 9px}
+    }
+    @media(max-height:540px){ .vs-tick{height:10px} }
+    </style>
+    <script>
+    (function(){
+      var VD=__VDAYS__;
+      var box=document.getElementById('vscrub'), rail=document.getElementById('vs-rail');
+      var flag=document.getElementById('vs-flag'), av=document.getElementById('av');
+      if(!box||!rail||!av) return;
+      var ticks=[];
+      VD.forEach(function(o){
+        var b=document.createElement('button');
+        b.type='button'; b.className='vs-tick'; b.setAttribute('data-day',o.d);
+        b.title='Day '+o.d+' · '+o.city;
+        b.innerHTML='<i style="--c:'+o.color+'"></i>';
+        rail.appendChild(b); ticks.push(b);
+      });
+      function head(d){ return av.querySelector('.dh[data-day="'+d+'"]'); }
+      function barH(){ var b=document.getElementById('af'); return b?b.getBoundingClientRect().height:0; }
+      function mark(d){
+        for(var i=0;i<ticks.length;i++) ticks[i].classList.toggle('act', i+1===d);
+        var o=VD[d-1]; if(!o) return;
+        flag.textContent='Day '+o.d+' · '+o.date+' · '+o.city;
+        var t=ticks[d-1];
+        if(t) flag.style.top=(t.offsetTop+rail.offsetTop-2)+'px';
+      }
+      function goTo(d,smooth){
+        var h=head(d); if(!h){ mark(d); return; }
+        var top=Math.max(0, av.scrollTop + h.getBoundingClientRect().top
+                            - av.getBoundingClientRect().top - barH() - 10);
+        // Always jump instantly. Chrome's smooth animation both stalls ~2000px
+        // short on long jumps and keeps running into the next tap, which made
+        // rapid tapping/dragging land on the wrong day.
+        av.scrollTop=top;
+        mark(d);
+      }
+      var ft=null;
+      function flash(){ flag.classList.add('on'); clearTimeout(ft);
+        ft=setTimeout(function(){ flag.classList.remove('on'); },1200); }
+      ticks.forEach(function(t){
+        t.addEventListener('click',function(e){
+          e.preventDefault(); e.stopPropagation();
+          goTo(+t.getAttribute('data-day'),true); flash();
+        });
+      });
+      var drag=false;
+      function dayFromY(y){
+        // snap to the nearest tick centre — a linear fraction of the rail is
+        // off by one, because the rail has padding and inter-tick gaps
+        var best=1, bd=Infinity;
+        for(var i=0;i<ticks.length;i++){
+          var r=ticks[i].getBoundingClientRect();
+          var dist=Math.abs((r.top+r.height/2)-y);
+          if(dist<bd){ bd=dist; best=i+1; }
+        }
+        return best;
+      }
+      rail.addEventListener('pointerdown',function(e){
+        drag=true; try{ rail.setPointerCapture(e.pointerId); }catch(_){}
+        goTo(dayFromY(e.clientY),false); flag.classList.add('on'); e.preventDefault();
+      });
+      rail.addEventListener('pointermove',function(e){ if(drag) goTo(dayFromY(e.clientY),false); });
+      window.addEventListener('pointerup',function(){ if(drag){ drag=false; flash(); } });
+      var raf=null;
+      av.addEventListener('scroll',function(){
+        if(raf||drag) return;
+        raf=requestAnimationFrame(function(){
+          raf=null; if(drag) return;
+          var limit=av.getBoundingClientRect().top+barH()+16, best=1;
+          for(var i=0;i<VD.length;i++){
+            var h=head(VD[i].d); if(!h) continue;
+            if(h.getBoundingClientRect().top<=limit) best=VD[i].d;
+          }
+          mark(best);
+        });
+      },{passive:true});
+      function sync(){
+        var on=getComputedStyle(av).display!=='none';
+        document.body.classList.toggle('ag-on', on);
+      }
+      try{ new MutationObserver(sync).observe(av,{attributes:true,attributeFilter:['style','class']}); }catch(e){}
+      sync(); mark(1);
+    })();
+    </script>
+    """
+    return html.replace("__VDAYS__", json.dumps(days))
 
 def build_scrubber():
     def _largest_cluster(coords):
@@ -1638,7 +1761,7 @@ def build_theme():
       #map-title .title-route{display:none;}          /* shorten the sub line on phones */
       /* respect the home-bar / Safari toolbar safe area */
       #scrub{bottom:calc(12px + env(safe-area-inset-bottom)) !important;}
-      #vtog{bottom:calc(94px + env(safe-area-inset-bottom)) !important;}   /* above the scrubber on the map */
+      #vtog{bottom:calc(118px + env(safe-area-inset-bottom)) !important;}  /* clears the ~95px scrubber sitting 12px up */
       #vtog.agenda-mode{bottom:calc(16px + env(safe-area-inset-bottom)) !important;}  /* low, tab-bar style, in the itinerary */
       #d-fab{bottom:calc(24px + env(safe-area-inset-bottom)) !important;}
     }
