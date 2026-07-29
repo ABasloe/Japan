@@ -1,10 +1,13 @@
 // Bump this whenever the cached shell should be thrown away.
-const CACHE_NAME = 'trip-map-v4';
+const CACHE_NAME = 'trip-map-v5';
 
 // Only the entry point is pre-cached, as an OFFLINE FALLBACK. The generated
-// pages (index/iceland/spain) are deliberately NOT pre-cached: they change on
+// pages (index/iceland/spain/japan) are deliberately NOT pre-cached: they change on
 // every deploy, and a stale copy of them is exactly the bug this avoids.
-const ASSETS_TO_CACHE = ['/'];
+// Resolve the shell relative to the worker so project-site deployments such as
+// https://user.github.io/Japan/ do not fall back to the account root.
+const APP_ROOT = new URL('./', self.location).pathname;
+const ASSETS_TO_CACHE = [APP_ROOT];
 
 self.addEventListener('install', event => {
     // Take over immediately instead of waiting for every tab to close — without
@@ -63,7 +66,7 @@ self.addEventListener('fetch', event => {
                     }
                     return res;
                 })
-                .catch(() => caches.match(req).then(hit => hit || caches.match('/')))
+                .catch(() => caches.match(req).then(hit => hit || caches.match(APP_ROOT)))
         );
         return;
     }

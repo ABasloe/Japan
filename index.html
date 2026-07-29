@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#191714">
-<title>Spain &amp; Iceland — Trips</title>
+<title>Japan, Spain &amp; Iceland — Trips</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,11 +14,16 @@
 html,body{height:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:#fff;overflow:hidden;background:#191714}
 .wrap{display:flex;height:100vh;width:100vw}
+.landing-head{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:40;text-align:center;
+  text-shadow:0 2px 12px rgba(0,0,0,.45);pointer-events:none}
+.landing-head strong{display:block;font-family:'Fraunces','Iowan Old Style','Palatino Linotype',Georgia,serif;font-size:18px}
+.landing-head span{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.82}
 .panel{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;cursor:pointer;overflow:hidden;color:#fff;text-decoration:none;transition:flex 0.5s cubic-bezier(.4,0,.2,1)}
 .panel,.panel *{color:#fff;text-decoration:none}
 .panel::before{content:"";position:absolute;inset:0;z-index:0;transition:transform 0.7s ease, filter 0.5s ease}
 .iceland::before{background:linear-gradient(160deg,#0b2545 0%,#13315c 40%,#2e5b8a 100%)}
 .spain::before{background:linear-gradient(160deg,#7b1f2b 0%,#b23a48 45%,#d4a017 100%)}
+.japan::before{background:linear-gradient(160deg,#6e1724 0%,#b42f42 48%,#e3915b 100%)}
 .panel::after{content:"";position:absolute;inset:0;z-index:1;background:rgba(0,0,0,0.22);transition:background 0.5s ease}
 .panel:hover::before{transform:scale(1.06)}
 .panel:hover::after{background:rgba(0,0,0,0.10)}
@@ -34,6 +39,7 @@ h1{font-family:'Fraunces','Iowan Old Style','Palatino Linotype',Georgia,serif;fo
 .panel:hover .btn{background:#fff;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
 .iceland:hover .btn{color:#13315c}
 .spain:hover .btn{color:#b23a48}
+.japan:hover .btn{color:#b42f42}
 /* Dark mode: deepen the panels for a warm, low-glare look */
 :root[data-theme="dark"] .panel::before{filter:brightness(0.8) saturate(0.95)}
 :root[data-theme="dark"] .panel::after{background:rgba(0,0,0,0.42)}
@@ -42,21 +48,50 @@ h1{font-family:'Fraunces','Iowan Old Style','Palatino Linotype',Georgia,serif;fo
   background:rgba(255,255,255,0.16);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.3);
   color:#fff;font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;transition:transform .2s}
 #theme-tog:hover{transform:scale(1.08)}
+#share-trips{position:fixed;top:14px;left:14px;z-index:50;height:42px;border-radius:22px;padding:0 14px;
+  background:rgba(255,255,255,.16);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.3);
+  color:#fff;font-size:12px;font-weight:800;cursor:pointer;transition:transform .2s}
+#share-trips:hover{transform:scale(1.05)}
+#share-toast{position:fixed;left:50%;bottom:22px;z-index:60;transform:translate(-50%,16px);opacity:0;
+  border-radius:9px;background:#222;color:#fff;padding:9px 13px;font-size:12px;font-weight:700;transition:.2s;pointer-events:none}
+#share-toast.show{opacity:1;transform:translate(-50%,0)}
 @media (max-width:760px){
- .wrap{flex-direction:column}
+ body{overflow:auto}
+ .wrap{flex-direction:column;height:auto;min-height:100svh}
  .panel:hover{flex:1}
- .panel{padding:24px}
- .flag{font-size:56px}
- h1{font-size:30px}
- .sub{font-size:14px}
- .meta{font-size:12px}
- .btn{margin-top:18px;padding:12px 32px;font-size:15px}
+ .panel{padding:12px 18px;min-height:33.333svh}
+ .flag{font-size:40px}
+ h1{font-size:27px;margin:6px 0 3px}
+ .sub{font-size:13px}
+ .meta{font-size:11px;margin-top:6px;line-height:1.4}
+ .tags{display:none}
+ .btn{margin-top:9px;padding:8px 25px;font-size:13px}
+ .landing-head{display:none}
+ #share-trips{top:10px;left:10px;height:36px;padding:0 11px}
+ #theme-tog{top:10px;right:10px;width:36px;height:36px}
 }
 </style>
 </head>
 <body>
+<button id="share-trips" type="button">↗ Share trips</button>
 <button id="theme-tog" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+<div class="landing-head"><strong>Trip Atlas</strong><span>Choose an itinerary</span></div>
+<div id="share-toast" role="status"></div>
 <div class="wrap">
+  <a class="panel japan" href="japan.html">
+    <div class="content">
+      <div class="flag">🇯🇵</div>
+      <h1>Japan</h1>
+      <div class="sub">Family Trip</div>
+      <div class="meta">Jul 28–Aug 14, 2023 · 18 days<br>Tokyo → Kanazawa → Kyoto → Osaka</div>
+      <div class="tags">
+        <span class="tag">⛩️ Temples &amp; shrines</span>
+        <span class="tag">🚅 Shinkansen</span>
+        <span class="tag">🗻 Mount Fuji</span>
+      </div>
+      <span class="btn">Explore Japan →</span>
+    </div>
+  </a>
   <a class="panel spain" href="spain.html">
     <div class="content">
       <div class="flag">🕌</div>
@@ -100,6 +135,18 @@ h1{font-family:'Fraunces','Iowan Old Style','Palatino Linotype',Georgia,serif;fo
     var next=(document.documentElement.getAttribute('data-theme')==='dark')?'light':'dark';
     try{localStorage.setItem(KEY,next);}catch(e){}
     apply(next);
+  });
+  function toast(message){
+    var el=document.getElementById('share-toast');el.textContent=message;el.classList.add('show');
+    setTimeout(function(){el.classList.remove('show');},1800);
+  }
+  document.getElementById('share-trips').addEventListener('click',async function(){
+    var data={title:'Trip Atlas',text:'Interactive itineraries for Japan, Spain, and Iceland',url:location.href};
+    try{
+      if(navigator.share){await navigator.share(data);}
+      else if(navigator.clipboard){await navigator.clipboard.writeText(location.href);toast('Landing-page link copied');}
+      else{prompt('Copy this link',location.href);}
+    }catch(e){}
   });
 })();
 </script>

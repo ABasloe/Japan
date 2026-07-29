@@ -1,0 +1,1374 @@
+[
+  {
+    "day": 1,
+    "from": "Washington Dulles (IAD)",
+    "to": "Tokyo Haneda (HND)",
+    "mode": "flight",
+    "km": 10890.9,
+    "coords": [
+      [
+        38.9531,
+        -77.4565
+      ],
+      [
+        39.5359,
+        -80.8556
+      ],
+      [
+        40.0863,
+        -84.2548
+      ],
+      [
+        40.6043,
+        -87.6539
+      ],
+      [
+        41.09,
+        -91.053
+      ],
+      [
+        41.5432,
+        -94.4522
+      ],
+      [
+        41.9641,
+        -97.8513
+      ],
+      [
+        42.3526,
+        -101.2505
+      ],
+      [
+        42.7087,
+        -104.6496
+      ],
+      [
+        43.0325,
+        -108.0487
+      ],
+      [
+        43.3238,
+        -111.4479
+      ],
+      [
+        43.5828,
+        -114.847
+      ],
+      [
+        43.8094,
+        -118.2461
+      ],
+      [
+        44.0036,
+        -121.6453
+      ],
+      [
+        44.1654,
+        -125.0444
+      ],
+      [
+        44.2948,
+        -128.4435
+      ],
+      [
+        44.3919,
+        -131.8427
+      ],
+      [
+        44.4566,
+        -135.2418
+      ],
+      [
+        44.4889,
+        -138.6409
+      ],
+      [
+        44.4888,
+        -142.0401
+      ],
+      [
+        44.4563,
+        -145.4392
+      ],
+      [
+        44.3915,
+        -148.8383
+      ],
+      [
+        44.2942,
+        -152.2375
+      ],
+      [
+        44.1646,
+        -155.6366
+      ],
+      [
+        44.0026,
+        -159.0358
+      ],
+      [
+        43.8082,
+        -162.4349
+      ],
+      [
+        43.5815,
+        -165.834
+      ],
+      [
+        43.3223,
+        -169.2332
+      ],
+      [
+        43.0308,
+        -172.6323
+      ],
+      [
+        42.7069,
+        -176.0314
+      ],
+      [
+        42.3506,
+        -179.4306
+      ],
+      [
+        41.962,
+        -182.8297
+      ],
+      [
+        41.5409,
+        -186.2288
+      ],
+      [
+        41.0875,
+        -189.628
+      ],
+      [
+        40.6017,
+        -193.0271
+      ],
+      [
+        40.0835,
+        -196.4263
+      ],
+      [
+        39.5329,
+        -199.8254
+      ],
+      [
+        38.9499,
+        -203.2245
+      ],
+      [
+        38.3346,
+        -206.6237
+      ],
+      [
+        37.6869,
+        -210.0228
+      ],
+      [
+        37.0068,
+        -213.4219
+      ],
+      [
+        36.2943,
+        -216.8211
+      ],
+      [
+        35.5494,
+        -220.2202
+      ]
+    ],
+    "far": true
+  },
+  {
+    "day": 2,
+    "from": "Tokyo Haneda (HND) — arrive",
+    "to": "The Blossom Hibiya",
+    "mode": "metro",
+    "km": 13.5,
+    "coords": [
+      [
+        35.5494,
+        139.7798
+      ],
+      [
+        35.6695,
+        139.7568
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 2,
+    "from": "The Blossom Hibiya",
+    "to": "Ginza · Itoya · ancōra · MARUZEN",
+    "mode": "walk",
+    "km": 0.8,
+    "coords": [
+      [
+        35.6695,
+        139.7568
+      ],
+      [
+        35.6717,
+        139.765
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 2,
+    "from": "Ginza · Itoya · ancōra · MARUZEN",
+    "to": "Sumida River Fireworks Festival",
+    "mode": "metro",
+    "km": 6.6,
+    "coords": [
+      [
+        35.6717,
+        139.765
+      ],
+      [
+        35.7206,
+        139.8065
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 3,
+    "from": "Tsukiji Outer Market",
+    "to": "teamLab Planets",
+    "mode": "bus",
+    "km": 2.5,
+    "coords": [
+      [
+        35.6655,
+        139.7707
+      ],
+      [
+        35.6491,
+        139.7898
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 3,
+    "from": "teamLab Planets",
+    "to": "Odaiba · DiverCity · Gundam Base",
+    "mode": "metro",
+    "km": 3.0,
+    "coords": [
+      [
+        35.6491,
+        139.7898
+      ],
+      [
+        35.6251,
+        139.7755
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 3,
+    "from": "Odaiba · DiverCity · Gundam Base",
+    "to": "Tokyo Water Cruise — Odaiba pier",
+    "mode": "walk",
+    "km": 0.5,
+    "coords": [
+      [
+        35.6251,
+        139.7755
+      ],
+      [
+        35.6273,
+        139.771
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 3,
+    "from": "Tokyo Water Cruise — Odaiba pier",
+    "to": "Senso-ji & Asakusa",
+    "mode": "cruise",
+    "km": 10.0,
+    "coords": [
+      [
+        35.6273,
+        139.771
+      ],
+      [
+        35.7148,
+        139.7967
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 4,
+    "from": "Shibuya Crossing",
+    "to": "Harajuku · Takeshita Street",
+    "mode": "walk",
+    "km": 1.2,
+    "coords": [
+      [
+        35.6595,
+        139.7005
+      ],
+      [
+        35.6702,
+        139.7027
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 4,
+    "from": "Harajuku · Takeshita Street",
+    "to": "Meiji Shrine",
+    "mode": "walk",
+    "km": 0.8,
+    "coords": [
+      [
+        35.6702,
+        139.7027
+      ],
+      [
+        35.6764,
+        139.6993
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 5,
+    "from": "Shinjuku LOVE Object — tour meet-up",
+    "to": "Oishi Park · Lake Kawaguchi",
+    "mode": "bus",
+    "km": 87.9,
+    "coords": [
+      [
+        35.6914,
+        139.696
+      ],
+      [
+        35.521,
+        138.7465
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 5,
+    "from": "Oishi Park · Lake Kawaguchi",
+    "to": "Tokyo Mode Gakuen — tour return",
+    "mode": "bus",
+    "km": 88.0,
+    "coords": [
+      [
+        35.521,
+        138.7465
+      ],
+      [
+        35.6917,
+        139.6968
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 6,
+    "from": "Inokashira Park",
+    "to": "Ghibli Museum, Mitaka",
+    "mode": "walk",
+    "km": 0.6,
+    "coords": [
+      [
+        35.7004,
+        139.574
+      ],
+      [
+        35.6962,
+        139.5704
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 6,
+    "from": "Ghibli Museum, Mitaka",
+    "to": "Kichijoji",
+    "mode": "walk",
+    "km": 1.1,
+    "coords": [
+      [
+        35.6962,
+        139.5704
+      ],
+      [
+        35.7032,
+        139.5796
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 7,
+    "from": "Akihabara",
+    "to": "Haruki Murakami Library · Waseda",
+    "mode": "metro",
+    "km": 4.9,
+    "coords": [
+      [
+        35.6984,
+        139.7731
+      ],
+      [
+        35.707,
+        139.7197
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 7,
+    "from": "Haruki Murakami Library · Waseda",
+    "to": "Shinjuku",
+    "mode": "metro",
+    "km": 2.1,
+    "coords": [
+      [
+        35.707,
+        139.7197
+      ],
+      [
+        35.6938,
+        139.7034
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 8,
+    "from": "The Blossom Hibiya — check out",
+    "to": "Aoyama Flower Market Tea House",
+    "mode": "metro",
+    "km": 4.1,
+    "coords": [
+      [
+        35.6695,
+        139.7568
+      ],
+      [
+        35.6635,
+        139.7122
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 8,
+    "from": "Aoyama Flower Market Tea House",
+    "to": "Tokyo Station — Kagayaki 511",
+    "mode": "metro",
+    "km": 5.3,
+    "coords": [
+      [
+        35.6635,
+        139.7122
+      ],
+      [
+        35.6812,
+        139.7671
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 8,
+    "from": "Tokyo Station — Kagayaki 511",
+    "to": "Kanazawa Station — arrive",
+    "mode": "train",
+    "km": 297.3,
+    "coords": [
+      [
+        35.6812,
+        139.7671
+      ],
+      [
+        35.9063,
+        139.6239
+      ],
+      [
+        36.6433,
+        138.1887
+      ],
+      [
+        36.6953,
+        137.2137
+      ],
+      [
+        36.5781,
+        136.6486
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 8,
+    "from": "Kanazawa Station — arrive",
+    "to": "Mitsui Garden Hotel Kanazawa",
+    "mode": "bus",
+    "km": 1.4,
+    "coords": [
+      [
+        36.5781,
+        136.6486
+      ],
+      [
+        36.5667,
+        136.6552
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 9,
+    "from": "Kanazawa Station — tour meet-up",
+    "to": "Roadside Station Shirakawa-go",
+    "mode": "bus",
+    "km": 41.8,
+    "coords": [
+      [
+        36.5781,
+        136.6486
+      ],
+      [
+        36.2643,
+        136.9066
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 9,
+    "from": "Roadside Station Shirakawa-go",
+    "to": "Shirakawa-go lunch",
+    "mode": "walk",
+    "km": 0.8,
+    "coords": [
+      [
+        36.2643,
+        136.9066
+      ],
+      [
+        36.257,
+        136.9065
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 9,
+    "from": "Shirakawa-go lunch",
+    "to": "Shirakawa-go village",
+    "mode": "walk",
+    "km": 0.4,
+    "coords": [
+      [
+        36.257,
+        136.9065
+      ],
+      [
+        36.2606,
+        136.906
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 9,
+    "from": "Shirakawa-go village",
+    "to": "Kanazawa Station — tour return",
+    "mode": "bus",
+    "km": 42.2,
+    "coords": [
+      [
+        36.2606,
+        136.906
+      ],
+      [
+        36.5781,
+        136.6486
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 9,
+    "from": "Kanazawa Station — tour return",
+    "to": "Higashi Chaya District",
+    "mode": "bus",
+    "km": 1.7,
+    "coords": [
+      [
+        36.5781,
+        136.6486
+      ],
+      [
+        36.5725,
+        136.6666
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 10,
+    "from": "Mitsui Garden Hotel — check out",
+    "to": "Kenrokuen Garden",
+    "mode": "walk",
+    "km": 0.8,
+    "coords": [
+      [
+        36.5667,
+        136.6552
+      ],
+      [
+        36.5621,
+        136.6625
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 10,
+    "from": "Kenrokuen Garden",
+    "to": "Kanazawa Station — Thunderbird 40",
+    "mode": "bus",
+    "km": 2.2,
+    "coords": [
+      [
+        36.5621,
+        136.6625
+      ],
+      [
+        36.5781,
+        136.6486
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 10,
+    "from": "Kanazawa Station — Thunderbird 40",
+    "to": "Kyoto Station — arrive",
+    "mode": "train",
+    "km": 194.4,
+    "coords": [
+      [
+        36.5781,
+        136.6486
+      ],
+      [
+        36.0617,
+        136.2236
+      ],
+      [
+        35.6452,
+        136.0769
+      ],
+      [
+        35.3145,
+        136.2908
+      ],
+      [
+        35.0972,
+        136.073
+      ],
+      [
+        35.0522,
+        135.7566
+      ],
+      [
+        34.9858,
+        135.7588
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 10,
+    "from": "Kyoto Station — arrive",
+    "to": "Kyoto Airbnb · Gion",
+    "mode": "metro",
+    "km": 2.6,
+    "coords": [
+      [
+        34.9858,
+        135.7588
+      ],
+      [
+        35.0032,
+        135.7784
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 11,
+    "from": "Fushimi Inari Taisha",
+    "to": "Gion",
+    "mode": "metro",
+    "km": 4.1,
+    "coords": [
+      [
+        34.9671,
+        135.7727
+      ],
+      [
+        35.0037,
+        135.7786
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 12,
+    "from": "Higashiyama · % Arabica",
+    "to": "Yasaka Shrine",
+    "mode": "walk",
+    "km": 0.8,
+    "coords": [
+      [
+        34.9969,
+        135.7808
+      ],
+      [
+        35.0037,
+        135.7785
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 12,
+    "from": "Yasaka Shrine",
+    "to": "Kiyomizu-dera",
+    "mode": "walk",
+    "km": 1.1,
+    "coords": [
+      [
+        35.0037,
+        135.7785
+      ],
+      [
+        34.9949,
+        135.785
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 12,
+    "from": "Kiyomizu-dera",
+    "to": "Kyoto Station — Aoniyoshi",
+    "mode": "metro",
+    "km": 2.6,
+    "coords": [
+      [
+        34.9949,
+        135.785
+      ],
+      [
+        34.9858,
+        135.7588
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 12,
+    "from": "Kyoto Station — Aoniyoshi",
+    "to": "Tōdai-ji",
+    "mode": "train",
+    "km": 33.8,
+    "coords": [
+      [
+        34.9858,
+        135.7588
+      ],
+      [
+        34.9534,
+        135.7698
+      ],
+      [
+        34.882,
+        135.7994
+      ],
+      [
+        34.6937,
+        135.8008
+      ],
+      [
+        34.689,
+        135.8398
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 12,
+    "from": "Tōdai-ji",
+    "to": "Nara Park",
+    "mode": "walk",
+    "km": 0.5,
+    "coords": [
+      [
+        34.689,
+        135.8398
+      ],
+      [
+        34.6851,
+        135.843
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 12,
+    "from": "Nara Park",
+    "to": "Nara dinner options",
+    "mode": "walk",
+    "km": 1.4,
+    "coords": [
+      [
+        34.6851,
+        135.843
+      ],
+      [
+        34.6825,
+        135.8275
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 12,
+    "from": "Nara dinner options",
+    "to": "Philosopher's Path · optional",
+    "mode": "train",
+    "km": 38.4,
+    "coords": [
+      [
+        34.6825,
+        135.8275
+      ],
+      [
+        35.0267,
+        135.7956
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 12,
+    "from": "Philosopher's Path · optional",
+    "to": "Kinkaku-ji · optional",
+    "mode": "bus",
+    "km": 6.2,
+    "coords": [
+      [
+        35.0267,
+        135.7956
+      ],
+      [
+        35.0394,
+        135.7292
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 13,
+    "from": "Shoraian",
+    "to": "Kyoto Imperial Palace",
+    "mode": "metro",
+    "km": 8.3,
+    "coords": [
+      [
+        35.015,
+        135.6718
+      ],
+      [
+        35.0254,
+        135.7621
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 13,
+    "from": "Kyoto Imperial Palace",
+    "to": "Ippodo Tea Kyoto Main Store",
+    "mode": "walk",
+    "km": 1.0,
+    "coords": [
+      [
+        35.0254,
+        135.7621
+      ],
+      [
+        35.0176,
+        135.7674
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 13,
+    "from": "Ippodo Tea Kyoto Main Store",
+    "to": "Kyoto International Manga Museum",
+    "mode": "walk",
+    "km": 1.0,
+    "coords": [
+      [
+        35.0176,
+        135.7674
+      ],
+      [
+        35.0119,
+        135.7594
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 13,
+    "from": "Kyoto International Manga Museum",
+    "to": "Honke Owariya",
+    "mode": "walk",
+    "km": 0.2,
+    "coords": [
+      [
+        35.0119,
+        135.7594
+      ],
+      [
+        35.0137,
+        135.7596
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 13,
+    "from": "Honke Owariya",
+    "to": "Kamo River bridge sunset",
+    "mode": "walk",
+    "km": 1.2,
+    "coords": [
+      [
+        35.0137,
+        135.7596
+      ],
+      [
+        35.0088,
+        135.771
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 14,
+    "from": "Heian Jingū",
+    "to": "Kyoto Airbnb — check out",
+    "mode": "walk",
+    "km": 1.5,
+    "coords": [
+      [
+        35.0159,
+        135.7824
+      ],
+      [
+        35.0032,
+        135.7784
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 14,
+    "from": "Kyoto Airbnb — check out",
+    "to": "Kyoto Station — Thunderbird 18",
+    "mode": "metro",
+    "km": 2.6,
+    "coords": [
+      [
+        35.0032,
+        135.7784
+      ],
+      [
+        34.9858,
+        135.7588
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 14,
+    "from": "Kyoto Station — Thunderbird 18",
+    "to": "Osaka Station — arrive",
+    "mode": "train",
+    "km": 39.6,
+    "coords": [
+      [
+        34.9858,
+        135.7588
+      ],
+      [
+        34.8915,
+        135.8078
+      ],
+      [
+        34.802,
+        135.561
+      ],
+      [
+        34.7025,
+        135.4959
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 14,
+    "from": "Osaka Station — arrive",
+    "to": "Osaka Airbnb · Dōtonbori",
+    "mode": "metro",
+    "km": 3.9,
+    "coords": [
+      [
+        34.7025,
+        135.4959
+      ],
+      [
+        34.6686,
+        135.5064
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 16,
+    "from": "Osaka Airbnb — check out",
+    "to": "Shin-Osaka Station",
+    "mode": "metro",
+    "km": 7.2,
+    "coords": [
+      [
+        34.6686,
+        135.5064
+      ],
+      [
+        34.7335,
+        135.5002
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 16,
+    "from": "Shin-Osaka Station",
+    "to": "Shin-Osaka — Hikari 652",
+    "mode": "walk",
+    "km": 0.0,
+    "coords": [
+      [
+        34.7335,
+        135.5002
+      ],
+      [
+        34.7335,
+        135.5002
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 16,
+    "from": "Shin-Osaka — Hikari 652",
+    "to": "Tokyo Station — arrive",
+    "mode": "train",
+    "km": 401.7,
+    "coords": [
+      [
+        34.7335,
+        135.5002
+      ],
+      [
+        35.1709,
+        136.8815
+      ],
+      [
+        34.9716,
+        138.389
+      ],
+      [
+        35.1036,
+        138.859
+      ],
+      [
+        35.2564,
+        139.1549
+      ],
+      [
+        35.6302,
+        139.7404
+      ],
+      [
+        35.6812,
+        139.7671
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 16,
+    "from": "Tokyo Station — arrive",
+    "to": "The Knot Tokyo Shinjuku",
+    "mode": "metro",
+    "km": 6.9,
+    "coords": [
+      [
+        35.6812,
+        139.7671
+      ],
+      [
+        35.6896,
+        139.6918
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 17,
+    "from": "Shinjuku",
+    "to": "Kingdom Note Shinjuku",
+    "mode": "walk",
+    "km": 0.6,
+    "coords": [
+      [
+        35.6938,
+        139.7034
+      ],
+      [
+        35.6909,
+        139.6981
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 18,
+    "from": "The Knot Tokyo Shinjuku — check out",
+    "to": "Tokyo Haneda (HND) — depart",
+    "mode": "metro",
+    "km": 17.5,
+    "coords": [
+      [
+        35.6896,
+        139.6918
+      ],
+      [
+        35.5494,
+        139.7798
+      ]
+    ],
+    "far": false
+  },
+  {
+    "day": 18,
+    "from": "Tokyo Haneda (HND) — depart",
+    "to": "Washington Dulles (IAD) — arrive",
+    "mode": "flight",
+    "km": 10890.9,
+    "coords": [
+      [
+        35.5494,
+        139.7798
+      ],
+      [
+        36.2943,
+        143.1789
+      ],
+      [
+        37.0068,
+        146.5781
+      ],
+      [
+        37.6869,
+        149.9772
+      ],
+      [
+        38.3346,
+        153.3763
+      ],
+      [
+        38.9499,
+        156.7755
+      ],
+      [
+        39.5329,
+        160.1746
+      ],
+      [
+        40.0835,
+        163.5737
+      ],
+      [
+        40.6017,
+        166.9729
+      ],
+      [
+        41.0875,
+        170.372
+      ],
+      [
+        41.5409,
+        173.7712
+      ],
+      [
+        41.962,
+        177.1703
+      ],
+      [
+        42.3506,
+        180.5694
+      ],
+      [
+        42.7069,
+        183.9686
+      ],
+      [
+        43.0308,
+        187.3677
+      ],
+      [
+        43.3223,
+        190.7668
+      ],
+      [
+        43.5815,
+        194.166
+      ],
+      [
+        43.8082,
+        197.5651
+      ],
+      [
+        44.0026,
+        200.9642
+      ],
+      [
+        44.1646,
+        204.3634
+      ],
+      [
+        44.2942,
+        207.7625
+      ],
+      [
+        44.3915,
+        211.1617
+      ],
+      [
+        44.4563,
+        214.5608
+      ],
+      [
+        44.4888,
+        217.9599
+      ],
+      [
+        44.4889,
+        221.3591
+      ],
+      [
+        44.4566,
+        224.7582
+      ],
+      [
+        44.3919,
+        228.1573
+      ],
+      [
+        44.2948,
+        231.5565
+      ],
+      [
+        44.1654,
+        234.9556
+      ],
+      [
+        44.0036,
+        238.3547
+      ],
+      [
+        43.8094,
+        241.7539
+      ],
+      [
+        43.5828,
+        245.153
+      ],
+      [
+        43.3238,
+        248.5521
+      ],
+      [
+        43.0325,
+        251.9513
+      ],
+      [
+        42.7087,
+        255.3504
+      ],
+      [
+        42.3526,
+        258.7495
+      ],
+      [
+        41.9641,
+        262.1487
+      ],
+      [
+        41.5432,
+        265.5478
+      ],
+      [
+        41.09,
+        268.947
+      ],
+      [
+        40.6043,
+        272.3461
+      ],
+      [
+        40.0863,
+        275.7452
+      ],
+      [
+        39.5359,
+        279.1444
+      ],
+      [
+        38.9531,
+        282.5435
+      ]
+    ],
+    "far": true
+  }
+]

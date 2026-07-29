@@ -1,8 +1,8 @@
 {
-  "name": "Portugal & Spain — Aug 2026",
-  "short_name": "Iberia 2026",
-  "description": "Porto → Lisbon → Seville → Granada → Madrid, Aug 6–20 2026",
-  "start_url": "spain.html",
+  "name": "Japan, Spain & Iceland — Trips",
+  "short_name": "Trips",
+  "description": "Interactive itineraries for Japan, Portugal and Spain, and Iceland",
+  "start_url": "index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
