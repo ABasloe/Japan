@@ -3,6 +3,7 @@ node_modules/
 .claude/
 *.png
 *.js
+!japan_firebase_config.js
 extracted_skips.txt
 pdf_text.txt
 package.json

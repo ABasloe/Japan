@@ -9,9 +9,10 @@ docs/Ihsan Japan Sharing Repo - Itenirary.csv.
 Features mirror the existing trip pages:
   - Leaflet/Folium map with day layers and multiple basemaps
   - Rich stop popups, Google Maps links, and route lines
-  - Map/itinerary views with filters, search, skip toggles, and delays
+  - Map/itinerary views with filters, search, and mobile navigation
   - Horizontal and vertical day scrubbers, dark mode, geolocation, and PWA hooks
   - A separate ideas layer for every categorized place in the source document
+  - Firebase-backed group editing, Google sign-in, and access requests
 
 Requires: pip install folium
 Usage:    python japan_interactive_map.py
@@ -737,7 +738,7 @@ def build_map(routes):
     trip_map.get_root().html.add_child(folium.Element(title))
     trip_map.get_root().html.add_child(folium.Element(build_agenda(routes)))
     trip_map.get_root().html.add_child(folium.Element(build_scrubber()))
-    trip_map.get_root().html.add_child(folium.Element(build_location_editor()))
+    trip_map.get_root().html.add_child(folium.Element(build_collaboration_app(routes)))
     trip_map.get_root().html.add_child(folium.Element(build_theme()))
     trip_map.get_root().html.add_child(folium.Element(build_touch_cleanup()))
     return trip_map
@@ -758,7 +759,7 @@ def agenda_card(item):
     <article class="stop-card" id="jp-{item["day"]}-{slug(item["name"])}"
       data-day="{item["day"]}" data-city="{city_group(item["city"])}"
       data-search="{searchable}" style="--city:{color}">
-      <button class="skip" type="button" aria-label="Skip {escape(item["name"], quote=True)}"
+      <button class="skip legacy-skip" type="button" aria-label="Skip {escape(item["name"], quote=True)}"
         data-skip="jp-{item["day"]}-{slug(item["name"])}">✓</button>
       <div class="card-time" data-hour="{item["hour"]}" data-day="{item["day"]}">{format_time(item["hour"])}</div>
       <div class="card-main">
@@ -813,7 +814,7 @@ def build_agenda(routes):
       <main id="agenda-list">__CARDS__</main>
       <footer>
         Source: <code>docs/Ihsan Japan Sharing Repo - Itenirary.csv</code> ·
-        __ROUTES__ route segments · skip and delay state stays on this device.
+        __ROUTES__ route segments · use Group plan for shared itinerary changes.
       </footer>
     </div>
     <div id="day-rail" aria-label="Jump to a day"><div id="day-rail-label"></div><div id="day-rail-buttons"></div></div>
@@ -884,10 +885,10 @@ def build_agenda(routes):
     #day-rail:hover #day-rail-label{opacity:1}
     #delay-fab{display:none;position:fixed;right:18px;bottom:20px;z-index:2600;border:0;border-radius:22px;
       padding:10px 14px;background:var(--brand);color:#fff;font-weight:800;box-shadow:var(--shadow);cursor:pointer}
-    body.agenda-on #delay-fab{display:block}
+    body.agenda-on #delay-fab{display:none}
     #delay-modal{position:fixed;inset:0;z-index:4000;background:rgba(15,15,16,.55);backdrop-filter:blur(4px);
       align-items:center;justify-content:center;padding:18px}
-    #delay-modal:not([hidden]){display:flex}.delay-card{position:relative;width:min(92vw,480px);background:var(--panel);
+    #delay-modal{display:none!important}#delay-modal:not([hidden]){display:flex}.delay-card{position:relative;width:min(92vw,480px);background:var(--panel);
       color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 18px 60px rgba(0,0,0,.3)}
     .delay-card h2{font-family:var(--serif);margin:0 0 6px}.delay-card p{font-size:13px;color:var(--ink2);line-height:1.5}
     #delay-close{position:absolute;right:12px;top:10px;border:0;background:transparent;color:var(--ink2);font-size:24px;cursor:pointer}
@@ -1404,6 +1405,140 @@ def build_theme():
     })();
     </script>
     """
+
+
+def build_collaboration_app(routes):
+    """Shared, authenticated itinerary editing for the Japan map.
+
+    The Firebase project settings live in japan_firebase_config.js.  Keeping
+    the configuration separate means the generated itinerary remains safe to
+    publish while Firestore rules—not a hidden browser key—protect group data.
+    """
+    per_day_order = {}
+    baseline = []
+    for index, item in enumerate(STOPS, start=1):
+        day = item["day"]
+        per_day_order[day] = per_day_order.get(day, 0) + 1
+        baseline.append({
+            "id": f"base-{index:03d}",
+            "name": item["name"],
+            "day": day,
+            "order": per_day_order[day] * 1000,
+            "startMinutes": item["hour"] * 60,
+            "duration": item["duration"],
+            "kind": item["kind"],
+            "city": item["city"],
+            "notes": item["notes"],
+            "mode": item["mode"],
+            "mapsUrl": item.get("link") or google_maps_url(item["lat"], item["lon"]),
+            "address": "",
+            "lat": item["lat"],
+            "lon": item["lon"],
+            "hasLocation": True,
+            "baseline": True,
+            "locked": item["locked"],
+        })
+
+    baseline_ids = {
+        (item["day"], item["name"]): item["id"]
+        for item in baseline
+    }
+    route_templates = {}
+    for route in routes:
+        previous_id = baseline_ids.get((route["day"], route["from"]))
+        current_id = baseline_ids.get((route["day"], route["to"]))
+        if previous_id and current_id:
+            route_templates[f"{previous_id}|{current_id}"] = route["coords"]
+
+    template = r"""
+    <script src="japan_firebase_config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <button id="group-fab" type="button">👥 Group plan</button>
+    <div id="group-toast" role="status" aria-live="polite"></div>
+    <div id="group-modal" hidden><section class="group-dialog" role="dialog" aria-modal="true" aria-labelledby="group-title">
+      <button class="group-close" type="button" aria-label="Close">×</button>
+      <h2 id="group-title">Group plan</h2><div id="group-body"></div>
+    </section></div>
+    <div id="stop-modal" hidden><section class="group-dialog stop-dialog" role="dialog" aria-modal="true" aria-labelledby="stop-title">
+      <button class="group-close" type="button" aria-label="Close">×</button>
+      <h2 id="stop-title">Add to the plan</h2>
+      <form id="stop-form">
+        <input id="stop-id" type="hidden"><input id="stop-version" type="hidden">
+        <label class="wide">Place or action name<input id="stop-name" maxlength="120" required placeholder="Restaurant, temple, reservation, or activity"></label>
+        <label>Day<select id="stop-day"></select></label>
+        <label>Start time<input id="stop-time" type="time"></label>
+        <label>Duration (minutes)<input id="stop-duration" type="number" min="0" max="1440" value="60"></label>
+        <label>Category<select id="stop-kind"><option value="attraction">Place</option><option value="food">Food</option><option value="shop">Shop</option><option value="temple">Temple</option><option value="museum">Museum</option><option value="event">Event</option><option value="activity">Action</option><option value="transit">Transit</option></select></label>
+        <label>Travel to it<select id="stop-mode"><option value="walk">Walk</option><option value="metro">Metro / local train</option><option value="bus">Bus</option><option value="train">Intercity train</option><option value="flight">Flight</option><option value="cruise">Water</option></select></label>
+        <label class="wide">Google Maps link (optional)<input id="stop-maps" type="url" maxlength="1000" placeholder="https://maps.google.com/…"></label>
+        <label class="wide">Address or area (optional)<input id="stop-address" maxlength="240" placeholder="Street address, neighborhood, or city"></label>
+        <div class="wide group-inline"><button id="place-search" class="secondary" type="button">Find location</button><button id="place-pick" class="secondary" type="button">Pick on map</button><span id="place-status">Actions can be saved without a location.</span></div>
+        <div id="place-results" class="wide"></div>
+        <input id="stop-lat" type="hidden"><input id="stop-lon" type="hidden">
+        <label class="wide">Notes<input id="stop-notes" maxlength="1000" placeholder="Why it is useful, booking details, or a group note"></label>
+        <div class="wide group-actions"><button class="primary" type="submit">Save shared item</button><button id="stop-delete" class="danger" type="button" hidden>Delete</button></div>
+      </form>
+    </section></div>
+    <style>
+    .legacy-skip{display:none}#group-fab{position:fixed;z-index:2750;right:112px;top:12px;border:1px solid var(--line);border-radius:22px;background:var(--panel);color:var(--ink);box-shadow:var(--shadow);padding:10px 14px;font:800 12px var(--sans);cursor:pointer}
+    body.agenda-on #group-fab{right:16px;bottom:20px;top:auto}.group-dialog{position:relative;width:min(94vw,640px);max-height:90vh;overflow:auto;box-sizing:border-box;border:1px solid var(--line);border-radius:17px;background:var(--panel);color:var(--ink);padding:22px;box-shadow:0 20px 70px rgba(0,0,0,.35);font-family:var(--sans)}
+    #group-modal,#stop-modal{position:fixed;inset:0;z-index:5400;background:rgba(15,15,17,.58);backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:18px}#group-modal:not([hidden]),#stop-modal:not([hidden]){display:flex}.group-close{position:absolute;right:11px;top:8px;border:0;background:transparent;color:var(--ink2);font-size:26px;cursor:pointer}.group-dialog h2{font:600 25px var(--serif);margin:0 28px 10px 0}.group-dialog p,.group-dialog small{color:var(--ink2);font-size:13px;line-height:1.45}
+    #stop-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}#stop-form label{font-size:11px;font-weight:700;color:var(--ink2)}#stop-form input,#stop-form select{display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:9px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);font:13px var(--sans)}.wide{grid-column:1/-1}.group-inline,.group-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.group-inline span{font-size:11px;color:var(--ink3)}.group-dialog button{border-radius:9px;padding:9px 11px;font:800 12px var(--sans);cursor:pointer}.primary{border:0;background:var(--brand);color:#fff}.secondary{border:1px solid var(--line);background:var(--panel2);color:var(--ink)}.danger{border:1px solid #c0524a;background:transparent;color:#c0524a}.group-actions{justify-content:space-between}.place-result{display:block;width:100%;text-align:left;border:1px solid var(--line)!important;background:var(--panel2);color:var(--ink);margin-top:5px}.place-result small{display:block;margin-top:2px}.group-card{border-top:1px solid var(--line);padding:12px 0}.group-card:first-child{border-top:0}.group-card b{font-size:13px}.group-card small{display:block}.group-request{display:flex;justify-content:space-between;gap:10px;align-items:center}.group-feed{max-height:270px;overflow:auto}.group-feed-item{padding:8px 0;border-top:1px solid var(--line);font-size:12px}.group-feed-item small{display:block}.group-empty{color:var(--ink3);font-size:13px;padding:12px 0}.group-stop{position:relative}.group-stop.is-new{box-shadow:inset 4px 0 0 var(--brand);background:var(--accent-soft,#f8e7e8)}.group-stop .group-edit{position:absolute;right:40px;top:10px;border:0;background:transparent;color:var(--brand);font:800 11px var(--sans);cursor:pointer}.group-stop .group-move{border:0;background:transparent;color:var(--ink2);font-size:16px;line-height:1;cursor:pointer;padding:2px 5px}.group-stop .group-author{font-size:10px;color:var(--ink3);margin-top:5px}.group-add-row{padding:4px 0 14px;text-align:right}.group-add-row button{border:0;border-radius:9px;background:var(--brand);color:#fff;padding:9px 12px;font:800 12px var(--sans);cursor:pointer}#group-toast{position:fixed;z-index:5600;left:50%;bottom:28px;transform:translate(-50%,20px);padding:9px 13px;border-radius:9px;background:#232326;color:#fff;font:700 12px var(--sans);opacity:0;pointer-events:none;transition:.2s}#group-toast.show{opacity:1;transform:translate(-50%,0)}
+    @media(max-width:600px){#group-fab{right:58px;top:calc(10px + env(safe-area-inset-top));padding:10px 11px}body.agenda-on #group-fab{right:12px;bottom:calc(62px + env(safe-area-inset-bottom))}.group-dialog{max-height:94vh;padding:18px}#stop-form{grid-template-columns:1fr}.wide{grid-column:auto}}
+    </style>
+    <script>
+    (function(){
+      var CONFIG=window.JAPAN_FIREBASE_CONFIG||{},TRIP_ID=(window.JAPAN_TRIP_ID||'japan-family-trip'),BASELINE=__BASELINE__,ROUTE_TEMPLATES=__ROUTE_TEMPLATES__,DAY_LABELS=__DAY_LABELS__,DAY_CITY=__DAY_CITY__,DAY_COUNT=18;
+      var app=null,db=null,auth=null,user=null,member=null,stops=[],activities=[],requests=[],unsub=[],map=null,layer=null,removedBase=false,picking=false,lastLookup=0,previousSeen=0;
+      var modal=document.getElementById('group-modal'),stopModal=document.getElementById('stop-modal'),body=document.getElementById('group-body'),agenda=document.getElementById('agenda-list');
+      var colors={Tokyo:'#c8555f',Kanazawa:'#3d877f',Kyoto:'#8a63a8',Osaka:'#d18435',Transit:'#6f747b','Shirakawa-go':'#3d877f',Fuji:'#c8555f',Nara:'#8a63a8'};
+      function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+      function toast(message){var e=document.getElementById('group-toast');e.textContent=message;e.classList.add('show');setTimeout(function(){e.classList.remove('show')},2600)}
+      function validConfig(){return CONFIG&&CONFIG.apiKey&&CONFIG.projectId&&!/^REPLACE_/i.test(CONFIG.apiKey)&&!/REPLACE/i.test(CONFIG.projectId)}
+      function stamp(value){return value&&value.toMillis?value.toMillis():0}function time(m){if(m===null||m===undefined||m==='')return 'Flexible';m=+m;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}
+      function displayName(){return (user&&((user.displayName||'').trim()||user.email))||'Unknown member'}function ref(path){return db.collection('trips').doc(TRIP_ID).collection(path)}function tripRef(){return db.collection('trips').doc(TRIP_ID)}
+      function closeAll(){modal.hidden=true;stopModal.hidden=true;picking=false}document.querySelectorAll('.group-close').forEach(function(b){b.onclick=closeAll});[modal,stopModal].forEach(function(e){e.addEventListener('click',function(x){if(x.target===e)closeAll()})});
+      document.getElementById('group-fab').onclick=function(){modal.hidden=false;renderPanel()};
+      function signIn(){auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function(e){toast('Google sign-in failed: '+e.message)})}
+      function start(){if(!validConfig()){body.innerHTML='<p>Group sharing has not been connected yet.</p><p><small>The trip owner needs to add Firebase web settings to <code>japan_firebase_config.js</code>.</small></p>';return}try{app=firebase.initializeApp(CONFIG);auth=firebase.auth();db=firebase.firestore()}catch(e){body.innerHTML='<p>Could not start group sharing.</p><small>'+esc(e.message)+'</small>';return}auth.onAuthStateChanged(onAuth)}
+      function onAuth(next){cleanup();user=next;member=null;stops=[];activities=[];requests=[];if(!user){renderPanel();return}tripRef().get().then(function(s){if(!s.exists){renderPanel();return}return ref('members').doc(user.uid).get().then(function(m){member=m.exists?m.data():null;renderPanel();if(member)subscribe()})}).catch(function(e){toast('Could not load group plan: '+e.message);renderPanel()})}
+      function cleanup(){unsub.forEach(function(fn){fn()});unsub=[]}function isOwner(){return member&&member.role==='owner'}
+      async function initialize(){var first=await tripRef().get();if(first.exists){toast('This group plan was already initialized.');onAuth(user);return}try{await tripRef().set({ownerUid:user.uid,title:'Japan Family Trip',createdAt:firebase.firestore.FieldValue.serverTimestamp()});await ref('members').doc(user.uid).set({uid:user.uid,displayName:displayName(),email:user.email||'',role:'owner',joinedAt:firebase.firestore.FieldValue.serverTimestamp()});var batch=db.batch();BASELINE.forEach(function(item){batch.set(ref('stops').doc(item.id),Object.assign({},item,{createdBy:displayName(),createdByUid:user.uid,createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:displayName(),updatedByUid:user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),version:1}))});batch.set(ref('activity').doc(),{action:'initialized the shared itinerary',author:displayName(),authorUid:user.uid,createdAt:firebase.firestore.FieldValue.serverTimestamp()});await batch.commit();toast('Shared itinerary initialized. You are the owner.');onAuth(user)}catch(e){toast('Initialization failed: '+e.message)}}
+      function requestAccess(){ref('accessRequests').doc(user.uid).set({uid:user.uid,displayName:displayName(),email:user.email||'',requestedAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){toast('Access request sent to the trip owner.');renderPanel()}).catch(function(e){toast('Could not request access: '+e.message)})}
+      function subscribe(){previousSeen=+(localStorage.getItem('jp_group_seen_'+user.uid)||0);localStorage.setItem('jp_group_seen_'+user.uid,String(Date.now()));unsub.push(ref('stops').onSnapshot(function(s){stops=s.docs.map(function(d){return Object.assign({id:d.id},d.data())}).sort(compareStops);renderShared()},function(e){toast('Shared stops unavailable: '+e.message)}));unsub.push(ref('activity').orderBy('createdAt','desc').limit(40).onSnapshot(function(s){activities=s.docs.map(function(d){return Object.assign({id:d.id},d.data())});renderPanel()}));if(isOwner())unsub.push(ref('accessRequests').onSnapshot(function(s){requests=s.docs.map(function(d){return d.data()});renderPanel()}))}
+      function compareStops(a,b){return (+a.day-+b.day)||(+a.order-+b.order)||String(a.id).localeCompare(String(b.id))}
+      function getMap(){if(map)return map;for(var k in window){try{if(window[k] instanceof L.Map){map=window[k];break}}catch(e){}}return map}
+      function cleanBaseMap(){if(removedBase)return;var m=getMap();if(!m)return;var gone=[];m.eachLayer(function(item){if(item instanceof L.Marker||item instanceof L.Polyline)gone.push(item)});gone.forEach(function(item){m.removeLayer(item)});removedBase=true;layer=L.featureGroup().addTo(m)}
+      function markerIcon(item){var icons={airport:'plane',hotel:'bed',train:'train',food:'cutlery',shop:'shopping-bag',temple:'institution',museum:'university',park:'tree',view:'camera',event:'star',transit:'bus',cruise:'ship'};try{return L.AwesomeMarkers.icon({icon:icons[item.kind]||'map-marker',prefix:'fa',markerColor:'red',iconColor:'#fff'})}catch(e){return null}}
+      function mapsUrl(item){return item.mapsUrl||((item.lat!=null&&item.lon!=null)?'https://www.google.com/maps?q='+item.lat+','+item.lon:'')}
+      function drawMap(){cleanBaseMap();if(!layer)return;layer.clearLayers();var m=getMap(),byDay={};stops.forEach(function(item){if(item.hasLocation!==false&&Number.isFinite(+item.lat)&&Number.isFinite(+item.lon)){(byDay[item.day]=byDay[item.day]||[]).push(item)}});Object.keys(byDay).forEach(function(day){var list=byDay[day];for(var i=1;i<list.length;i++){var from=list[i-1],to=list[i],mode=to.mode||'walk',styles={walk:['#56875b','2 7'],metro:['#4b70aa','7 6'],bus:['#338b88',null],train:['#b84f43',null],flight:['#73767d','11 8'],cruise:['#3f82b5','6 5']}[mode]||['#56875b','2 7'],saved=ROUTE_TEMPLATES[from.id+'|'+to.id],geometry=saved||[[+from.lat,+from.lon],[+to.lat,+to.lon]],label=saved?esc(mode)+' connection':'Approximate '+esc(mode)+' connection';L.polyline(geometry,{color:styles[0],dashArray:styles[1],weight:4,opacity:.82}).bindTooltip('<b>'+label+'</b><br>'+esc(from.name)+' → '+esc(to.name)).addTo(layer)}});stops.forEach(function(item){if(item.hasLocation===false||!Number.isFinite(+item.lat)||!Number.isFinite(+item.lon))return;var link=mapsUrl(item),html='<div class="popup-card"><div class="popup-kicker">Day '+esc(item.day)+' · shared plan</div><div class="popup-title">'+esc(item.name)+'</div><div class="popup-notes">'+esc(item.notes||'No notes yet.')+'</div>'+(link?'<div class="popup-links"><a target="_blank" rel="noopener" href="'+esc(link)+'">📍 Map</a></div>':'')+'</div>';var marker=L.marker([+item.lat,+item.lon],markerIcon(item)?{icon:markerIcon(item)}:{}).bindPopup(html).bindTooltip('<b>'+esc(item.name)+'</b><br><small>Day '+esc(item.day)+'</small>');marker.addTo(layer)});if(picking&&m){m.once('click',function(e){document.getElementById('stop-lat').value=e.latlng.lat.toFixed(6);document.getElementById('stop-lon').value=e.latlng.lng.toFixed(6);document.getElementById('place-status').textContent='Pin selected: '+e.latlng.lat.toFixed(5)+', '+e.latlng.lng.toFixed(5);picking=false;stopModal.hidden=false})}}
+      function renderShared(){if(!stops.length)return;drawMap();var grouped={},cityGroups={Fuji:'Tokyo','Shirakawa-go':'Kanazawa',Nara:'Kyoto'};stops.forEach(function(item){(grouped[item.day]=grouped[item.day]||[]).push(item)});var html='';for(var day=1;day<=DAY_COUNT;day++){var list=grouped[day]||[],dayCity=DAY_CITY[day]||'Transit';html+='<section class="day-section" data-day="'+day+'" data-city="'+esc(cityGroups[dayCity]||dayCity)+'"><div class="day-head" style="--city:'+(colors[dayCity]||'#6f747b')+'"><span>Day '+day+'</span><div><b>'+esc(DAY_LABELS[day]||'Day '+day)+'</b></div></div><div class="group-add-row"><button type="button" data-add-day="'+day+'">＋ Add item</button></div>';list.forEach(function(item){var isNew=stamp(item.updatedAt)>previousSeen,search=esc((item.name+' '+item.notes+' '+item.kind+' '+item.city).toLowerCase());html+='<article class="stop-card group-stop '+(isNew?'is-new':'')+'" data-stop="'+esc(item.id)+'" data-search="'+search+'"><button class="group-move" type="button" data-move="-1" title="Move earlier">↑</button><button class="group-edit" type="button">Edit</button><div class="card-time">'+esc(time(item.startMinutes))+'</div><div class="card-main"><div class="card-title">'+esc(item.name)+'</div><div class="card-meta">Day '+esc(item.day)+' · '+esc(item.duration||0)+' min · '+esc(item.kind||'action')+'</div><div class="card-notes">'+esc(item.notes||'')+'</div>'+(mapsUrl(item)?'<div class="card-links"><a target="_blank" rel="noopener" href="'+esc(mapsUrl(item))+'">Map</a></div>':'')+'<div class="group-author">Last changed by '+esc(item.updatedBy||item.createdBy||'a group member')+'</div></div><button class="group-move" type="button" data-move="1" title="Move later">↓</button></article>'});html+='</section>'}agenda.innerHTML=html;agenda.querySelectorAll('[data-add-day]').forEach(function(b){b.onclick=function(){openEditor(null,+b.dataset.addDay)}});agenda.querySelectorAll('.group-edit').forEach(function(b){b.onclick=function(){openEditor(stops.find(function(s){return s.id===b.closest('[data-stop]').dataset.stop}))}});agenda.querySelectorAll('[data-move]').forEach(function(b){b.onclick=function(){moveStop(b.closest('[data-stop]').dataset.stop,+b.dataset.move)}})}
+      function renderPanel(){if(!validConfig()){body.innerHTML='<p>Group sharing has not been connected yet.</p><p><small>Follow <code>docs/group-collaboration-setup.md</code> to add Firebase settings.</small></p>';return}if(!user){body.innerHTML='<p>Sign in with Google to collaborate. The original itinerary remains visible to everyone.</p><button id="group-signin" class="primary" type="button">Sign in with Google</button>';document.getElementById('group-signin').onclick=signIn;return}tripRef().get().then(function(s){if(!s.exists){body.innerHTML='<p>Start the private group copy of this itinerary. Do this before sending the link to friends.</p><button id="group-init" class="primary" type="button">Initialize shared itinerary</button>';document.getElementById('group-init').onclick=initialize;return}if(!member){ref('accessRequests').doc(user.uid).get().then(function(request){if(request.exists){body.innerHTML='<p>Your access request is pending approval.</p><small>You can close this panel; the owner will see your request.</small>';return}body.innerHTML='<p>Signed in as <b>'+esc(displayName())+'</b>. Ask to join; the owner must approve before you can see or edit group changes.</p><button id="group-request" class="primary" type="button">Request access</button>';document.getElementById('group-request').onclick=requestAccess});return}var h='<p>Signed in as <b>'+esc(displayName())+'</b>. Changes are live for approved members.</p><div class="group-card"><b>Recent group activity</b><div class="group-feed">';h+=activities.length?activities.map(function(a){return '<div class="group-feed-item">'+esc(a.author||'A member')+' '+esc(a.action||'updated the itinerary')+'<small>'+esc(a.itemName||'')+'</small></div>'}).join(''):'<div class="group-empty">No activity yet.</div>';h+='</div></div>';if(isOwner()){h+='<div class="group-card"><b>Access requests</b>';h+=requests.length?requests.map(function(r){return '<div class="group-request"><span>'+esc(r.displayName)+'<small>'+esc(r.email||'')+'</small></span><button class="primary" type="button" data-approve="'+esc(r.uid)+'">Approve</button></div>'}).join(''):'<div class="group-empty">No pending requests.</div>';h+='</div>'}body.innerHTML=h;body.querySelectorAll('[data-approve]').forEach(function(b){b.onclick=function(){approve(b.dataset.approve)}})}).catch(function(e){body.innerHTML='<p>Could not load group access.</p><small>'+esc(e.message)+'</small>'})}
+      async function approve(uid){var r=requests.find(function(x){return x.uid===uid});if(!r)return;try{var batch=db.batch();batch.set(ref('members').doc(uid),{uid:uid,displayName:r.displayName,email:r.email||'',role:'member',joinedAt:firebase.firestore.FieldValue.serverTimestamp()});batch.delete(ref('accessRequests').doc(uid));batch.set(ref('activity').doc(),{action:'approved access for',itemName:r.displayName,author:displayName(),authorUid:user.uid,createdAt:firebase.firestore.FieldValue.serverTimestamp()});await batch.commit();toast('Access approved.')}catch(e){toast('Could not approve: '+e.message)}}
+      function options(){var o='';for(var d=1;d<=DAY_COUNT;d++)o+='<option value="'+d+'">Day '+d+'</option>';return o}document.getElementById('stop-day').innerHTML=options();
+      function openEditor(item,day){document.getElementById('stop-form').reset();document.getElementById('place-results').innerHTML='';document.getElementById('place-status').textContent='Actions can be saved without a location.';document.getElementById('stop-id').value=item?item.id:'';document.getElementById('stop-version').value=item?item.version||0:'';document.getElementById('stop-title').textContent=item?'Edit shared item':'Add to the plan';document.getElementById('stop-delete').hidden=!item;['name','day','duration','kind','mode','maps','address','lat','lon','notes'].forEach(function(k){var e=document.getElementById('stop-'+k);if(!e)return;var field={maps:'mapsUrl',lat:'lat',lon:'lon'}[k]||k;e.value=item&&item[field]!=null?item[field]:''});document.getElementById('stop-day').value=item?item.day:(day||1);document.getElementById('stop-time').value=item&&item.startMinutes!=null?time(item.startMinutes):'';stopModal.hidden=false}
+      function selectedLocation(lat,lon,label){document.getElementById('stop-lat').value=lat;document.getElementById('stop-lon').value=lon;document.getElementById('place-status').textContent='Selected: '+label;document.getElementById('place-results').innerHTML=''}
+      document.getElementById('place-search').onclick=async function(){var now=Date.now(),name=document.getElementById('stop-name').value.trim(),address=document.getElementById('stop-address').value.trim(),out=document.getElementById('place-results');if(!name&&!address){toast('Enter a place name or address first.');return}if(now-lastLookup<1000){toast('Please wait a moment before another location search.');return}lastLookup=now;out.innerHTML='<small>Looking up location…</small>';try{var q=encodeURIComponent([name,address,'Japan'].filter(Boolean).join(', '));var res=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q='+q,{headers:{Accept:'application/json'}});var matches=await res.json();if(!matches.length){out.innerHTML='<small>No match found. Use Pick on map instead.</small>';return}out.innerHTML=matches.map(function(m,i){return '<button type="button" class="place-result" data-result="'+i+'">'+esc(m.display_name.split(',')[0])+'<small>'+esc(m.display_name)+'</small></button>'}).join('');out.querySelectorAll('[data-result]').forEach(function(b){b.onclick=function(){var m=matches[+b.dataset.result];selectedLocation(m.lat,m.lon,m.display_name)}})}catch(e){out.innerHTML='<small>Lookup failed. Use Pick on map instead.</small>'}}
+      document.getElementById('place-pick').onclick=function(){var m=getMap();if(!m){toast('Map is not ready yet.');return}picking=true;stopModal.hidden=true;if(document.body.classList.contains('agenda-on'))document.getElementById('map-button').click();drawMap();toast('Tap the map to place this item.');};
+      function formData(){var t=document.getElementById('stop-time').value.split(':');return {name:document.getElementById('stop-name').value.trim(),day:+document.getElementById('stop-day').value,startMinutes:t.length===2?(+t[0]*60 + +t[1]):null,duration:+document.getElementById('stop-duration').value||0,kind:document.getElementById('stop-kind').value,mode:document.getElementById('stop-mode').value,mapsUrl:document.getElementById('stop-maps').value.trim(),address:document.getElementById('stop-address').value.trim(),lat:document.getElementById('stop-lat').value===''?null:+document.getElementById('stop-lat').value,lon:document.getElementById('stop-lon').value===''?null:+document.getElementById('stop-lon').value,notes:document.getElementById('stop-notes').value.trim()}}
+      function activity(tx,action,item){tx.set(ref('activity').doc(),{action:action,itemName:item.name,author:displayName(),authorUid:user.uid,createdAt:firebase.firestore.FieldValue.serverTimestamp()})}
+      document.getElementById('stop-form').onsubmit=async function(e){e.preventDefault();var data=formData(),id=document.getElementById('stop-id').value,version=+document.getElementById('stop-version').value;if(!data.name){return}data.hasLocation=Number.isFinite(data.lat)&&Number.isFinite(data.lon);try{if(!id){var doc=ref('stops').doc();data.order=(stops.filter(function(s){return +s.day===data.day}).reduce(function(n,s){return Math.max(n,+s.order||0)},0)||0)+1000;data.createdBy=displayName();data.createdByUid=user.uid;data.createdAt=firebase.firestore.FieldValue.serverTimestamp();data.updatedBy=displayName();data.updatedByUid=user.uid;data.updatedAt=firebase.firestore.FieldValue.serverTimestamp();data.version=1;var batch=db.batch();batch.set(doc,data);batch.set(ref('activity').doc(),{action:'added',itemName:data.name,author:displayName(),authorUid:user.uid,createdAt:firebase.firestore.FieldValue.serverTimestamp()});await batch.commit();toast('Added to the shared itinerary.')}else{await db.runTransaction(async function(tx){var doc=ref('stops').doc(id),current=await tx.get(doc);if(!current.exists)throw new Error('This item no longer exists.');if((current.data().version||0)!==version)throw new Error('This item changed while you were editing. Reload it before saving.');var next=Object.assign({},data,{updatedBy:displayName(),updatedByUid:user.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),version:version+1});tx.update(doc,next);activity(tx,'edited',Object.assign({name:current.data().name},next))});toast('Shared item updated.')}stopModal.hidden=true}catch(err){toast(err.message||'Could not save shared item.')}}
+      document.getElementById('stop-delete').onclick=async function(){var id=document.getElementById('stop-id').value,version=+document.getElementById('stop-version').value,item=stops.find(function(s){return s.id===id});if(!item||!confirm('Delete '+item.name+' from the shared itinerary?'))return;try{await db.runTransaction(async function(tx){var doc=ref('stops').doc(id),current=await tx.get(doc);if(!current.exists)throw new Error('This item no longer exists.');if((current.data().version||0)!==version)throw new Error('This item changed while you were editing. Reload it before deleting.');tx.delete(doc);activity(tx,'removed',current.data())});stopModal.hidden=true;toast('Removed from the shared itinerary.')}catch(e){toast(e.message||'Could not remove item.')}}
+      async function moveStop(id,direction){var item=stops.find(function(s){return s.id===id}),list=stops.filter(function(s){return +s.day===+item.day}).sort(compareStops),i=list.indexOf(item),other=list[i+direction];if(!other){toast(direction<0?'Already first that day.':'Already last that day.');return}try{await db.runTransaction(async function(tx){var a=ref('stops').doc(item.id),b=ref('stops').doc(other.id),sa=await tx.get(a),sb=await tx.get(b);if(!sa.exists||!sb.exists)throw new Error('The itinerary changed. Try again.');var va=sa.data().version||0,vb=sb.data().version||0,now=firebase.firestore.FieldValue.serverTimestamp();tx.update(a,{order:sb.data().order,updatedBy:displayName(),updatedByUid:user.uid,updatedAt:now,version:va+1});tx.update(b,{order:sa.data().order,updatedBy:displayName(),updatedByUid:user.uid,updatedAt:now,version:vb+1});activity(tx,'reordered',sa.data())});toast('Order updated for everyone.')}catch(e){toast(e.message||'Could not reorder item.')}}
+      start();
+    })();
+    </script>
+    """
+    baseline_json = json.dumps(baseline, ensure_ascii=False).replace("<", "\\u003c")
+    # branca parses inserted HTML as a Jinja template. A CSS block beginning
+    # with an ID selector would otherwise look like a Jinja ``{#`` comment.
+    return (template.replace("__BASELINE__", baseline_json)
+            .replace("__ROUTE_TEMPLATES__", json.dumps(route_templates, ensure_ascii=False))
+            .replace("__DAY_LABELS__", json.dumps(DAY_LABELS, ensure_ascii=False))
+            .replace("__DAY_CITY__", json.dumps(DAY_CITY, ensure_ascii=False))
+            .replace("{#", "{ #"))
 
 
 def build_touch_cleanup():
