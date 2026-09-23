@@ -1,8 +1,8 @@
 // Bump this whenever the cached shell should be thrown away.
-const CACHE_NAME = 'trip-map-v5';
+const CACHE_NAME = 'japan-trip-v1';
 
 // Only the entry point is pre-cached, as an OFFLINE FALLBACK. The generated
-// pages (index/iceland/spain/japan) are deliberately NOT pre-cached: they change on
+// pages (index/japan) are deliberately NOT pre-cached: they change on
 // every deploy, and a stale copy of them is exactly the bug this avoids.
 // Resolve the shell relative to the worker so project-site deployments such as
 // https://user.github.io/Japan/ do not fall back to the account root.

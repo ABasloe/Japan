@@ -1,7 +1,7 @@
 {
-  "name": "Japan, Spain & Iceland — Trips",
-  "short_name": "Trips",
-  "description": "Interactive itineraries for Japan, Portugal and Spain, and Iceland",
+  "name": "Japan — Trip",
+  "short_name": "Japan Trip",
+  "description": "Interactive Japan itinerary",
   "start_url": "index.html",
   "scope": "./",
   "display": "standalone",

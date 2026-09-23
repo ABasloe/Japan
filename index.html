@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#191714">
-<title>Japan, Spain &amp; Iceland — Trips</title>
+<title>Japan — Trip</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,8 +21,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;co
 .panel{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;cursor:pointer;overflow:hidden;color:#fff;text-decoration:none;transition:flex 0.5s cubic-bezier(.4,0,.2,1)}
 .panel,.panel *{color:#fff;text-decoration:none}
 .panel::before{content:"";position:absolute;inset:0;z-index:0;transition:transform 0.7s ease, filter 0.5s ease}
-.iceland::before{background:linear-gradient(160deg,#0b2545 0%,#13315c 40%,#2e5b8a 100%)}
-.spain::before{background:linear-gradient(160deg,#7b1f2b 0%,#b23a48 45%,#d4a017 100%)}
 .japan::before{background:linear-gradient(160deg,#6e1724 0%,#b42f42 48%,#e3915b 100%)}
 .panel::after{content:"";position:absolute;inset:0;z-index:1;background:rgba(0,0,0,0.22);transition:background 0.5s ease}
 .panel:hover::before{transform:scale(1.06)}
@@ -37,8 +35,6 @@ h1{font-family:'Fraunces','Iowan Old Style','Palatino Linotype',Georgia,serif;fo
 .tag{font-size:12px;font-weight:600;background:rgba(255,255,255,0.18);backdrop-filter:blur(6px);padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.25)}
 .btn{display:inline-block;margin-top:26px;padding:14px 40px;font-size:16px;font-weight:700;color:#fff;background:rgba(255,255,255,0.14);border:2px solid rgba(255,255,255,0.85);border-radius:40px;text-decoration:none;backdrop-filter:blur(6px);transition:all 0.25s ease}
 .panel:hover .btn{background:#fff;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
-.iceland:hover .btn{color:#13315c}
-.spain:hover .btn{color:#b23a48}
 .japan:hover .btn{color:#b42f42}
 /* Dark mode: deepen the panels for a warm, low-glare look */
 :root[data-theme="dark"] .panel::before{filter:brightness(0.8) saturate(0.95)}
@@ -59,7 +55,7 @@ h1{font-family:'Fraunces','Iowan Old Style','Palatino Linotype',Georgia,serif;fo
  body{overflow:auto}
  .wrap{flex-direction:column;height:auto;min-height:100svh}
  .panel:hover{flex:1}
- .panel{padding:12px 18px;min-height:33.333svh}
+ .panel{padding:12px 18px;min-height:100svh}
  .flag{font-size:40px}
  h1{font-size:27px;margin:6px 0 3px}
  .sub{font-size:13px}
@@ -73,9 +69,9 @@ h1{font-family:'Fraunces','Iowan Old Style','Palatino Linotype',Georgia,serif;fo
 </style>
 </head>
 <body>
-<button id="share-trips" type="button">↗ Share trips</button>
+<button id="share-trips" type="button">↗ Share trip</button>
 <button id="theme-tog" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
-<div class="landing-head"><strong>Trip Atlas</strong><span>Choose an itinerary</span></div>
+<div class="landing-head"><strong>Japan Trip</strong><span>Interactive itinerary</span></div>
 <div id="share-toast" role="status"></div>
 <div class="wrap">
   <a class="panel japan" href="japan.html">
@@ -90,34 +86,6 @@ h1{font-family:'Fraunces','Iowan Old Style','Palatino Linotype',Georgia,serif;fo
         <span class="tag">🗻 Mount Fuji</span>
       </div>
       <span class="btn">Explore Japan →</span>
-    </div>
-  </a>
-  <a class="panel spain" href="spain.html">
-    <div class="content">
-      <div class="flag">🕌</div>
-      <h1>Spain</h1>
-      <div class="sub">Portugal &amp; Spain</div>
-      <div class="meta">Aug 6–20, 2026 · 15 days<br>Porto → Lisbon → Seville → Granada → Madrid</div>
-      <div class="tags">
-        <span class="tag">🕌 Alhambra &amp; Mezquita</span>
-        <span class="tag">🚆 All trains</span>
-        <span class="tag">🌘 Solar eclipse</span>
-      </div>
-      <span class="btn">Explore Spain →</span>
-    </div>
-  </a>
-  <a class="panel iceland" href="iceland.html">
-    <div class="content">
-      <div class="flag">🇮🇸</div>
-      <h1>Iceland</h1>
-      <div class="sub">South Coast Road Trip</div>
-      <div class="meta">March 6–10, 2026 · 5 days · ~1,200 km<br>KEF → Vík → Höfn → Golden Circle</div>
-      <div class="tags">
-        <span class="tag">🥾 Hiking trails</span>
-        <span class="tag">🐉 GoT locations</span>
-        <span class="tag">🌡️ Live weather</span>
-      </div>
-      <span class="btn">Explore Iceland →</span>
     </div>
   </a>
 </div>
@@ -141,7 +109,7 @@ h1{font-family:'Fraunces','Iowan Old Style','Palatino Linotype',Georgia,serif;fo
     setTimeout(function(){el.classList.remove('show');},1800);
   }
   document.getElementById('share-trips').addEventListener('click',async function(){
-    var data={title:'Trip Atlas',text:'Interactive itineraries for Japan, Spain, and Iceland',url:location.href};
+    var data={title:'Japan Trip',text:'Interactive Japan itinerary',url:location.href};
     try{
       if(navigator.share){await navigator.share(data);}
       else if(navigator.clipboard){await navigator.clipboard.writeText(location.href);toast('Landing-page link copied');}
